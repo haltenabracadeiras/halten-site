@@ -270,7 +270,7 @@ export function AppSection() {
       <style>{`
         @media (max-width: 900px) {
           .app-wrap { grid-template-columns: 1fr !important; }
-          .app-visual { display: none !important; }
+          .app-visual { justify-content: center !important; }
         }
       `}</style>
     </section>
