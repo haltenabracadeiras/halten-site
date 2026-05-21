@@ -1,26 +1,23 @@
 import { AboutSection } from "./components/about-section";
 import { AppSection } from "./components/app-section";
 import { CatalogSection } from "./components/catalog-section";
-import { ContactSection } from "./components/contact-section";
+import { CtaBand } from "./components/cta-band";
 import { Footer } from "./components/footer";
 import HeroSection from "./components/hero-section";
-import { LocationSection } from "./components/location-section";
+import { MarqueeSection } from "./components/marquee-section";
 import { Navbar } from "./components/navbar";
 import ProductsSection from "./components/products-section";
-import { StatsBar } from "./components/stats-bar";
-
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[var(--bg)] text-[var(--ink)]" style={{ paddingTop: 80 }}>
+    <main style={{ minHeight: "100vh", background: "var(--ink)" }}>
       <Navbar />
       <HeroSection />
-      <StatsBar />
+      <MarqueeSection />
       <ProductsSection />
       <AboutSection />
-      <LocationSection />
-      <ContactSection />
       <AppSection />
       <CatalogSection />
+      <CtaBand />
       <Footer />
     </main>
   );

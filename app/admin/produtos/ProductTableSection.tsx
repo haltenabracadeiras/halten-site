@@ -5,7 +5,7 @@ import { FileSpreadsheet, Loader2, Trash2, Check, AlertCircle } from "lucide-rea
 import * as XLSX from "xlsx";
 import { saveProductTable, deleteProductTable } from "./table-actions";
 
-type ColumnDef = { key: string; label: string };
+type ColumnDef = { key: string; label: string; highlight?: boolean };
 type Template = { id: string; name: string; columns: ColumnDef[] };
 type ExistingTable = { id: string; template_id: string | null; rows: Record<string, string>[] };
 

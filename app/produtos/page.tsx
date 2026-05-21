@@ -1,6 +1,5 @@
 import { Navbar } from "../components/navbar";
 import { Footer } from "../components/footer";
-import { SectionHeader } from "../components/section-header";
 import { ProductsGrid } from "./products-grid";
 import { getSupabaseAdmin } from "../../lib/supabase";
 
@@ -41,71 +40,59 @@ export default async function ProductsPage() {
   return (
     <>
       <Navbar />
-      <main style={{ paddingTop: 80 }}>
-        {/* Page header */}
+      <main style={{ background: "var(--paper)" }}>
+        {/* Hero header */}
         <section
           style={{
-            background: "linear-gradient(135deg, #0f2d4a 0%, #1c9bd7 60%, #38b8f0 100%)",
-            padding: "64px 24px",
+            background: "var(--ink)",
+            padding: "96px 32px 80px",
           }}
         >
           <div style={{ maxWidth: 1280, margin: "0 auto" }}>
             <p
-              className="font-sans"
               style={{
-                display: "inline-flex",
-                alignItems: "center",
-                background: "rgba(255,255,255,0.15)",
-                color: "white",
+                fontFamily: "var(--font-mono)",
                 fontSize: 11,
-                fontWeight: 600,
-                letterSpacing: "0.15em",
+                letterSpacing: "0.18em",
                 textTransform: "uppercase",
-                padding: "6px 16px",
-                borderRadius: 999,
+                color: "rgba(255,255,255,0.35)",
                 marginBottom: 20,
               }}
             >
-              Catálogo
+              [ Catálogo · Produtos ]
             </p>
             <h1
               className="font-sans"
               style={{
-                fontSize: "clamp(36px, 5vw, 56px)",
-                fontWeight: 800,
-                color: "white",
-                lineHeight: 1.05,
+                fontSize: "clamp(48px,6vw,80px)",
+                fontWeight: 700,
+                lineHeight: 0.95,
                 letterSpacing: "-0.03em",
+                color: "white",
                 margin: 0,
               }}
             >
-              Produtos{" "}
-              <span style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", color: "#7dd3f8" }}>
-                Halten
-              </span>
+              Linha completa{" "}
+              <em style={{ fontStyle: "italic", color: "var(--blue)" }}>de abraçadeiras.</em>
             </h1>
             <p
               style={{
-                marginTop: 16,
-                fontSize: 16,
-                color: "rgba(255,255,255,0.8)",
                 fontFamily: "var(--font-mono)",
-                fontWeight: 300,
-                maxWidth: 500,
+                fontSize: 14,
+                lineHeight: 1.7,
+                color: "rgba(255,255,255,0.55)",
+                maxWidth: 520,
+                marginTop: 20,
+                marginBottom: 0,
               }}
             >
-              Abraçadeiras e acessórios para as demandas mais exigentes da indústria.
+              Abraçadeiras para os projetos mais exigentes — montagem de motores, intercooler, sistemas hidráulicos, agrícola e cargas pesadas.
             </p>
           </div>
         </section>
 
-        {/* Products grid with filter */}
-        <section
-          style={{
-            background: "var(--bg)",
-            padding: "64px 24px",
-          }}
-        >
+        {/* Grid */}
+        <section style={{ padding: "80px 32px 120px" }}>
           <div style={{ maxWidth: 1280, margin: "0 auto" }}>
             <ProductsGrid products={products} categories={categories} />
           </div>

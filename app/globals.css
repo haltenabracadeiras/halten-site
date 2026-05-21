@@ -2,6 +2,7 @@
 
 :root {
   --blue: #1c9bd7;
+  --blue-2: #56b9e6;
   --blue-deep: #1480b8;
   --blue-light: #e8f5fc;
   --blue-glow: rgba(28, 155, 215, 0.15);
@@ -9,20 +10,27 @@
   --bg: #f7f8fa;
   --bg-white: #ffffff;
   --bg-section: #f0f4f8;
+  --paper: #f4f5f7;
+  --paper-2: #eaecef;
 
   --ink: #0f1923;
+  --ink-2: #0a1219;
+  --ink-3: #172430;
   --ink-mid: #3d5166;
   --ink-dim: #7a92a8;
   --ink-mute: #b0c0cc;
 
   --line: #e2e8ed;
   --line-soft: #eef1f4;
+  --line-dark: rgba(255,255,255,0.08);
+  --line-dark-strong: rgba(255,255,255,0.18);
+  --muted: rgba(255,255,255,0.55);
+  --muted-dark: rgba(15,25,35,0.55);
 
   --green: #22c55e;
   --red: #ef4444;
 
   --font-sans: var(--font-syne);
-  --font-mono: var(--font-mono);
   --font-serif: var(--font-serif);
 }
 

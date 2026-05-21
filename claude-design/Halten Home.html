@@ -1,0 +1,1016 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<title>Halten Abraçadeiras — Engenharia em fixação industrial</title>
+<meta name="viewport" content="width=1280" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0f1923;
+    --ink-2:#0a1219;
+    --ink-3:#172430;
+    --line:rgba(255,255,255,0.08);
+    --line-strong:rgba(255,255,255,0.18);
+    --line-dark:rgba(15,25,35,0.10);
+    --line-dark-strong:rgba(15,25,35,0.20);
+    --blue:#1c9bd7;
+    --blue-2:#56b9e6;
+    --paper:#f4f5f7;
+    --paper-2:#eaecef;
+    --white:#ffffff;
+    --muted:rgba(255,255,255,0.55);
+    --muted-dark:rgba(15,25,35,0.55);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--ink);color:#fff;font-family:"JetBrains Mono", ui-monospace, monospace;font-size:14px;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  body{overflow-x:hidden}
+  .syne{font-family:"Syne", sans-serif;letter-spacing:-0.02em}
+  .mono{font-family:"JetBrains Mono", monospace}
+  a{color:inherit;text-decoration:none}
+  img,svg{display:block;max-width:100%}
+  button{font:inherit;background:none;border:0;color:inherit;cursor:pointer}
+
+  /* ============ shared ============ */
+  .wrap{max-width:1440px;margin:0 auto;padding:0 56px}
+  .row{display:flex;align-items:center}
+  .between{display:flex;align-items:center;justify-content:space-between}
+  .col{display:flex;flex-direction:column}
+  .eyebrow{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--blue)}
+  .eyebrow.dim{color:var(--muted)}
+  .eyebrow.dark{color:rgba(15,25,35,0.45)}
+
+  /* ============ top utility bar ============ */
+  .util{background:var(--ink-2);border-bottom:1px solid var(--line);font-size:11px;color:var(--muted);letter-spacing:0.04em}
+  .util .wrap{display:flex;justify-content:space-between;height:34px;align-items:center}
+  .util .left{display:flex;gap:24px}
+  .util .left b{color:#fff;font-weight:500}
+  .util .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#3fcf8e;margin-right:8px;vertical-align:middle;box-shadow:0 0 0 3px rgba(63,207,142,0.18)}
+  .util .right{display:flex;gap:18px}
+  .util .right a:hover{color:#fff}
+
+  /* ============ header ============ */
+  header.site{position:sticky;top:0;z-index:50;background:rgba(15,25,35,0.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  header.site .wrap{height:78px;display:flex;align-items:center;justify-content:space-between;gap:40px}
+  .logo{display:flex;align-items:center;gap:12px}
+  .logo .mark{width:38px;height:38px;border-radius:9px;background:var(--blue);display:grid;place-items:center;box-shadow:0 8px 24px -10px rgba(28,155,215,0.6)}
+  .logo .mark svg{width:22px;height:22px}
+  .logo .word{font-family:"Syne",sans-serif;font-weight:700;font-size:22px;letter-spacing:-0.02em}
+  .logo .word small{display:block;font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:0.22em;color:var(--muted);font-weight:400;margin-top:2px}
+  nav.primary{display:flex;gap:6px}
+  nav.primary a{padding:10px 14px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.78);position:relative}
+  nav.primary a:hover{color:#fff;background:rgba(255,255,255,0.05)}
+  nav.primary a.active{color:#fff}
+  nav.primary a.active::after{content:"";position:absolute;left:14px;right:14px;bottom:4px;height:2px;background:var(--blue)}
+  .head-right{display:flex;align-items:center;gap:10px}
+  .icon-btn{width:42px;height:42px;border:1px solid var(--line-strong);border-radius:10px;display:grid;place-items:center;color:#fff;transition:.15s}
+  .icon-btn:hover{background:rgba(255,255,255,0.05)}
+  .cta{height:46px;padding:0 22px;border-radius:10px;background:var(--blue);color:#fff;font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px;font-weight:500;box-shadow:0 12px 28px -12px rgba(28,155,215,0.55)}
+  .cta:hover{background:#1689bf}
+  .cta.ghost{background:transparent;border:1px solid var(--line-strong);box-shadow:none}
+  .cta.ghost:hover{background:rgba(255,255,255,0.05)}
+  .cta.dark{background:var(--ink);color:#fff;box-shadow:none}
+
+  /* ============ HERO CAROUSEL 1920x650 (kept) ============ */
+  .hero-carousel{position:relative;width:100%;height:650px;background:#0a1219;overflow:hidden}
+  .hero-carousel .track{position:absolute;inset:0;display:flex;transition:transform .7s cubic-bezier(.7,0,.2,1)}
+  .hero-carousel .slide{flex:0 0 100%;height:650px;position:relative;display:flex;align-items:center;padding:0 96px;color:#fff;overflow:hidden}
+  .slide.s1{background:radial-gradient(120% 100% at 20% 30%, #1c9bd7 0%, #0f5d8a 55%, #0a3a59 100%)}
+  .slide.s2{background:linear-gradient(120deg, #0f1923 0%, #14283a 60%, #1c9bd7 130%)}
+
+  /* slide 1 — app launch */
+  .s1 .content{max-width:640px;position:relative;z-index:2}
+  .s1 .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.22);padding:8px 14px;border-radius:999px;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:24px}
+  .s1 h1{font-family:"Syne",sans-serif;font-weight:700;font-size:88px;line-height:0.95;letter-spacing:-0.03em;margin-bottom:18px}
+  .s1 h1 em{font-style:italic;font-weight:600;color:#cdeafa}
+  .s1 .lede{font-family:"JetBrains Mono",monospace;font-size:15px;line-height:1.6;color:rgba(255,255,255,0.85);max-width:480px;margin-bottom:32px}
+  .s1 .stores{display:flex;gap:12px;margin-bottom:0}
+  .store{display:flex;align-items:center;gap:12px;background:#0a1219;padding:12px 20px;border-radius:12px;border:1px solid rgba(255,255,255,0.08)}
+  .store .si{width:28px;height:28px;display:grid;place-items:center}
+  .store .lbl{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.55)}
+  .store .name{font-family:"Syne",sans-serif;font-weight:600;font-size:15px;margin-top:1px}
+
+  .s1 .phone-mock{position:absolute;right:96px;top:50%;transform:translateY(-50%);width:520px;height:520px;display:grid;place-items:center}
+  .s1 .phone-mock .grid-bg{position:absolute;inset:0;background:
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.18), transparent 60%),
+    repeating-linear-gradient(0deg, transparent 0 39px, rgba(255,255,255,0.06) 39px 40px),
+    repeating-linear-gradient(90deg, transparent 0 39px, rgba(255,255,255,0.06) 39px 40px);
+    border-radius:50%;
+    mask:radial-gradient(circle at 50%, #000 35%, transparent 75%)}
+  .s1 .phone{position:relative;width:240px;height:480px;border-radius:38px;background:#0f1923;border:6px solid #0a1219;box-shadow:0 40px 80px -30px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08) inset;padding:18px}
+  .s1 .phone .notch{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:90px;height:24px;background:#0a1219;border-radius:14px}
+  .s1 .phone .screen{width:100%;height:100%;background:linear-gradient(180deg,#103a55, #0a1219);border-radius:26px;padding:42px 16px 16px}
+  .s1 .phone .logo-card{background:var(--blue);border-radius:14px;padding:14px;display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .s1 .phone .logo-card .h{width:24px;height:24px;border-radius:6px;background:#fff;color:var(--blue);display:grid;place-items:center;font-family:"Syne";font-weight:800;font-size:14px}
+  .s1 .phone .logo-card .t{font-family:"Syne",sans-serif;font-weight:700;font-size:13px}
+  .s1 .phone .logo-card .t small{display:block;font-size:9px;font-weight:400;font-family:"JetBrains Mono";opacity:0.75;letter-spacing:0.1em}
+  .s1 .phone .row-list{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+  .s1 .phone .row-list .li{display:flex;align-items:center;gap:10px;padding:10px;background:rgba(255,255,255,0.06);border-radius:10px;font-size:10px;font-family:"JetBrains Mono"}
+  .s1 .phone .row-list .li .ic{width:18px;height:18px;border-radius:5px;background:var(--blue);opacity:0.85}
+  .s1 .phone .row-list .li .meta{flex:1}
+  .s1 .phone .row-list .li .meta b{display:block;font-family:"Syne";font-weight:600;font-size:11px;margin-bottom:2px;color:#fff}
+  .s1 .phone .row-list .li .meta span{color:rgba(255,255,255,0.55)}
+
+  /* slide 2 — industrial */
+  .s2 .left{flex:1;max-width:640px;position:relative;z-index:2}
+  .s2 .right{flex:1;height:100%;display:flex;align-items:center;justify-content:center;position:relative}
+  .s2 .left .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(28,155,215,0.18);border:1px solid rgba(28,155,215,0.4);padding:8px 14px;border-radius:999px;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:24px;color:var(--blue-2)}
+  .s2 h1{font-family:"Syne",sans-serif;font-weight:700;font-size:78px;line-height:0.96;letter-spacing:-0.03em;margin-bottom:22px}
+  .s2 h1 em{font-style:italic;color:var(--blue)}
+  .s2 .lede{font-family:"JetBrains Mono",monospace;font-size:14px;line-height:1.7;color:rgba(255,255,255,0.7);max-width:480px;margin-bottom:32px}
+  .s2 .actions{display:flex;gap:12px}
+
+  .s2 .ringset{position:relative;width:520px;height:520px}
+  .s2 .ringset .ring{position:absolute;inset:0;border:2px dashed rgba(255,255,255,0.18);border-radius:50%}
+  .s2 .ringset .ring.r2{inset:50px;border-style:solid;border-color:rgba(255,255,255,0.08);border-width:1px}
+  .s2 .ringset .ring.r3{inset:120px;border-color:rgba(28,155,215,0.45);border-style:solid;border-width:2px}
+  .s2 .ringset .ring.r4{inset:170px;border-color:rgba(28,155,215,0.7);border-width:6px;border-style:solid;background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15), transparent 70%)}
+  .s2 .ringset .ring.r5{inset:200px;border-color:#fff;border-width:1px;border-style:solid;background:rgba(255,255,255,0.06)}
+  .s2 .ringset .tick{position:absolute;left:50%;top:0;width:2px;height:14px;background:#fff;transform-origin:50% 260px}
+  .s2 .ringset .mark{position:absolute;font-family:"JetBrains Mono",monospace;font-size:10px;color:rgba(255,255,255,0.6);letter-spacing:0.1em}
+  .s2 .ringset .label{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center}
+  .s2 .ringset .label .v{font-family:"Syne";font-weight:700;font-size:34px;letter-spacing:-0.02em;color:#fff}
+  .s2 .ringset .label .k{font-family:"JetBrains Mono";font-size:10px;letter-spacing:0.2em;color:var(--blue-2);text-transform:uppercase;margin-top:4px}
+
+  /* carousel controls */
+  .car-ctrl{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.25);display:grid;place-items:center;color:#fff;backdrop-filter:blur(10px)}
+  .car-ctrl:hover{background:rgba(255,255,255,0.18)}
+  .car-ctrl.prev{left:32px}
+  .car-ctrl.next{right:32px}
+  .car-dots{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:5}
+  .car-dots .dot{width:32px;height:4px;border-radius:2px;background:rgba(255,255,255,0.25);cursor:pointer}
+  .car-dots .dot.active{background:#fff;width:48px}
+  .car-meta{position:absolute;bottom:32px;right:48px;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:0.14em;color:rgba(255,255,255,0.7);z-index:5}
+  .car-meta b{color:#fff;font-weight:500}
+
+  .hero-corner{position:absolute;z-index:4;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:0.18em;color:rgba(255,255,255,0.55);text-transform:uppercase}
+  .hero-corner.tl{top:28px;left:48px}
+  .hero-corner.tr{top:28px;right:48px;text-align:right}
+
+  /* ============ marquee ============ */
+  .marquee{background:var(--blue);color:#0a1219;border-top:1px solid rgba(255,255,255,0.15);border-bottom:1px solid rgba(0,0,0,0.15);overflow:hidden;height:62px;display:flex;align-items:center}
+  .marquee-track{display:flex;gap:48px;white-space:nowrap;animation:scroll-x 38s linear infinite;font-family:"Syne",sans-serif;font-weight:700;font-size:20px;letter-spacing:-0.01em;align-items:center}
+  .marquee-track span{display:flex;align-items:center;gap:48px}
+  .marquee-track .dotsep{width:8px;height:8px;border-radius:50%;background:#0a1219;display:inline-block}
+  @keyframes scroll-x{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* ============ stats / counters ============ */
+  .stats{background:var(--ink);padding:120px 0 100px;position:relative;border-bottom:1px solid var(--line)}
+  .stats .wrap{display:grid;grid-template-columns:1.1fr 2fr;gap:80px;align-items:end}
+  .stats .intro h2{font-family:"Syne",sans-serif;font-weight:700;font-size:54px;line-height:1.0;letter-spacing:-0.03em;margin:18px 0 22px}
+  .stats .intro h2 em{font-style:italic;color:var(--blue)}
+  .stats .intro p{font-family:"JetBrains Mono",monospace;font-size:13px;line-height:1.7;color:rgba(255,255,255,0.65);max-width:380px}
+  .stats .nums{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--line)}
+  .stats .nums .cell{padding:32px 24px 0;border-right:1px solid var(--line);position:relative}
+  .stats .nums .cell:last-child{border-right:0}
+  .stats .nums .k{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:0.18em;color:var(--blue);text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:6px}
+  .stats .nums .k::before{content:"";width:6px;height:6px;background:var(--blue);border-radius:50%}
+  .stats .nums .v{font-family:"Syne",sans-serif;font-weight:700;font-size:72px;line-height:0.9;letter-spacing:-0.04em}
+  .stats .nums .v sub{font-size:28px;color:var(--muted);font-weight:500;vertical-align:baseline;margin-left:4px}
+  .stats .nums .desc{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted);margin-top:18px;line-height:1.6}
+
+  /* ============ products ============ */
+  .products{background:var(--paper);color:var(--ink);padding:120px 0 140px;position:relative}
+  .products::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent, rgba(15,25,35,0.1), transparent)}
+  .section-head{display:grid;grid-template-columns:1.1fr 1.4fr;gap:64px;margin-bottom:64px;align-items:end}
+  .section-head .title{font-family:"Syne",sans-serif;font-weight:700;font-size:64px;line-height:1.0;letter-spacing:-0.03em;color:var(--ink)}
+  .section-head .title em{font-style:italic;color:var(--blue)}
+  .section-head .copy{font-family:"JetBrains Mono",monospace;font-size:13px;line-height:1.7;color:var(--muted-dark);max-width:460px}
+  .section-head .meta{margin-bottom:10px}
+  .section-head .filter{display:flex;gap:8px;margin-top:22px;flex-wrap:wrap}
+  .chip{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;padding:8px 14px;border:1px solid var(--line-dark-strong);border-radius:999px;color:var(--ink);background:transparent}
+  .chip.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+  .prod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .pcard{background:#fff;border-radius:16px;overflow:hidden;border:1px solid rgba(15,25,35,0.06);transition:.2s;position:relative;display:flex;flex-direction:column}
+  .pcard:hover{transform:translateY(-4px);box-shadow:0 30px 50px -30px rgba(15,25,35,0.25)}
+  .pcard .visual{aspect-ratio:1/1;background:linear-gradient(180deg,#eef1f4, #dde2e7);position:relative;display:grid;place-items:center;overflow:hidden}
+  .pcard .visual .grid-tex{position:absolute;inset:0;background:
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(15,25,35,0.04) 31px 32px),
+    repeating-linear-gradient(90deg, transparent 0 31px, rgba(15,25,35,0.04) 31px 32px);
+    pointer-events:none}
+  .pcard .code{position:absolute;top:14px;left:14px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:0.12em;color:rgba(15,25,35,0.55);text-transform:uppercase}
+  .pcard .tag{position:absolute;top:14px;right:14px;font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:0.16em;color:#fff;background:var(--ink);padding:4px 8px;border-radius:4px;text-transform:uppercase}
+  .pcard .tag.blue{background:var(--blue)}
+  /* product silhouettes — simple SVG placeholder rings */
+  .clamp-svg{width:70%;height:70%;color:#1c9bd7;opacity:0.85}
+  .pcard .body{padding:22px 22px 24px;display:flex;flex-direction:column;gap:14px;border-top:1px solid rgba(15,25,35,0.06)}
+  .pcard h3{font-family:"Syne",sans-serif;font-weight:700;font-size:20px;letter-spacing:-0.02em;line-height:1.1;color:var(--ink)}
+  .pcard .specs{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted-dark);display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .pcard .specs b{color:var(--ink);font-weight:500}
+  .pcard .footer-row{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px dashed rgba(15,25,35,0.12)}
+  .pcard .footer-row .cat{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--blue)}
+  .pcard .footer-row .arr{width:36px;height:36px;border-radius:50%;border:1px solid var(--line-dark-strong);display:grid;place-items:center;color:var(--ink)}
+  .pcard:hover .arr{background:var(--blue);border-color:var(--blue);color:#fff}
+
+  .prod-foot{display:flex;justify-content:space-between;align-items:center;margin-top:48px;padding-top:32px;border-top:1px solid rgba(15,25,35,0.1)}
+  .prod-foot .all{display:inline-flex;align-items:center;gap:14px;font-family:"Syne";font-weight:600;font-size:22px;color:var(--ink)}
+  .prod-foot .all .arr{width:42px;height:42px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center}
+  .prod-foot .count{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--muted-dark);letter-spacing:0.14em}
+
+  /* ============ precision / capabilities ============ */
+  .precision{background:var(--ink);padding:140px 0;position:relative;overflow:hidden}
+  .precision::before{content:"";position:absolute;inset:0;background:
+    repeating-linear-gradient(0deg, transparent 0 79px, rgba(255,255,255,0.025) 79px 80px),
+    repeating-linear-gradient(90deg, transparent 0 79px, rgba(255,255,255,0.025) 79px 80px);
+    pointer-events:none}
+  .precision .wrap{position:relative}
+  .precision .head{display:grid;grid-template-columns:1.1fr 1.4fr;gap:64px;margin-bottom:80px;align-items:end}
+  .precision h2{font-family:"Syne",sans-serif;font-weight:700;font-size:64px;line-height:0.98;letter-spacing:-0.03em}
+  .precision h2 em{font-style:italic;color:var(--blue)}
+  .precision .head p{font-family:"JetBrains Mono",monospace;font-size:14px;line-height:1.7;color:rgba(255,255,255,0.65);max-width:480px}
+
+  .cap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line)}
+  .cap{padding:40px 32px 44px;border-right:1px solid var(--line);position:relative;min-height:280px;display:flex;flex-direction:column;justify-content:space-between}
+  .cap:nth-child(3n){border-right:0}
+  .cap:nth-child(n+4){border-top:1px solid var(--line)}
+  .cap .num{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:0.18em;color:var(--blue);margin-bottom:32px}
+  .cap h3{font-family:"Syne",sans-serif;font-weight:700;font-size:28px;letter-spacing:-0.02em;line-height:1.15;margin-bottom:14px}
+  .cap p{font-family:"JetBrains Mono",monospace;font-size:13px;line-height:1.65;color:rgba(255,255,255,0.65)}
+  .cap .ic{position:absolute;top:32px;right:32px;width:44px;height:44px;border:1px solid var(--line);border-radius:10px;display:grid;place-items:center;color:var(--blue)}
+
+  /* ============ about / história ============ */
+  .about{background:var(--paper);color:var(--ink);padding:140px 0;position:relative}
+  .about .wrap{display:grid;grid-template-columns:1fr 1.2fr;gap:80px;align-items:start}
+  .about .left h2{font-family:"Syne",sans-serif;font-weight:700;font-size:72px;line-height:0.95;letter-spacing:-0.03em;color:var(--ink);margin:18px 0 28px}
+  .about .left h2 em{font-style:italic;color:var(--blue)}
+  .about .left .body{font-family:"JetBrains Mono",monospace;font-size:14px;line-height:1.75;color:var(--muted-dark);max-width:440px;margin-bottom:32px}
+  .about .left .signature{font-family:"Syne",sans-serif;font-weight:600;font-size:18px;color:var(--ink);margin-top:32px;padding-top:24px;border-top:1px solid rgba(15,25,35,0.12);max-width:440px}
+  .about .left .signature small{display:block;font-family:"JetBrains Mono";font-size:11px;color:var(--muted-dark);font-weight:400;letter-spacing:0.08em;margin-top:4px}
+
+  .pillars{display:flex;flex-direction:column;gap:0;border-top:1px solid rgba(15,25,35,0.15)}
+  .pillar{padding:32px 0;border-bottom:1px solid rgba(15,25,35,0.15);display:grid;grid-template-columns:120px 1fr auto;gap:32px;align-items:start;transition:.2s}
+  .pillar:hover{padding-left:8px}
+  .pillar .k{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:0.18em;color:var(--blue);text-transform:uppercase;padding-top:6px}
+  .pillar .content h4{font-family:"Syne",sans-serif;font-weight:700;font-size:30px;letter-spacing:-0.02em;margin-bottom:10px;color:var(--ink)}
+  .pillar .content p{font-family:"JetBrains Mono",monospace;font-size:13px;line-height:1.65;color:var(--muted-dark);max-width:540px}
+  .pillar .n{font-family:"JetBrains Mono";font-size:11px;color:var(--muted-dark);letter-spacing:0.1em;padding-top:8px}
+
+  /* ============ app section ============ */
+  .app-sec{background:var(--ink);padding:140px 0;position:relative;overflow:hidden}
+  .app-sec::before{content:"";position:absolute;top:-300px;right:-200px;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle, rgba(28,155,215,0.18), transparent 70%);filter:blur(20px)}
+  .app-sec .wrap{display:grid;grid-template-columns:1.2fr 1fr;gap:80px;align-items:center;position:relative}
+  .app-sec .left .badge{display:inline-flex;align-items:center;gap:10px;background:rgba(28,155,215,0.12);border:1px solid rgba(28,155,215,0.35);padding:8px 16px;border-radius:999px;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--blue-2);margin-bottom:28px}
+  .app-sec .left .badge .dot{width:6px;height:6px;border-radius:50%;background:var(--blue-2);box-shadow:0 0 0 4px rgba(28,155,215,0.25)}
+  .app-sec h2{font-family:"Syne",sans-serif;font-weight:700;font-size:84px;line-height:0.95;letter-spacing:-0.035em;margin-bottom:24px}
+  .app-sec h2 em{font-style:italic;color:var(--blue)}
+  .app-sec .lede{font-family:"JetBrains Mono",monospace;font-size:14px;line-height:1.75;color:rgba(255,255,255,0.7);max-width:480px;margin-bottom:36px}
+  .app-sec .feat{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:36px;max-width:520px}
+  .app-sec .feat .f{display:flex;gap:12px;padding:14px;background:rgba(255,255,255,0.04);border:1px solid var(--line);border-radius:10px}
+  .app-sec .feat .f .ic{width:32px;height:32px;border-radius:7px;background:rgba(28,155,215,0.15);display:grid;place-items:center;color:var(--blue);flex-shrink:0}
+  .app-sec .feat .f .t{font-family:"Syne";font-weight:600;font-size:13px;line-height:1.3}
+  .app-sec .feat .f .t small{display:block;font-family:"JetBrains Mono";font-weight:400;font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:0.05em}
+  .app-sec .stores{display:flex;gap:12px}
+  .app-sec .stores .store{background:rgba(255,255,255,0.06);border-color:var(--line)}
+
+  .app-visual{position:relative;height:580px;display:grid;place-items:center}
+  .phone-big{position:relative;width:280px;height:560px;border-radius:42px;background:#0a1219;border:8px solid #050a0f;box-shadow:0 60px 100px -40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.06) inset;padding:18px;z-index:2}
+  .phone-big .notch{position:absolute;top:18px;left:50%;transform:translateX(-50%);width:100px;height:28px;background:#050a0f;border-radius:14px;z-index:3}
+  .phone-big .screen{width:100%;height:100%;background:linear-gradient(180deg, #1c9bd7 0%, #0f5d8a 50%, #0a1219 100%);border-radius:30px;padding:48px 18px 18px;position:relative;overflow:hidden}
+  .phone-big .screen .top{display:flex;align-items:center;justify-content:space-between;font-family:"JetBrains Mono";font-size:10px;color:rgba(255,255,255,0.7);margin-bottom:24px;padding:0 4px}
+  .phone-big .screen .hero-cell{background:rgba(255,255,255,0.12);border-radius:14px;padding:18px;backdrop-filter:blur(4px);margin-bottom:14px}
+  .phone-big .screen .hero-cell .l{font-family:"Syne";font-weight:700;font-size:22px;letter-spacing:-0.02em;line-height:1}
+  .phone-big .screen .hero-cell .s{font-family:"JetBrains Mono";font-size:10px;color:rgba(255,255,255,0.75);margin-top:6px}
+  .phone-big .screen .search{background:rgba(255,255,255,0.18);border-radius:10px;padding:10px 12px;font-family:"JetBrains Mono";font-size:11px;color:rgba(255,255,255,0.85);display:flex;align-items:center;gap:8px;margin-bottom:14px}
+  .phone-big .screen .lst{display:flex;flex-direction:column;gap:8px}
+  .phone-big .screen .lst .row{background:rgba(255,255,255,0.10);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px}
+  .phone-big .screen .lst .row .sq{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.2);display:grid;place-items:center;color:#fff;font-family:"JetBrains Mono";font-size:9px}
+  .phone-big .screen .lst .row .meta b{display:block;font-family:"Syne";font-weight:600;font-size:11px;color:#fff}
+  .phone-big .screen .lst .row .meta span{font-family:"JetBrains Mono";font-size:9px;color:rgba(255,255,255,0.7);margin-top:2px;display:block}
+
+  .qr{position:absolute;right:0;bottom:30px;background:#fff;color:var(--ink);border-radius:14px;padding:18px;width:200px;z-index:3;box-shadow:0 30px 60px -20px rgba(0,0,0,0.4)}
+  .qr .qr-img{width:100%;aspect-ratio:1/1;background:
+    conic-gradient(from 0deg at 50% 50%, #0f1923, #0f1923),
+    #fff;
+    position:relative;
+    background:
+      linear-gradient(0deg, #fff, #fff);
+      border-radius:6px;
+    overflow:hidden;
+    margin-bottom:10px;
+  }
+  /* simulated qr */
+  .qr svg{width:100%;height:100%}
+  .qr .lbl{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-dark);text-align:center}
+  .qr .lbl b{display:block;font-family:"Syne";font-size:12px;color:var(--ink);font-weight:700;letter-spacing:0;text-transform:none;margin-top:4px}
+
+  /* ============ catalog ============ */
+  .catalog{background:var(--paper);color:var(--ink);padding:140px 0;position:relative}
+  .catalog .wrap{display:grid;grid-template-columns:1fr 1.1fr;gap:80px;align-items:center}
+  .catalog .visual{position:relative;height:560px}
+  .catalog .visual .grid-bg{position:absolute;inset:0;background:
+    repeating-linear-gradient(0deg, transparent 0 47px, rgba(15,25,35,0.05) 47px 48px),
+    repeating-linear-gradient(90deg, transparent 0 47px, rgba(15,25,35,0.05) 47px 48px);}
+  .catalog .book{position:relative;width:340px;height:460px;background:linear-gradient(135deg, #1c9bd7 0%, #0f5d8a 100%);border-radius:6px 22px 22px 6px;box-shadow:0 50px 80px -30px rgba(15,25,35,0.4);margin:30px auto;padding:40px 32px;color:#fff;overflow:hidden}
+  .catalog .book::before{content:"";position:absolute;left:0;top:0;bottom:0;width:8px;background:rgba(0,0,0,0.25)}
+  .catalog .book .h-logo{font-family:"Syne";font-weight:700;font-size:24px;letter-spacing:-0.02em}
+  .catalog .book .h-logo small{display:block;font-family:"JetBrains Mono";font-size:9px;font-weight:400;letter-spacing:0.18em;opacity:0.7;margin-top:4px}
+  .catalog .book .yr{font-family:"JetBrains Mono";font-size:10px;letter-spacing:0.18em;margin-top:120px;opacity:0.8}
+  .catalog .book .ttl{font-family:"Syne",sans-serif;font-weight:800;font-style:italic;font-size:46px;letter-spacing:-0.03em;line-height:0.95;margin-top:10px}
+  .catalog .book .url{position:absolute;left:32px;bottom:32px;font-family:"JetBrains Mono";font-size:10px;letter-spacing:0.1em;opacity:0.7}
+  .catalog .book .spine-num{position:absolute;right:24px;bottom:32px;font-family:"JetBrains Mono";font-size:10px;letter-spacing:0.16em}
+  .catalog .book .stripes{position:absolute;right:0;top:0;bottom:0;width:60px;background:repeating-linear-gradient(0deg, transparent 0 19px, rgba(255,255,255,0.08) 19px 20px)}
+
+  .catalog .right h2{font-family:"Syne",sans-serif;font-weight:700;font-size:64px;line-height:0.98;letter-spacing:-0.03em;margin:18px 0 26px}
+  .catalog .right h2 em{font-style:italic;color:var(--blue)}
+  .catalog .right p{font-family:"JetBrains Mono",monospace;font-size:14px;line-height:1.7;color:var(--muted-dark);max-width:520px;margin-bottom:32px}
+  .catalog .right ul{list-style:none;margin-bottom:36px;display:flex;flex-direction:column;gap:14px;max-width:520px}
+  .catalog .right ul li{display:flex;align-items:start;gap:14px;font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--ink);padding-bottom:14px;border-bottom:1px solid rgba(15,25,35,0.08)}
+  .catalog .right ul li .ck{width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;flex-shrink:0}
+  .catalog .right ul li b{font-family:"Syne";font-weight:600;font-size:15px;letter-spacing:-0.01em;color:var(--ink);display:block;margin-bottom:2px}
+  .catalog .right ul li span{color:var(--muted-dark);font-size:12px}
+  .catalog .right .ctas{display:flex;gap:12px}
+  .catalog .right .cta{background:var(--ink)}
+  .catalog .right .cta:hover{background:#1f3142}
+  .catalog .right .cta.blue{background:var(--blue)}
+
+  /* ============ contact / cta band ============ */
+  .ctaband{background:var(--ink);padding:120px 0;position:relative;overflow:hidden;border-top:1px solid var(--line)}
+  .ctaband::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 80% at 50% 0%, rgba(28,155,215,0.15), transparent 70%)}
+  .ctaband .wrap{position:relative;display:grid;grid-template-columns:1.4fr 1fr;gap:64px;align-items:center}
+  .ctaband h2{font-family:"Syne",sans-serif;font-weight:700;font-size:90px;line-height:0.92;letter-spacing:-0.035em}
+  .ctaband h2 em{font-style:italic;color:var(--blue)}
+  .ctaband .sub{font-family:"JetBrains Mono",monospace;font-size:14px;line-height:1.7;color:rgba(255,255,255,0.7);margin-top:24px;max-width:480px}
+  .ctaband .actions{margin-top:36px;display:flex;gap:12px}
+  .contact-card{background:rgba(255,255,255,0.03);border:1px solid var(--line-strong);border-radius:18px;padding:36px}
+  .contact-card .k{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:0.18em;color:var(--blue);text-transform:uppercase;margin-bottom:16px}
+  .contact-card h3{font-family:"Syne",sans-serif;font-weight:700;font-size:24px;letter-spacing:-0.02em;margin-bottom:24px}
+  .contact-card .item{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .contact-card .item:last-child{border-bottom:0}
+  .contact-card .item .ic{width:38px;height:38px;border-radius:9px;background:rgba(28,155,215,0.12);display:grid;place-items:center;color:var(--blue);flex-shrink:0}
+  .contact-card .item .meta small{display:block;font-family:"JetBrains Mono";font-size:10px;color:var(--muted);letter-spacing:0.1em;margin-bottom:3px}
+  .contact-card .item .meta b{font-family:"Syne";font-size:16px;font-weight:600;color:#fff;letter-spacing:-0.01em}
+
+  /* ============ footer ============ */
+  footer{background:var(--ink-2);padding:80px 0 32px;border-top:1px solid var(--line)}
+  footer .wrap{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:64px;padding-bottom:48px;border-bottom:1px solid var(--line)}
+  footer .col-brand{display:flex;flex-direction:column;gap:18px}
+  footer .col-brand p{font-family:"JetBrains Mono",monospace;font-size:12px;line-height:1.7;color:var(--muted);max-width:300px}
+  footer .col-brand .cnpj{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted);letter-spacing:0.1em;padding:8px 14px;border:1px solid var(--line);border-radius:8px;display:inline-flex;align-items:center;gap:10px;width:fit-content}
+  footer .col-brand .cnpj b{color:#fff;font-weight:500}
+  footer h5{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:0.18em;color:var(--blue);text-transform:uppercase;margin-bottom:18px}
+  footer ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+  footer ul li a{font-family:"Syne";font-size:15px;color:rgba(255,255,255,0.7);font-weight:500}
+  footer ul li a:hover{color:#fff}
+  footer .col p, footer .col span{font-family:"JetBrains Mono",monospace;font-size:13px;color:rgba(255,255,255,0.8);line-height:1.7}
+  footer .col .lbl{display:block;font-size:10px;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;margin-top:18px}
+  footer .col .lbl:first-child{margin-top:0}
+  footer .legal{padding-top:32px;display:flex;justify-content:space-between;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted);letter-spacing:0.06em}
+  footer .legal .pill{display:inline-flex;align-items:center;gap:8px}
+  footer .legal .pill .dot{width:6px;height:6px;border-radius:50%;background:#3fcf8e;box-shadow:0 0 0 3px rgba(63,207,142,0.18)}
+
+  .big-word{font-family:"Syne",sans-serif;font-weight:800;font-size:240px;line-height:0.85;letter-spacing:-0.05em;color:rgba(255,255,255,0.03);text-align:center;padding:0 0 60px;user-select:none}
+
+  /* ============ floating side rail ============ */
+  .side-rail{position:fixed;left:24px;top:50%;transform:translateY(-50%);writing-mode:vertical-rl;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:0.3em;color:rgba(255,255,255,0.5);text-transform:uppercase;z-index:30;display:flex;align-items:center;gap:20px}
+  .side-rail::before{content:"";width:1px;height:60px;background:var(--line-strong)}
+</style>
+</head>
+<body>
+
+<!-- ============ TOP UTILITY ============ -->
+<div class="util">
+  <div class="wrap">
+    <div class="left">
+      <span><span class="dot"></span>Operação online <b>· Seg–Sex 08:00–17:30</b></span>
+      <span>R. Alba Vieira, 653 — Cataratas, Cascavel/PR</span>
+    </div>
+    <div class="right">
+      <a href="#">PT-BR</a>
+      <a href="#">contato@halten.ind.br</a>
+      <a href="#">(45) 3197-2130</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============ HEADER ============ -->
+<header class="site">
+  <div class="wrap">
+    <a href="#" class="logo">
+      <div class="mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="12" cy="12" r="7"/><path d="M9 9v6M15 9v6M9 12h6"/></svg>
+      </div>
+      <div class="word">Halten<small>Abraçadeiras · Est. 1981</small></div>
+    </a>
+    <nav class="primary">
+      <a href="#" class="active">Início</a>
+      <a href="#produtos">Produtos</a>
+      <a href="#empresa">Quem somos</a>
+      <a href="#localizacao">Localização</a>
+      <a href="#contato">Contato</a>
+    </nav>
+    <div class="head-right">
+      <button class="icon-btn" aria-label="Buscar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      </button>
+      <button class="icon-btn" aria-label="Catálogo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4V4Z"/><path d="M4 4v12a4 4 0 0 0 4 4"/></svg>
+      </button>
+      <a href="#contato" class="cta">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+        Atendimento
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- ============ HERO CAROUSEL 1920x650 ============ -->
+<section class="hero-carousel" id="hero">
+  <div class="hero-corner tl">[01] Banner promocional — 1920 × 650</div>
+  <div class="hero-corner tr">Atualizado · Mai 2026</div>
+
+  <div class="track" id="heroTrack">
+    <!-- Slide 1 -->
+    <div class="slide s1">
+      <div class="content">
+        <div class="badge">
+          <span style="width:6px;height:6px;border-radius:50%;background:#fff"></span>
+          Novidade · App Oficial
+        </div>
+        <h1>O App da Halten <em>chegou.</em></h1>
+        <p class="lede">Catálogo completo, especificações técnicas e pedidos diretamente na palma da sua mão. Disponível gratuitamente para iOS e Android.</p>
+        <div class="stores">
+          <a href="#" class="store">
+            <div class="si"><svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M17.05 12.04c-.03-2.46 2.01-3.64 2.1-3.7-1.15-1.68-2.94-1.91-3.57-1.93-1.5-.16-2.95.9-3.72.9-.78 0-1.96-.88-3.23-.86-1.65.03-3.2.96-4.05 2.44-1.74 3.01-.44 7.45 1.24 9.89.82 1.19 1.79 2.52 3.07 2.48 1.24-.05 1.7-.79 3.2-.79 1.49 0 1.92.79 3.22.77 1.33-.02 2.17-1.2 2.98-2.4.94-1.37 1.32-2.71 1.34-2.78-.03-.01-2.55-.98-2.58-3.89zM14.65 4.52c.69-.83 1.15-2 1.02-3.14-.99.04-2.18.66-2.89 1.49-.64.73-1.2 1.9-1.05 3.02 1.1.08 2.23-.55 2.92-1.37z"/></svg></div>
+            <div><div class="lbl">Disponível na</div><div class="name">App Store</div></div>
+          </a>
+          <a href="#" class="store">
+            <div class="si"><svg width="22" height="22" viewBox="0 0 24 24"><path fill="#1c9bd7" d="M3.2 1.6 13.4 12 3.2 22.4c-.4-.3-.7-.8-.7-1.4V3c0-.6.3-1.1.7-1.4z"/><path fill="#56b9e6" d="M17 8.3 14.9 9.5 5.4 1.1c.3-.1.6-.1.9 0L17 8.3z"/><path fill="#fff" d="M17 15.7 6.3 22.9c-.3.1-.6.1-.9 0l9.5-8.4L17 15.7z"/><path fill="#cdeafa" d="m20.4 10.6 1.4.9c.8.5.8 1.5 0 2l-1.4.9-3.4-1.9 3.4-1.9z"/></svg></div>
+            <div><div class="lbl">Disponível no</div><div class="name">Google Play</div></div>
+          </a>
+        </div>
+      </div>
+      <div class="phone-mock">
+        <div class="grid-bg"></div>
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="logo-card">
+              <div class="h">H</div>
+              <div class="t">Halten Abraçadeiras<small>NEGÓCIOS · v2.4</small></div>
+            </div>
+            <div class="row-list">
+              <div class="li"><div class="ic"></div><div class="meta"><b>Pesquisar produto</b><span>cód, modelo, dimensão</span></div></div>
+              <div class="li"><div class="ic" style="background:#fff;opacity:1"></div><div class="meta"><b>Lançamentos</b><span>Atualizado em 18/05</span></div></div>
+              <div class="li"><div class="ic"></div><div class="meta"><b>Carrinho</b><span>3 itens · em rascunho</span></div></div>
+              <div class="li"><div class="ic" style="background:rgba(255,255,255,0.4)"></div><div class="meta"><b>Mensagens</b><span>Suporte técnico</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="slide s2" style="justify-content:space-between">
+      <div class="left">
+        <div class="badge">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--blue-2)"></span>
+          Linha 2026 · Inox AISI 304/316
+        </div>
+        <h1>Fixação <em>industrial</em> em alta resistência.</h1>
+        <p class="lede">Abraçadeiras desenvolvidas para suportar vibração, pressão e ciclos térmicos extremos. Cada peça é testada em laboratório próprio.</p>
+        <div class="actions">
+          <a href="#produtos" class="cta">Ver linha completa</a>
+          <a href="#" class="cta ghost">Download técnico (PDF)</a>
+        </div>
+      </div>
+      <div class="right">
+        <div class="ringset">
+          <div class="ring r1"></div>
+          <div class="ring r2"></div>
+          <div class="ring r3"></div>
+          <div class="ring r4"></div>
+          <div class="ring r5"></div>
+          <span class="mark" style="top:-22px;left:50%;transform:translateX(-50%)">⌀ 76 mm</span>
+          <span class="mark" style="top:50%;right:-90px;transform:translateY(-50%)">torque · 12 N·m</span>
+          <span class="mark" style="bottom:-22px;left:50%;transform:translateX(-50%)">aço inox W4</span>
+          <span class="mark" style="top:50%;left:-110px;transform:translateY(-50%)">⌀ 38 mm</span>
+          <div class="label"><div class="v">SAE J1508</div><div class="k">Norma aplicada</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="car-ctrl prev" id="cPrev" aria-label="Anterior">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+  </button>
+  <button class="car-ctrl next" id="cNext" aria-label="Próximo">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+  </button>
+
+  <div class="car-dots" id="cDots">
+    <button class="dot active" data-i="0"></button>
+    <button class="dot" data-i="1"></button>
+  </div>
+  <div class="car-meta">SLIDE <b id="cIdx">01</b> / 02</div>
+</section>
+
+<!-- ============ MARQUEE ============ -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>FIXAÇÃO INDUSTRIAL <span class="dotsep"></span> INOX AISI 304/316 <span class="dotsep"></span> RESISTÊNCIA &amp; PRECISÃO <span class="dotsep"></span> DESDE 1981 <span class="dotsep"></span> 45 ANOS DE ENGENHARIA <span class="dotsep"></span> NORMA SAE J1508 <span class="dotsep"></span></span>
+    <span>FIXAÇÃO INDUSTRIAL <span class="dotsep"></span> INOX AISI 304/316 <span class="dotsep"></span> RESISTÊNCIA &amp; PRECISÃO <span class="dotsep"></span> DESDE 1981 <span class="dotsep"></span> 45 ANOS DE ENGENHARIA <span class="dotsep"></span> NORMA SAE J1508 <span class="dotsep"></span></span>
+  </div>
+</div>
+
+<!-- ============ STATS ============ -->
+<section class="stats">
+  <div class="wrap">
+    <div class="intro">
+      <div class="eyebrow">[ 00.1 — Sobre a operação ]</div>
+      <h2>Engenharia que <em>aperta forte</em> há quatro décadas.</h2>
+      <p>Fabricamos no Brasil abraçadeiras e acessórios para o setor automotivo, sanitário, agroindustrial e de infraestrutura. Cada lote sai com rastreabilidade e ensaio.</p>
+    </div>
+    <div class="nums">
+      <div class="cell">
+        <div class="k">Produtos vendidos</div>
+        <div class="v">12<sub>k+</sub></div>
+        <div class="desc">unidades comercializadas em 2025</div>
+      </div>
+      <div class="cell">
+        <div class="k">Satisfação</div>
+        <div class="v">98<sub>%</sub></div>
+        <div class="desc">NPS médio em pesquisa B2B</div>
+      </div>
+      <div class="cell">
+        <div class="k">Suporte rápido</div>
+        <div class="v">24<sub>h</sub></div>
+        <div class="desc">tempo médio de resposta técnica</div>
+      </div>
+      <div class="cell">
+        <div class="k">Experiência</div>
+        <div class="v">45<sub>anos</sub></div>
+        <div class="desc">fabricação contínua desde 1981</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRODUCTS ============ -->
+<section class="products" id="produtos">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow dark meta">[ 01 — Catálogo · Produtos ]</div>
+        <h1 class="title">Nossas soluções<br><em>para a sua linha.</em></h1>
+      </div>
+      <div>
+        <p class="copy">Abraçadeiras e acessórios desenvolvidos para projetos exigentes — montagem de motores, intercooler, sistemas hidráulicos, sanitários e cargas pesadas. Encontre a peça certa por modelo, dimensão ou aplicação.</p>
+        <div class="filter">
+          <button class="chip active">Todos</button>
+          <button class="chip">Sem-fim</button>
+          <button class="chip">Mola</button>
+          <button class="chip">Mercedes</button>
+          <button class="chip">Intercooler</button>
+          <button class="chip">Acessórios</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="prod-grid">
+      <!-- card 1 -->
+      <article class="pcard">
+        <div class="visual">
+          <div class="grid-tex"></div>
+          <span class="code">HLT-09 · MRC</span>
+          <span class="tag">Inox 304</span>
+          <svg class="clamp-svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><circle cx="50" cy="50" r="32"/><circle cx="50" cy="50" r="38" stroke-dasharray="2 2" opacity="0.55"/><rect x="38" y="14" width="24" height="14" rx="2" fill="currentColor" opacity="0.85"/><path d="M44 16h12M44 22h12"/></svg>
+        </div>
+        <div class="body">
+          <h3>Abraçadeira Modelo Mercedes</h3>
+          <div class="specs"><b>⌀ 25–82 mm</b><span>Faixa de aperto</span><b>12 mm</b><span>Largura banda</span></div>
+          <div class="footer-row">
+            <span class="cat">Automotivo</span>
+            <span class="arr"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+          </div>
+        </div>
+      </article>
+
+      <!-- card 2 -->
+      <article class="pcard">
+        <div class="visual">
+          <div class="grid-tex"></div>
+          <span class="code">HLT-14 · INT</span>
+          <span class="tag blue">Heavy</span>
+          <svg class="clamp-svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><circle cx="50" cy="50" r="30"/><rect x="40" y="10" width="20" height="22" rx="2" fill="currentColor" opacity="0.85"/><circle cx="50" cy="20" r="3" fill="#0f1923"/><path d="M30 35 25 38M70 35l5 3M30 65l-5 3M70 65l5 3" stroke-width="2.5"/></svg>
+        </div>
+        <div class="body">
+          <h3>Abraçadeira Tucho Intercooler</h3>
+          <div class="specs"><b>⌀ 60–110 mm</b><span>Faixa de aperto</span><b>20 mm</b><span>Largura banda</span></div>
+          <div class="footer-row">
+            <span class="cat">Intercooler</span>
+            <span class="arr"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+          </div>
+        </div>
+      </article>
+
+      <!-- card 3 -->
+      <article class="pcard">
+        <div class="visual">
+          <div class="grid-tex"></div>
+          <span class="code">HLT-22 · TML</span>
+          <span class="tag">Mola</span>
+          <svg class="clamp-svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><circle cx="50" cy="50" r="28"/><path d="M50 8c8 4 8 6 0 10s-8 6 0 10"/><circle cx="50" cy="50" r="34" stroke-dasharray="2 3" opacity="0.5"/></svg>
+        </div>
+        <div class="body">
+          <h3>Abraçadeira Tucho Mola</h3>
+          <div class="specs"><b>⌀ 30–95 mm</b><span>Faixa de aperto</span><b>15 mm</b><span>Largura banda</span></div>
+          <div class="footer-row">
+            <span class="cat">Sanitário</span>
+            <span class="arr"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+          </div>
+        </div>
+      </article>
+
+      <!-- card 4 -->
+      <article class="pcard">
+        <div class="visual">
+          <div class="grid-tex"></div>
+          <span class="code">HLT-31 · SFM</span>
+          <span class="tag blue">Premium</span>
+          <svg class="clamp-svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><circle cx="50" cy="50" r="30"/><circle cx="50" cy="50" r="20" opacity="0.55"/><path d="M20 50h60M50 20v60" stroke-dasharray="2 3" opacity="0.45"/><rect x="36" y="12" width="28" height="12" rx="2" fill="currentColor" opacity="0.85"/></svg>
+        </div>
+        <div class="body">
+          <h3>Abraçadeira Sem-Fim Premium</h3>
+          <div class="specs"><b>⌀ 16–280 mm</b><span>Faixa de aperto</span><b>9 mm</b><span>Largura banda</span></div>
+          <div class="footer-row">
+            <span class="cat">Multi-uso</span>
+            <span class="arr"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="prod-foot">
+      <a href="#" class="all">
+        Ver todos os 240+ modelos
+        <span class="arr"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span>
+      </a>
+      <div class="count">CAT. 2026 · 240 SKUs · ATUALIZADO 12/05/2026</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRECISION / CAPABILITIES ============ -->
+<section class="precision">
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <div class="eyebrow">[ 02 — Engenharia ]</div>
+        <h2>Cada peça <em>pensada</em> antes de ser apertada.</h2>
+      </div>
+      <p>Da matéria-prima ao acabamento, nossa fábrica em Cascavel/PR opera com controle dimensional, ensaio de torque e teste de fadiga em 100% dos lotes. Você recebe rastreabilidade impressa no embalo.</p>
+    </div>
+
+    <div class="cap-grid">
+      <div class="cap">
+        <div>
+          <div class="num">01 / Material</div>
+          <h3>Inox AISI 304 e 316L</h3>
+          <p>Resistência à corrosão em ambientes salinos, químicos e sanitários. Certificado de matéria-prima por bobina.</p>
+        </div>
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 7v10l8 5 8-5V7l-8-5z"/><path d="M4 7l8 5 8-5"/><path d="M12 12v10"/></svg></div>
+      </div>
+      <div class="cap">
+        <div>
+          <div class="num">02 / Processo</div>
+          <h3>Estampagem + solda TIG</h3>
+          <p>Linha CNC com 6 prensas e 4 robôs de solda. Banda sem rebarba — não corta mangueira nem ferida instalador.</p>
+        </div>
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg></div>
+      </div>
+      <div class="cap">
+        <div>
+          <div class="num">03 / Ensaio</div>
+          <h3>Torque · vibração · fadiga</h3>
+          <p>Laboratório próprio com banca de torque calibrada (BIPM), câmara salina e teste cíclico até 50.000 voltas.</p>
+        </div>
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/><path d="M12 7v5l3 3"/></svg></div>
+      </div>
+      <div class="cap">
+        <div>
+          <div class="num">04 / Normativa</div>
+          <h3>SAE J1508 · DIN 3017</h3>
+          <p>Conformidade dimensional e mecânica com as normas internacionais aplicáveis a cada família de produto.</p>
+        </div>
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+      </div>
+      <div class="cap">
+        <div>
+          <div class="num">05 / Logística</div>
+          <h3>Pronta-entrega · BR todo</h3>
+          <p>Estoque-pulmão de 1,2 milhão de peças em Cascavel/PR. Despacho em até 24h para grandes capitais.</p>
+        </div>
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h13v9H3z"/><path d="M16 11h4l3 3v3h-7z"/><circle cx="7" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg></div>
+      </div>
+      <div class="cap">
+        <div>
+          <div class="num">06 / Engenharia sob medida</div>
+          <h3>Projetos especiais OEM</h3>
+          <p>Desenhamos abraçadeiras para o seu projeto: diâmetro, material, banda e gravação personalizada.</p>
+        </div>
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2 18 6"/><path d="m4 20 14-14a2.83 2.83 0 0 0-4-4L0 16v4h4z"/></svg></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ABOUT / HISTORIA ============ -->
+<section class="about" id="empresa">
+  <div class="wrap">
+    <div class="left">
+      <div class="eyebrow dark">[ 03 — Quem somos ]</div>
+      <h2>A história <em>da Halten.</em></h2>
+      <p class="body">Começamos em 1981 como uma pequena oficina de estampagem em Cascavel. Hoje, ocupamos um parque fabril de 8.400 m² atendendo montadoras, indústrias químicas e agropecuárias do Brasil inteiro — sempre com o mesmo princípio: a peça precisa segurar.</p>
+      <p class="body" style="margin-top:18px">Três gerações da família Halten ainda no chão de fábrica. Engenheiros, ferramenteiros e técnicos formando uma equipe que conhece cada parafuso da linha.</p>
+      <div class="signature">
+        Compromisso assinado.
+        <small>— Direção · Halten Indústria e Comércio Ltda.</small>
+      </div>
+    </div>
+    <div class="right">
+      <div class="pillars">
+        <div class="pillar">
+          <div class="k">Missão</div>
+          <div class="content">
+            <h4>Fornecer soluções técnicas que apertam de verdade.</h4>
+            <p>Abraçadeiras e acessórios que garantem operações mais seguras e eficientes para o setor industrial brasileiro.</p>
+          </div>
+          <div class="n">01</div>
+        </div>
+        <div class="pillar">
+          <div class="k">Visão</div>
+          <div class="content">
+            <h4>Ser a referência nacional em fixação industrial.</h4>
+            <p>Reconhecida pela qualidade, pela inovação no processo produtivo e pelo cuidado com o cliente — peça a peça.</p>
+          </div>
+          <div class="n">02</div>
+        </div>
+        <div class="pillar">
+          <div class="k">Valores</div>
+          <div class="content">
+            <h4>Integridade, robustez e atendimento dedicado.</h4>
+            <p>Resultado do cliente como métrica principal. Compromisso com prazo, qualidade e a verdade técnica em cada catálogo.</p>
+          </div>
+          <div class="n">03</div>
+        </div>
+        <div class="pillar">
+          <div class="k">Origem</div>
+          <div class="content">
+            <h4>Cascavel/PR · 1981 · capital industrial do Oeste.</h4>
+            <p>Três gerações da mesma família no comando, em uma fábrica que cresceu junto com a indústria do Paraná.</p>
+          </div>
+          <div class="n">04</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ APP SECTION ============ -->
+<section class="app-sec">
+  <div class="wrap">
+    <div class="left">
+      <div class="badge"><span class="dot"></span>Aplicativo oficial</div>
+      <h2>Halten no <em>seu celular.</em></h2>
+      <p class="lede">Consulte códigos, tabelas técnicas e o catálogo completo de abraçadeiras direto do smartphone — sem internet depois do primeiro acesso. Disponível gratuitamente para Android e iOS.</p>
+      <div class="feat">
+        <div class="f">
+          <div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></div>
+          <div class="t">Busca por código<small>SKU, modelo, dimensão</small></div>
+        </div>
+        <div class="f">
+          <div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg></div>
+          <div class="t">Tabela técnica<small>Diâmetros, torque, banda</small></div>
+        </div>
+        <div class="f">
+          <div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <div class="t">Pedido em rascunho<small>Salva offline</small></div>
+        </div>
+        <div class="f">
+          <div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 6-6"/></svg></div>
+          <div class="t">Atualizações ao vivo<small>Novidades em tempo real</small></div>
+        </div>
+      </div>
+      <div class="stores">
+        <a href="#" class="store">
+          <div class="si"><svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M17.05 12.04c-.03-2.46 2.01-3.64 2.1-3.7-1.15-1.68-2.94-1.91-3.57-1.93-1.5-.16-2.95.9-3.72.9-.78 0-1.96-.88-3.23-.86-1.65.03-3.2.96-4.05 2.44-1.74 3.01-.44 7.45 1.24 9.89.82 1.19 1.79 2.52 3.07 2.48 1.24-.05 1.7-.79 3.2-.79 1.49 0 1.92.79 3.22.77 1.33-.02 2.17-1.2 2.98-2.4.94-1.37 1.32-2.71 1.34-2.78-.03-.01-2.55-.98-2.58-3.89zM14.65 4.52c.69-.83 1.15-2 1.02-3.14-.99.04-2.18.66-2.89 1.49-.64.73-1.2 1.9-1.05 3.02 1.1.08 2.23-.55 2.92-1.37z"/></svg></div>
+          <div><div class="lbl">Disponível na</div><div class="name">App Store</div></div>
+        </a>
+        <a href="#" class="store">
+          <div class="si"><svg width="22" height="22" viewBox="0 0 24 24"><path fill="#1c9bd7" d="M3.2 1.6 13.4 12 3.2 22.4c-.4-.3-.7-.8-.7-1.4V3c0-.6.3-1.1.7-1.4z"/><path fill="#56b9e6" d="M17 8.3 14.9 9.5 5.4 1.1c.3-.1.6-.1.9 0L17 8.3z"/><path fill="#fff" d="M17 15.7 6.3 22.9c-.3.1-.6.1-.9 0l9.5-8.4L17 15.7z"/><path fill="#cdeafa" d="m20.4 10.6 1.4.9c.8.5.8 1.5 0 2l-1.4.9-3.4-1.9 3.4-1.9z"/></svg></div>
+          <div><div class="lbl">Disponível no</div><div class="name">Google Play</div></div>
+        </a>
+      </div>
+    </div>
+
+    <div class="app-visual">
+      <div class="phone-big">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="top">
+            <span>9:41</span>
+            <span>● ▲ ▮▮▮</span>
+          </div>
+          <div class="hero-cell">
+            <div class="l">Catálogo<br>Halten</div>
+            <div class="s">240+ produtos · atualizado hoje</div>
+          </div>
+          <div class="search">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            Buscar por código, modelo…
+          </div>
+          <div class="lst">
+            <div class="row"><div class="sq">09</div><div class="meta"><b>Modelo Mercedes</b><span>HLT-09 · ⌀ 25–82 mm</span></div></div>
+            <div class="row"><div class="sq">14</div><div class="meta"><b>Tucho Intercooler</b><span>HLT-14 · ⌀ 60–110 mm</span></div></div>
+            <div class="row"><div class="sq">22</div><div class="meta"><b>Tucho Mola</b><span>HLT-22 · ⌀ 30–95 mm</span></div></div>
+            <div class="row"><div class="sq">31</div><div class="meta"><b>Sem-Fim Premium</b><span>HLT-31 · ⌀ 16–280 mm</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="qr">
+        <svg viewBox="0 0 60 60" style="aspect-ratio:1/1;margin-bottom:10px" fill="#0f1923">
+          <rect x="0" y="0" width="60" height="60" fill="#fff"/>
+          <!-- positioning squares -->
+          <rect x="3" y="3" width="14" height="14"/>
+          <rect x="5" y="5" width="10" height="10" fill="#fff"/>
+          <rect x="7" y="7" width="6" height="6"/>
+          <rect x="43" y="3" width="14" height="14"/>
+          <rect x="45" y="5" width="10" height="10" fill="#fff"/>
+          <rect x="47" y="7" width="6" height="6"/>
+          <rect x="3" y="43" width="14" height="14"/>
+          <rect x="5" y="45" width="10" height="10" fill="#fff"/>
+          <rect x="7" y="47" width="6" height="6"/>
+          <!-- random "data" cells -->
+          <g>
+            <rect x="20" y="3" width="3" height="3"/><rect x="26" y="3" width="3" height="3"/><rect x="32" y="3" width="3" height="3"/><rect x="38" y="3" width="3" height="3"/>
+            <rect x="23" y="9" width="3" height="3"/><rect x="29" y="9" width="3" height="3"/><rect x="35" y="9" width="3" height="3"/>
+            <rect x="20" y="15" width="3" height="3"/><rect x="26" y="15" width="3" height="3"/><rect x="32" y="15" width="3" height="3"/><rect x="38" y="15" width="3" height="3"/>
+            <rect x="3" y="20" width="3" height="3"/><rect x="9" y="20" width="3" height="3"/><rect x="15" y="20" width="3" height="3"/><rect x="21" y="20" width="3" height="3"/><rect x="27" y="20" width="3" height="3"/><rect x="33" y="20" width="3" height="3"/><rect x="39" y="20" width="3" height="3"/><rect x="45" y="20" width="3" height="3"/><rect x="51" y="20" width="3" height="3"/>
+            <rect x="6" y="26" width="3" height="3"/><rect x="12" y="26" width="3" height="3"/><rect x="18" y="26" width="3" height="3"/><rect x="24" y="26" width="3" height="3"/><rect x="30" y="26" width="3" height="3"/><rect x="36" y="26" width="3" height="3"/><rect x="42" y="26" width="3" height="3"/><rect x="48" y="26" width="3" height="3"/>
+            <rect x="3" y="32" width="3" height="3"/><rect x="9" y="32" width="3" height="3"/><rect x="15" y="32" width="3" height="3"/><rect x="27" y="32" width="3" height="3"/><rect x="33" y="32" width="3" height="3"/><rect x="45" y="32" width="3" height="3"/><rect x="51" y="32" width="3" height="3"/>
+            <rect x="6" y="38" width="3" height="3"/><rect x="18" y="38" width="3" height="3"/><rect x="24" y="38" width="3" height="3"/><rect x="36" y="38" width="3" height="3"/><rect x="42" y="38" width="3" height="3"/><rect x="48" y="38" width="3" height="3"/>
+            <rect x="20" y="43" width="3" height="3"/><rect x="26" y="43" width="3" height="3"/><rect x="32" y="43" width="3" height="3"/><rect x="38" y="43" width="3" height="3"/>
+            <rect x="23" y="49" width="3" height="3"/><rect x="29" y="49" width="3" height="3"/><rect x="35" y="49" width="3" height="3"/><rect x="41" y="49" width="3" height="3"/>
+            <rect x="20" y="55" width="3" height="3"/><rect x="26" y="55" width="3" height="3"/><rect x="32" y="55" width="3" height="3"/><rect x="38" y="55" width="3" height="3"/>
+          </g>
+        </svg>
+        <div class="lbl">Aponte sua câmera<b>baixar agora</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CATALOG ============ -->
+<section class="catalog">
+  <div class="wrap">
+    <div class="visual">
+      <div class="grid-bg"></div>
+      <div class="book">
+        <div class="h-logo">Halten<small>ABRAÇADEIRAS · INDUSTRIAL</small></div>
+        <div class="yr">EDIÇÃO 2026 · CAT-26</div>
+        <div class="ttl">Abraçadeiras<br>&amp; Acessórios</div>
+        <div class="url">halten.ind.br</div>
+        <div class="spine-num">240+ SKU</div>
+        <div class="stripes"></div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="eyebrow dark">[ 04 — Catálogo digital ]</div>
+      <h2>Todo o catálogo <em>na palma da mão.</em></h2>
+      <p>Acesse o catálogo digital completo com todos os produtos, especificações técnicas e códigos. Fácil de compartilhar com clientes — e sempre atualizado.</p>
+      <ul>
+        <li><span class="ck"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></span><div><b>240+ produtos com especificações técnicas</b><span>Faixa de aperto, banda, material, torque máximo</span></div></li>
+        <li><span class="ck"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></span><div><b>Tabelas de dimensões e códigos</b><span>SKUs prontos para integração no seu ERP</span></div></li>
+        <li><span class="ck"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></span><div><b>Acesso rápido pelo celular ou computador</b><span>PDF, web e mobile — sincronizados</span></div></li>
+      </ul>
+      <div class="ctas">
+        <a href="#" class="cta blue">Acessar catálogo digital
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </a>
+        <a href="#" class="cta" style="background:transparent;color:var(--ink);border:1px solid var(--line-dark-strong);box-shadow:none">Baixar PDF (38 MB)</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA BAND / CONTACT ============ -->
+<section class="ctaband" id="contato">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow">[ 05 — Atendimento técnico ]</div>
+      <h2 style="margin-top:18px">Vamos <em>apertar</em><br>seu próximo<br>projeto?</h2>
+      <p class="sub">Fale com nosso time de engenharia. Respondemos com proposta técnica em até 24h úteis — incluindo desenho dimensional e amostra para validação em linha.</p>
+      <div class="actions">
+        <a href="#" class="cta">Solicitar orçamento técnico</a>
+        <a href="#" class="cta ghost">Falar no WhatsApp</a>
+      </div>
+    </div>
+    <div class="contact-card">
+      <div class="k">Canais diretos</div>
+      <h3>Halten Cascavel/PR</h3>
+      <div class="item">
+        <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg></div>
+        <div class="meta"><small>E-MAIL</small><b>contato@halten.ind.br</b></div>
+      </div>
+      <div class="item">
+        <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-1.3 4.5L21 22l-6.1-1.6A8.5 8.5 0 1 1 21 11.5z"/></svg></div>
+        <div class="meta"><small>WHATSAPP COMERCIAL</small><b>(45) 99144-7046</b></div>
+      </div>
+      <div class="item">
+        <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg></div>
+        <div class="meta"><small>TELEFONE</small><b>(45) 3197-2130</b></div>
+      </div>
+      <div class="item">
+        <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <div class="meta"><small>FÁBRICA</small><b>R. Alba Vieira, 653 — Cascavel/PR</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BIG WORD ============ -->
+<div style="background:var(--ink-2);padding-top:80px"><div class="big-word">HALTEN</div></div>
+
+<!-- ============ FOOTER ============ -->
+<footer id="localizacao">
+  <div class="wrap">
+    <div class="col-brand">
+      <a href="#" class="logo">
+        <div class="mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="12" cy="12" r="7"/><path d="M9 9v6M15 9v6M9 12h6"/></svg>
+        </div>
+        <div class="word">Halten<small>Abraçadeiras · Est. 1981</small></div>
+      </a>
+      <p>Soluções industriais em abraçadeiras e acessórios com qualidade e desempenho para o setor automotivo, sanitário e agroindustrial.</p>
+      <span class="cnpj">CNPJ <b>43.453.407/0001-87</b></span>
+    </div>
+    <div class="col">
+      <h5>Navegação</h5>
+      <ul>
+        <li><a href="#">Início</a></li>
+        <li><a href="#produtos">Produtos</a></li>
+        <li><a href="#empresa">Quem Somos</a></li>
+        <li><a href="#contato">Contato</a></li>
+        <li><a href="#">Catálogo</a></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h5>Contato</h5>
+      <span class="lbl">E-mail</span>
+      <p>contato@halten.ind.br</p>
+      <span class="lbl">WhatsApp</span>
+      <p>(45) 99144-7046</p>
+      <span class="lbl">Telefone</span>
+      <p>(45) 3197-2130</p>
+    </div>
+    <div class="col">
+      <h5>Localização</h5>
+      <p>R. Alba Vieira, 653<br>Cataratas — Cascavel/PR<br>CEP 85818-630</p>
+      <span class="lbl">Atendimento</span>
+      <p>Seg–Sex · 08:00 às 17:30</p>
+    </div>
+  </div>
+  <div class="wrap legal">
+    <span>© 2026 Halten Abraçadeiras · Todos os direitos reservados</span>
+    <span class="pill"><span class="dot"></span>Fabricado em Cascavel/PR · Brasil</span>
+  </div>
+</footer>
+
+<div class="side-rail">SCROLL · HALTEN · 2026</div>
+
+<script>
+  // ======= carousel =======
+  (function(){
+    const track = document.getElementById('heroTrack');
+    const dots = document.querySelectorAll('#cDots .dot');
+    const idxLabel = document.getElementById('cIdx');
+    const total = 2;
+    let i = 0;
+    let timer;
+
+    function go(n){
+      i = (n + total) % total;
+      track.style.transform = 'translateX(' + (-i*100) + '%)';
+      dots.forEach((d, k) => d.classList.toggle('active', k===i));
+      idxLabel.textContent = String(i+1).padStart(2,'0');
+    }
+
+    function auto(){
+      clearInterval(timer);
+      timer = setInterval(()=>go(i+1), 6500);
+    }
+
+    document.getElementById('cPrev').addEventListener('click', ()=>{ go(i-1); auto(); });
+    document.getElementById('cNext').addEventListener('click', ()=>{ go(i+1); auto(); });
+    dots.forEach((d, k) => d.addEventListener('click', ()=>{ go(k); auto(); }));
+
+    auto();
+  })();
+</script>
+
+</body>
+</html>

@@ -1,13 +1,13 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, MessageCircle } from "lucide-react";
 import { Navbar } from "../../components/navbar";
 import { Footer } from "../../components/footer";
 import { getSupabaseAdmin } from "../../../lib/supabase";
+import { ImageViewer } from "./image-viewer";
 
 export const dynamic = "force-dynamic";
 
-type ColumnDef = { key: string; label: string };
+type ColumnDef = { key: string; label: string; highlight?: boolean };
 
 type ProductRow = {
   id: string;
@@ -96,20 +96,30 @@ export default async function ProductDetailPage({
   const conversionRows = productConversion?.rows ?? [];
   const hasConversions = conversionRows.length > 0;
 
+  const nameParts = product.name.trim().split(" ");
+  const lastWord = nameParts.pop() ?? "";
+  const restOfName = nameParts.join(" ");
+
   return (
     <>
       <Navbar />
-      <main style={{ paddingTop: 80, background: "var(--bg)", minHeight: "100vh" }}>
+      <main style={{ background: "var(--paper)", minHeight: "100vh" }}>
         {/* Breadcrumb */}
         <div
           style={{
-            background: "white",
-            borderBottom: "1px solid var(--line)",
-            padding: "16px 24px",
+            background: "var(--ink)",
+            padding: "20px 32px",
+            borderBottom: "1px solid rgba(255,255,255,0.05)",
           }}
         >
           <div
-            style={{ maxWidth: 1280, margin: "0 auto", display: "flex", alignItems: "center", gap: 8 }}
+            style={{
+              maxWidth: 1280,
+              margin: "0 auto",
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+            }}
           >
             <Link
               href="/produtos"
@@ -117,502 +127,597 @@ export default async function ProductDetailPage({
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 6,
-                fontSize: 14,
-                color: "var(--blue)",
-                textDecoration: "none",
                 fontFamily: "var(--font-mono)",
+                fontSize: 12,
+                color: "rgba(255,255,255,0.4)",
+                textDecoration: "none",
               }}
             >
-              <ArrowLeft size={14} />
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M19 12H5M12 5l-7 7 7 7" />
+              </svg>
               Catálogo
             </Link>
-            <span style={{ color: "var(--ink-mute)", fontSize: 14 }}>/</span>
             <span
-              style={{ fontSize: 14, color: "var(--ink-mid)", fontFamily: "var(--font-mono)" }}
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 12,
+                color: "rgba(255,255,255,0.18)",
+              }}
+            >
+              /
+            </span>
+            <span
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 12,
+                color: "rgba(255,255,255,0.55)",
+              }}
             >
               {product.name}
             </span>
           </div>
         </div>
 
-        {/* Content */}
-        <div
-          style={{
-            maxWidth: 1280,
-            margin: "0 auto",
-            padding: "48px 24px",
-            display: "grid",
-            gridTemplateColumns: "1fr",
-            gap: 32,
-            minWidth: 0,
-            overflow: "hidden",
-          }}
-          className="lg:grid-cols-[1fr_360px]"
-        >
-          {/* Left: images + description + technical table */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 32, minWidth: 0 }}>
-            {/* Gallery */}
-            <div
-              style={{
-                background: "white",
-                borderRadius: 24,
-                border: "1px solid var(--line)",
-                padding: 32,
-                boxShadow: "0 4px 24px rgba(15,25,35,0.05)",
-              }}
-            >
-              {images.length > 0 ? (
-                <div
+        {/* Main content */}
+        <section style={{ padding: "64px 32px 96px" }}>
+          <div
+            style={{
+              maxWidth: 1280,
+              margin: "0 auto",
+              display: "grid",
+              gridTemplateColumns: "1.15fr 0.85fr",
+              gap: 56,
+              alignItems: "start",
+            }}
+            className="slug-wrap"
+          >
+            {/* Left: Image viewer */}
+            <ImageViewer images={images} slug={product.slug} productName={product.name} />
+
+            {/* Right: Product info */}
+            <div style={{ position: "sticky", top: 96 }}>
+              {/* Category badge */}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                <span
                   style={{
-                    display: "grid",
-                    gap: 16,
-                    gridTemplateColumns: images.length === 1 ? "1fr" : "repeat(2, 1fr)",
+                    width: 6,
+                    height: 6,
+                    borderRadius: "50%",
+                    background: "#1c9bd7",
+                    display: "inline-block",
+                    flexShrink: 0,
                   }}
-                >
-                  {images.map((src, i) => (
-                    <img
-                      key={i}
-                      src={src}
-                      alt={`${product.name} — imagem ${i + 1}`}
-                      style={{
-                        width: "100%",
-                        height: 260,
-                        objectFit: "contain",
-                        borderRadius: 16,
-                        background: "var(--bg-section)",
-                        padding: 16,
-                      }}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div
+                />
+                <span
                   style={{
-                    height: 280,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderRadius: 16,
-                    background: "var(--bg-section)",
-                    color: "var(--ink-mute)",
-                    fontSize: 14,
                     fontFamily: "var(--font-mono)",
+                    fontSize: 10,
+                    letterSpacing: "0.15em",
+                    textTransform: "uppercase",
+                    color: "rgba(15,25,35,0.4)",
                   }}
                 >
-                  Imagens em breve
-                </div>
-              )}
-            </div>
+                  {product.category ?? "Abraçadeiras"} · {product.slug.toUpperCase()}
+                </span>
+              </div>
 
-            {/* Description */}
-            <div
-              style={{
-                background: "white",
-                borderRadius: 24,
-                border: "1px solid var(--line)",
-                padding: 32,
-                boxShadow: "0 4px 24px rgba(15,25,35,0.05)",
-              }}
-            >
-              <p
+              {/* Title */}
+              <h1
+                className="font-sans"
                 style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-                  letterSpacing: "0.15em",
-                  textTransform: "uppercase",
-                  color: "var(--blue)",
-                  fontFamily: "var(--font-mono)",
-                  marginBottom: 16,
+                  fontSize: "clamp(28px,3.2vw,44px)",
+                  fontWeight: 700,
+                  lineHeight: 0.95,
+                  letterSpacing: "-0.03em",
+                  color: "var(--ink)",
+                  margin: "0 0 20px",
                 }}
               >
-                Descrição
-              </p>
-              <p
-                style={{
-                  fontSize: 15,
-                  lineHeight: 1.75,
-                  color: "var(--ink-mid)",
-                  fontFamily: "var(--font-mono)",
-                  fontWeight: 300,
-                  whiteSpace: "pre-wrap",
-                }}
-              >
-                {product.description ??
-                  product.excerpt ??
-                  "Descrição detalhada não disponível para este produto."}
-              </p>
+                {restOfName}{restOfName ? " " : ""}
+                <em style={{ fontStyle: "italic", color: "var(--blue)" }}>{lastWord}</em>
+              </h1>
 
+              {/* Meta pills */}
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 24 }}>
+                {product.category && (
+                  <span
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: 9,
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      padding: "4px 10px",
+                      borderRadius: 4,
+                      background: "rgba(15,25,35,0.05)",
+                      color: "rgba(15,25,35,0.45)",
+                    }}
+                  >
+                    FAMÍLIA · {product.category}
+                  </span>
+                )}
+                <span
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 9,
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    padding: "4px 10px",
+                    borderRadius: 4,
+                    background: "rgba(15,25,35,0.05)",
+                    color: "rgba(15,25,35,0.45)",
+                  }}
+                >
+                  EDIÇÃO · CAT-26
+                </span>
+              </div>
+
+              {/* Details/specs */}
               {product.details && product.details.length > 0 && (
-                <div style={{ marginTop: 28 }}>
+                <div
+                  style={{
+                    background: "white",
+                    borderRadius: 14,
+                    border: "1px solid rgba(15,25,35,0.07)",
+                    padding: "20px 22px",
+                    marginBottom: 16,
+                  }}
+                >
                   <p
                     style={{
-                      fontSize: 11,
-                      fontWeight: 600,
+                      fontFamily: "var(--font-mono)",
+                      fontSize: 9,
                       letterSpacing: "0.15em",
                       textTransform: "uppercase",
-                      color: "var(--blue)",
-                      fontFamily: "var(--font-mono)",
-                      marginBottom: 14,
+                      color: "rgba(15,25,35,0.35)",
+                      margin: "0 0 14px",
                     }}
                   >
                     Especificações
                   </p>
-                  <ul
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {product.details.map((d, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                        <span
+                          style={{
+                            width: 4,
+                            height: 4,
+                            borderRadius: "50%",
+                            background: "#1c9bd7",
+                            flexShrink: 0,
+                            marginTop: 7,
+                          }}
+                        />
+                        <span
+                          style={{
+                            fontFamily: "var(--font-mono)",
+                            fontSize: 12,
+                            color: "rgba(15,25,35,0.65)",
+                            lineHeight: 1.5,
+                          }}
+                        >
+                          {d}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Description (if no details) */}
+              {(!product.details || product.details.length === 0) &&
+                (product.description ?? product.excerpt) && (
+                  <div
                     style={{
-                      margin: 0,
-                      paddingLeft: 20,
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 8,
+                      background: "white",
+                      borderRadius: 14,
+                      border: "1px solid rgba(15,25,35,0.07)",
+                      padding: "20px 22px",
+                      marginBottom: 16,
                     }}
                   >
-                    {product.details.map((d, i) => (
-                      <li
-                        key={i}
-                        style={{
-                          fontSize: 14,
-                          color: "var(--ink-mid)",
-                          fontFamily: "var(--font-mono)",
-                          lineHeight: 1.6,
-                        }}
-                      >
-                        {d}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
+                    <p
+                      style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: 9,
+                        letterSpacing: "0.15em",
+                        textTransform: "uppercase",
+                        color: "rgba(15,25,35,0.35)",
+                        margin: "0 0 10px",
+                      }}
+                    >
+                      Descrição
+                    </p>
+                    <p
+                      style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: 12,
+                        color: "rgba(15,25,35,0.65)",
+                        lineHeight: 1.7,
+                        margin: 0,
+                        whiteSpace: "pre-wrap",
+                      }}
+                    >
+                      {product.description ?? product.excerpt}
+                    </p>
+                  </div>
+                )}
 
-            {/* Tabela técnica */}
-            {hasTable && (
+              {/* Price */}
               <div
                 style={{
+                  padding: "20px 22px",
                   background: "white",
-                  borderRadius: 24,
-                  border: "1px solid var(--line)",
-                  padding: 32,
-                  boxShadow: "0 4px 24px rgba(15,25,35,0.05)",
-                  minWidth: 0,
-                  overflow: "hidden",
+                  borderRadius: 14,
+                  border: "1px solid rgba(15,25,35,0.07)",
+                  marginBottom: 14,
                 }}
               >
                 <p
                   style={{
-                    fontSize: 11,
-                    fontWeight: 600,
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 9,
                     letterSpacing: "0.15em",
                     textTransform: "uppercase",
-                    color: "var(--blue)",
-                    fontFamily: "var(--font-mono)",
-                    marginBottom: 20,
+                    color: "rgba(15,25,35,0.35)",
+                    margin: "0 0 6px",
                   }}
                 >
-                  Tabela Técnica
-                </p>
-
-                <div data-lenis-prevent style={{ overflowX: "auto", borderRadius: 12, border: "1px solid var(--line)" }}>
-                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, fontFamily: "var(--font-mono)" }}>
-                    <thead>
-                      <tr style={{ background: "#1c9bd7" }}>
-                        {tableTemplate!.columns.map((col) => (
-                          <th
-                            key={col.key}
-                            style={{
-                              padding: "12px 16px",
-                              textAlign: "left",
-                              color: "white",
-                              fontWeight: 700,
-                              fontSize: 11,
-                              letterSpacing: "0.06em",
-                              textTransform: "uppercase",
-                              whiteSpace: "nowrap",
-                            }}
-                          >
-                            {col.label}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {tableRows.map((row, i) => (
-                        <tr
-                          key={i}
-                          style={{ background: i % 2 === 0 ? "white" : "#f8fafc" }}
-                        >
-                          {tableTemplate!.columns.map((col, ci) => (
-                            <td
-                              key={col.key}
-                              style={{
-                                padding: "10px 16px",
-                                color: col.highlight ? "#1c9bd7" : "var(--ink)",
-                                fontWeight: col.highlight ? 700 : 400,
-                                borderBottom: i < tableRows.length - 1 ? "1px solid var(--line)" : "none",
-                                whiteSpace: col.highlight ? "nowrap" : "normal",
-                                wordBreak: "break-word",
-                                minWidth: col.highlight ? undefined : 120,
-                              }}
-                            >
-                              {row[col.key] ?? "—"}
-                            </td>
-                          ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-            {/* Tabela de conversões */}
-            {hasConversions && (
-              <div
-                style={{
-                  background: "white",
-                  borderRadius: 24,
-                  border: "1px solid var(--line)",
-                  padding: 32,
-                  boxShadow: "0 4px 24px rgba(15,25,35,0.05)",
-                }}
-              >
-                <p
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 600,
-                    letterSpacing: "0.15em",
-                    textTransform: "uppercase",
-                    color: "var(--blue)",
-                    fontFamily: "var(--font-mono)",
-                    marginBottom: 20,
-                  }}
-                >
-                  Tabela de Conversões
-                </p>
-
-                <div data-lenis-prevent style={{ overflowX: "auto", borderRadius: 12, border: "1px solid var(--line)" }}>
-                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, fontFamily: "var(--font-mono)" }}>
-                    <thead>
-                      <tr style={{ background: "#111827" }}>
-                        <th
-                          style={{
-                            padding: "12px 16px",
-                            textAlign: "left",
-                            color: "white",
-                            fontWeight: 700,
-                            fontSize: 11,
-                            letterSpacing: "0.06em",
-                            textTransform: "uppercase",
-                            whiteSpace: "nowrap",
-                            width: "30%",
-                          }}
-                        >
-                          Código Halten
-                        </th>
-                        <th
-                          style={{
-                            padding: "12px 16px",
-                            textAlign: "left",
-                            color: "white",
-                            fontWeight: 700,
-                            fontSize: 11,
-                            letterSpacing: "0.06em",
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          Códigos Originais
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {conversionRows.map((row, i) => (
-                        <tr key={i} style={{ background: i % 2 === 0 ? "white" : "#f8fafc" }}>
-                          <td
-                            style={{
-                              padding: "10px 16px",
-                              fontWeight: 700,
-                              color: "var(--ink)",
-                              borderBottom: i < conversionRows.length - 1 ? "1px solid var(--line)" : "none",
-                              whiteSpace: "nowrap",
-                            }}
-                          >
-                            {row.codigo_halten}
-                          </td>
-                          <td
-                            style={{
-                              padding: "10px 16px",
-                              color: "var(--ink-mid)",
-                              borderBottom: i < conversionRows.length - 1 ? "1px solid var(--line)" : "none",
-                            }}
-                          >
-                            {row.codigos_originais}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Right: sidebar */}
-          <aside
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 20,
-              alignSelf: "start",
-              position: "sticky",
-              top: 100,
-            }}
-          >
-            {/* Product info card */}
-            <div
-              style={{
-                background: "white",
-                borderRadius: 24,
-                border: "1px solid var(--line)",
-                padding: 28,
-                boxShadow: "0 4px 24px rgba(15,25,35,0.05)",
-              }}
-            >
-              {product.category && (
-                <span
-                  style={{
-                    display: "inline-flex",
-                    background: "var(--blue-light)",
-                    color: "var(--blue)",
-                    fontSize: 10,
-                    fontWeight: 600,
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                    padding: "4px 12px",
-                    borderRadius: 999,
-                    fontFamily: "var(--font-mono)",
-                    marginBottom: 14,
-                  }}
-                >
-                  {product.category}
-                </span>
-              )}
-              <h1
-                className="font-sans"
-                style={{
-                  fontSize: 22,
-                  fontWeight: 700,
-                  color: "var(--ink)",
-                  lineHeight: 1.25,
-                  letterSpacing: "-0.02em",
-                  margin: 0,
-                }}
-              >
-                {product.name}
-              </h1>
-
-              <div
-                style={{
-                  marginTop: 20,
-                  paddingTop: 20,
-                  borderTop: "1px solid var(--line-soft)",
-                }}
-              >
-                <p
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 600,
-                    letterSpacing: "0.15em",
-                    textTransform: "uppercase",
-                    color: "var(--ink-dim)",
-                    fontFamily: "var(--font-mono)",
-                    marginBottom: 6,
-                  }}
-                >
-                  Preço
+                  Preço unitário
                 </p>
                 <p
                   className="font-sans"
-                  style={{ fontSize: 28, fontWeight: 700, color: "var(--ink)", margin: 0 }}
+                  style={{
+                    fontSize: 36,
+                    fontWeight: 700,
+                    letterSpacing: "-0.03em",
+                    color: "var(--ink)",
+                    margin: "0 0 4px",
+                    lineHeight: 1,
+                  }}
                 >
                   {product.price !== null
                     ? `R$ ${product.price.toFixed(2).replace(".", ",")}`
                     : "Sob consulta"}
                 </p>
+                <p
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 10,
+                    color: "rgba(15,25,35,0.35)",
+                    margin: 0,
+                    letterSpacing: "0.04em",
+                  }}
+                >
+                  Resposta em até 24h úteis · 240+ SKU · catálogo 2026
+                </p>
               </div>
-            </div>
 
-            {/* CNPJ warning */}
-            <div
-              style={{
-                background: "var(--blue-light)",
-                borderLeft: "3px solid var(--blue)",
-                borderRadius: "0 12px 12px 0",
-                padding: "16px 20px",
-              }}
-            >
-              <p
-                className="font-sans"
-                style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)", marginBottom: 6 }}
-              >
-                Venda exclusiva para CNPJ
-              </p>
-              <p
+              {/* CNPJ box */}
+              <div
                 style={{
-                  fontSize: 13,
-                  color: "var(--ink-mid)",
-                  fontFamily: "var(--font-mono)",
-                  lineHeight: 1.6,
-                  margin: 0,
+                  padding: "16px 20px",
+                  background: "rgba(28,155,215,0.07)",
+                  border: "1px solid rgba(28,155,215,0.18)",
+                  borderRadius: 12,
+                  marginBottom: 16,
                 }}
               >
-                Este produto é comercializado apenas para pessoas jurídicas. Tenha seu CNPJ em mãos ao solicitar o orçamento.
-              </p>
+                <p
+                  className="font-sans"
+                  style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)", margin: "0 0 4px" }}
+                >
+                  Venda exclusiva para CNPJ
+                </p>
+                <p
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 11,
+                    color: "rgba(15,25,35,0.55)",
+                    lineHeight: 1.6,
+                    margin: 0,
+                  }}
+                >
+                  Comercializado apenas para pessoas jurídicas. Tenha seu CNPJ em mãos ao solicitar orçamento.
+                </p>
+              </div>
+
+              {/* WhatsApp CTA */}
+              <a
+                href={`https://wa.me/5545991447046?text=${whatsappMsg}`}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 10,
+                  padding: "16px 28px",
+                  borderRadius: 14,
+                  background: "#22c55e",
+                  color: "white",
+                  textDecoration: "none",
+                  marginBottom: 20,
+                  transition: "background 0.2s",
+                }}
+                className="whats-cta"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
+                </svg>
+                <span
+                  className="font-sans"
+                  style={{ fontWeight: 700, fontSize: 15, letterSpacing: "0.02em" }}
+                >
+                  SOLICITAR ORÇAMENTO
+                </span>
+              </a>
+
+              {/* Bottom 3-col bar */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr 1fr",
+                  borderRadius: 12,
+                  overflow: "hidden",
+                  border: "1px solid rgba(15,25,35,0.08)",
+                }}
+              >
+                {[
+                  { label: "Despacho", value: "até 24h" },
+                  { label: "Garantia", value: "12 meses" },
+                  { label: "Embalagem", value: "Industrial" },
+                ].map((item, i) => (
+                  <div
+                    key={item.label}
+                    style={{
+                      padding: "14px 12px",
+                      background: "white",
+                      textAlign: "center",
+                      borderLeft: i > 0 ? "1px solid rgba(15,25,35,0.08)" : "none",
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: 9,
+                        letterSpacing: "0.12em",
+                        textTransform: "uppercase",
+                        color: "rgba(15,25,35,0.35)",
+                        margin: "0 0 4px",
+                      }}
+                    >
+                      {item.label}
+                    </p>
+                    <p
+                      className="font-sans"
+                      style={{ fontSize: 13, fontWeight: 700, color: "var(--ink)", margin: 0 }}
+                    >
+                      {item.value}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
+          </div>
 
-            {/* WhatsApp CTA */}
-            <a
-              href={`https://wa.me/5545991447046?text=${whatsappMsg}`}
-              target="_blank"
-              rel="noreferrer"
-              className="font-sans"
+          {/* Technical tables */}
+          {(hasTable || hasConversions) && (
+            <div
               style={{
+                maxWidth: 1280,
+                margin: "64px auto 0",
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 10,
-                padding: "16px 24px",
-                borderRadius: 999,
-                background: "#22c55e",
-                color: "white",
-                fontSize: 15,
-                fontWeight: 700,
-                textDecoration: "none",
-                transition: "background 0.2s ease",
+                flexDirection: "column",
+                gap: 40,
               }}
             >
-              <MessageCircle size={18} />
-              Solicitar orçamento
-            </a>
+              {hasTable && (
+                <div>
+                  <p
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: 10,
+                      letterSpacing: "0.15em",
+                      textTransform: "uppercase",
+                      color: "rgba(15,25,35,0.35)",
+                      margin: "0 0 16px",
+                    }}
+                  >
+                    [ Tabela Técnica · {tableTemplate!.name} ]
+                  </p>
+                  <div
+                    style={{
+                      overflowX: "auto",
+                      borderRadius: 16,
+                      border: "1px solid rgba(15,25,35,0.08)",
+                      background: "white",
+                    }}
+                  >
+                    <table
+                      style={{
+                        width: "100%",
+                        borderCollapse: "collapse",
+                        fontSize: 13,
+                        fontFamily: "var(--font-mono)",
+                      }}
+                    >
+                      <thead>
+                        <tr style={{ background: "var(--ink)" }}>
+                          {tableTemplate!.columns.map((col) => (
+                            <th
+                              key={col.key}
+                              style={{
+                                padding: "12px 16px",
+                                textAlign: "left",
+                                color: "white",
+                                fontWeight: 700,
+                                fontSize: 10,
+                                letterSpacing: "0.1em",
+                                textTransform: "uppercase",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {col.label}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {tableRows.map((row, i) => (
+                          <tr
+                            key={i}
+                            style={{
+                              background: i % 2 === 0 ? "white" : "rgba(15,25,35,0.02)",
+                            }}
+                          >
+                            {tableTemplate!.columns.map((col) => (
+                              <td
+                                key={col.key}
+                                style={{
+                                  padding: "10px 16px",
+                                  color: col.highlight ? "#1c9bd7" : "var(--ink)",
+                                  fontWeight: col.highlight ? 700 : 400,
+                                  borderBottom:
+                                    i < tableRows.length - 1
+                                      ? "1px solid rgba(15,25,35,0.05)"
+                                      : "none",
+                                  whiteSpace: col.highlight ? "nowrap" : "normal",
+                                }}
+                              >
+                                {row[col.key] ?? "—"}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
 
-            <Link
-              href="/produtos"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 6,
-                fontSize: 14,
-                color: "var(--ink-mid)",
-                textDecoration: "none",
-                fontFamily: "var(--font-mono)",
-                padding: "12px 0",
-              }}
-            >
-              <ArrowLeft size={14} />
-              Voltar ao catálogo
-            </Link>
-          </aside>
-        </div>
+              {hasConversions && (
+                <div>
+                  <p
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: 10,
+                      letterSpacing: "0.15em",
+                      textTransform: "uppercase",
+                      color: "rgba(15,25,35,0.35)",
+                      margin: "0 0 16px",
+                    }}
+                  >
+                    [ Tabela de Conversões ]
+                  </p>
+                  <div
+                    style={{
+                      overflowX: "auto",
+                      borderRadius: 16,
+                      border: "1px solid rgba(15,25,35,0.08)",
+                      background: "white",
+                    }}
+                  >
+                    <table
+                      style={{
+                        width: "100%",
+                        borderCollapse: "collapse",
+                        fontSize: 13,
+                        fontFamily: "var(--font-mono)",
+                      }}
+                    >
+                      <thead>
+                        <tr style={{ background: "var(--ink)" }}>
+                          <th
+                            style={{
+                              padding: "12px 16px",
+                              textAlign: "left",
+                              color: "white",
+                              fontWeight: 700,
+                              fontSize: 10,
+                              letterSpacing: "0.1em",
+                              textTransform: "uppercase",
+                              whiteSpace: "nowrap",
+                              width: "30%",
+                            }}
+                          >
+                            Código Halten
+                          </th>
+                          <th
+                            style={{
+                              padding: "12px 16px",
+                              textAlign: "left",
+                              color: "white",
+                              fontWeight: 700,
+                              fontSize: 10,
+                              letterSpacing: "0.1em",
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            Códigos Originais
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {conversionRows.map((row, i) => (
+                          <tr
+                            key={i}
+                            style={{
+                              background: i % 2 === 0 ? "white" : "rgba(15,25,35,0.02)",
+                            }}
+                          >
+                            <td
+                              style={{
+                                padding: "10px 16px",
+                                fontWeight: 700,
+                                color: "var(--ink)",
+                                borderBottom:
+                                  i < conversionRows.length - 1
+                                    ? "1px solid rgba(15,25,35,0.05)"
+                                    : "none",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {row.codigo_halten}
+                            </td>
+                            <td
+                              style={{
+                                padding: "10px 16px",
+                                color: "rgba(15,25,35,0.55)",
+                                borderBottom:
+                                  i < conversionRows.length - 1
+                                    ? "1px solid rgba(15,25,35,0.05)"
+                                    : "none",
+                              }}
+                            >
+                              {row.codigos_originais}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </section>
       </main>
       <Footer />
+
+      <style>{`
+        .whats-cta:hover { background: #16a34a !important; }
+        @media (max-width: 860px) {
+          .slug-wrap { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </>
   );
 }

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, Phone, Search, X } from "lucide-react";
+import { Menu, Search, X } from "lucide-react";
 
 const navLinks = [
   { href: "/", label: "Início" },
@@ -39,48 +39,47 @@ export function Navbar() {
     <>
       <header
         style={{
-          position: "fixed",
+          position: "sticky",
           top: 0,
-          left: 0,
-          right: 0,
           zIndex: 50,
-          height: 80,
-          background: "rgba(255,255,255,0.95)",
-          backdropFilter: "blur(16px)",
-          WebkitBackdropFilter: "blur(16px)",
-          boxShadow: "0 2px 20px rgba(0,0,0,0.08)",
+          height: 78,
+          background: "rgba(15,25,35,0.88)",
+          backdropFilter: "blur(14px)",
+          WebkitBackdropFilter: "blur(14px)",
+          borderBottom: "1px solid rgba(255,255,255,0.08)",
         }}
       >
+        {/* Grid 3 colunas: logo | nav centralizada | botões */}
         <div
           style={{
-            display: "flex",
+            display: "grid",
+            gridTemplateColumns: "1fr auto 1fr",
             alignItems: "center",
-            maxWidth: 1280,
+            maxWidth: 1440,
             margin: "0 auto",
-            padding: "0 24px",
+            padding: "0 32px",
             height: "100%",
           }}
         >
-          {/* Logo */}
-          <Link
-            href="/"
-            style={{ flexShrink: 0, display: "flex", alignItems: "center", lineHeight: 0 }}
-          >
-            <Image
-              src="/logo.svg"
-              alt="Halten"
-              width={120}
-              height={36}
-              priority
-              style={{ width: 120, height: "auto" }}
-            />
-          </Link>
+          {/* Coluna esquerda — Logo */}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Link href="/" style={{ display: "inline-flex", lineHeight: 0, textDecoration: "none" }}>
+              <Image
+                src="/logo-240-60.svg"
+                alt="Halten Abraçadeiras"
+                width={240}
+                height={60}
+                priority
+                style={{ width: "auto", height: 60 }}
+              />
+            </Link>
+          </div>
 
-          {/* Desktop nav — fades out when search is open */}
+          {/* Coluna central — Nav */}
           <nav
-            className="hidden md:flex items-center justify-center gap-7"
+            className="hidden md:flex items-center"
             style={{
-              flex: 1,
+              gap: 4,
               opacity: searchOpen ? 0 : 1,
               pointerEvents: searchOpen ? "none" : "auto",
               transition: "opacity 0.25s ease",
@@ -90,13 +89,23 @@ export function Navbar() {
               <a
                 key={link.href}
                 href={link.href}
-                className="font-sans"
                 style={{
-                  fontSize: 15,
-                  fontWeight: 500,
-                  color: "var(--ink)",
+                  padding: "10px 14px",
+                  borderRadius: 8,
+                  fontSize: 13,
+                  color: "rgba(255,255,255,0.78)",
                   textDecoration: "none",
+                  fontFamily: "var(--font-mono)",
                   whiteSpace: "nowrap",
+                  transition: "color 0.15s, background 0.15s",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.color = "white";
+                  (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.78)";
+                  (e.currentTarget as HTMLElement).style.background = "transparent";
                 }}
               >
                 {link.label}
@@ -104,105 +113,136 @@ export function Navbar() {
             ))}
           </nav>
 
-          {/* Desktop right group */}
+          {/* Coluna direita — Search expandível + Atendimento */}
           <div
             className="hidden md:flex items-center"
-            style={{ gap: 8, flexShrink: 0 }}
+            style={{ gap: 10, justifyContent: "flex-end" }}
           >
-            {/* Search input + toggle */}
-            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              <div
-                style={{
-                  overflow: "hidden",
-                  width: searchOpen ? 220 : 0,
-                  opacity: searchOpen ? 1 : 0,
-                  transition: "width 0.35s ease, opacity 0.25s ease",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    border: "1px solid var(--line)",
-                    borderRadius: 999,
-                    padding: "6px 14px",
-                    background: "white",
-                    width: 220,
-                  }}
-                >
-                  <input
-                    ref={searchInputRef}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === "Escape" && closeSearch()}
-                    placeholder="Buscar produto..."
-                    style={{
-                      border: "none",
-                      outline: "none",
-                      background: "transparent",
-                      fontSize: 14,
-                      color: "var(--ink)",
-                      width: "100%",
-                      fontFamily: "inherit",
-                    }}
-                  />
-                </div>
-              </div>
-
+            {/*
+              Search: container único que expande.
+              Fechado: 46×46, só ícone.
+              Aberto: ~260px, ícone + input + X — mesmo formato do botão Atendimento.
+            */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                height: 46,
+                borderRadius: 10,
+                border: "1px solid rgba(255,255,255,0.18)",
+                background: "rgba(255,255,255,0.04)",
+                overflow: "hidden",
+                width: searchOpen ? 260 : 46,
+                transition: "width 0.4s cubic-bezier(0.16,1,0.3,1)",
+                flexShrink: 0,
+              }}
+            >
+              {/* Ícone lupa — clicável quando fechado */}
               <button
                 type="button"
-                onClick={searchOpen ? closeSearch : () => setSearchOpen(true)}
-                aria-label={searchOpen ? "Fechar busca" : "Buscar"}
+                onClick={() => !searchOpen && setSearchOpen(true)}
+                aria-label="Buscar"
                 style={{
+                  flexShrink: 0,
+                  width: 46,
+                  height: 46,
+                  border: "none",
+                  background: "none",
+                  cursor: searchOpen ? "default" : "pointer",
+                  color: "rgba(255,255,255,0.7)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  width: 38,
-                  height: 38,
-                  borderRadius: "50%",
-                  border: "none",
-                  background: "transparent",
-                  cursor: "pointer",
-                  color: "var(--ink)",
-                  flexShrink: 0,
                 }}
               >
-                {searchOpen ? <X size={18} /> : <Search size={18} />}
+                <Search size={17} />
               </button>
+
+              {/* Input — aparece quando open */}
+              <input
+                ref={searchInputRef}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Escape" && closeSearch()}
+                placeholder="Buscar produto..."
+                aria-hidden={!searchOpen}
+                style={{
+                  flex: 1,
+                  border: "none",
+                  background: "transparent",
+                  color: "white",
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 13,
+                  outline: "none",
+                  padding: "0",
+                  opacity: searchOpen ? 1 : 0,
+                  transition: "opacity 0.2s ease",
+                  minWidth: 0,
+                }}
+              />
+
+              {/* X — fechar */}
+              {searchOpen && (
+                <button
+                  type="button"
+                  onClick={closeSearch}
+                  aria-label="Fechar busca"
+                  style={{
+                    flexShrink: 0,
+                    width: 40,
+                    height: 46,
+                    border: "none",
+                    background: "none",
+                    cursor: "pointer",
+                    color: "rgba(255,255,255,0.55)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <X size={16} />
+                </button>
+              )}
             </div>
 
-            {/* Atendimento */}
-            <Link
+            {/* Atendimento CTA */}
+            <a
               href={WA_LINK}
               target="_blank"
               rel="noreferrer"
-              className="font-sans"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
-                gap: 8,
-                padding: "9px 22px",
-                borderRadius: 999,
+                gap: 10,
+                height: 46,
+                padding: "0 22px",
+                borderRadius: 10,
                 background: "var(--blue)",
                 color: "white",
-                fontSize: 14,
-                fontWeight: 600,
+                fontFamily: "var(--font-mono)",
+                fontSize: 12,
+                letterSpacing: "0.14em",
+                textTransform: "uppercase",
                 textDecoration: "none",
+                fontWeight: 500,
+                boxShadow: "0 12px 28px -12px rgba(28,155,215,0.55)",
                 flexShrink: 0,
                 whiteSpace: "nowrap",
               }}
             >
-              <Phone size={15} />
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/>
+              </svg>
               Atendimento
-            </Link>
+            </a>
           </div>
 
-          {/* Mobile right group */}
+          {/* Mobile right */}
           <div
             className="flex md:hidden items-center"
-            style={{ marginLeft: "auto", gap: 8 }}
+            style={{ justifyContent: "flex-end", gap: 8 }}
           >
-            <Link
+            <a
               href={WA_LINK}
               target="_blank"
               rel="noreferrer"
@@ -213,13 +253,16 @@ export function Navbar() {
                 justifyContent: "center",
                 width: 38,
                 height: 38,
-                borderRadius: "50%",
+                borderRadius: 9,
                 background: "var(--blue)",
                 color: "white",
+                textDecoration: "none",
               }}
             >
-              <Phone size={16} />
-            </Link>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/>
+              </svg>
+            </a>
 
             <button
               type="button"
@@ -234,7 +277,7 @@ export function Navbar() {
                 border: "none",
                 background: "transparent",
                 cursor: "pointer",
-                color: "var(--ink)",
+                color: "white",
               }}
             >
               <Menu size={22} />
@@ -243,7 +286,7 @@ export function Navbar() {
         </div>
       </header>
 
-      {/* Drawer overlay */}
+      {/* Overlay drawer */}
       <div
         onClick={() => setDrawerOpen(false)}
         aria-hidden="true"
@@ -251,7 +294,7 @@ export function Navbar() {
           position: "fixed",
           inset: 0,
           zIndex: 60,
-          background: "rgba(0,0,0,0.45)",
+          background: "rgba(0,0,0,0.55)",
           opacity: drawerOpen ? 1 : 0,
           pointerEvents: drawerOpen ? "auto" : "none",
           transition: "opacity 0.3s ease",
@@ -270,8 +313,8 @@ export function Navbar() {
           bottom: 0,
           zIndex: 70,
           width: 280,
-          background: "white",
-          boxShadow: "-4px 0 40px rgba(0,0,0,0.12)",
+          background: "#0a1219",
+          boxShadow: "-4px 0 40px rgba(0,0,0,0.4)",
           transform: drawerOpen ? "translateX(0)" : "translateX(100%)",
           transition: "transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)",
           display: "flex",
@@ -279,38 +322,15 @@ export function Navbar() {
           padding: "20px 24px 32px",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 32,
-          }}
-        >
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 40 }}>
           <Link href="/" onClick={() => setDrawerOpen(false)} style={{ lineHeight: 0 }}>
-            <Image
-              src="/logo.svg"
-              alt="Halten"
-              width={100}
-              height={28}
-              style={{ width: 100, height: "auto" }}
-            />
+            <Image src="/logo-240-60.svg" alt="Halten" width={140} height={35} style={{ width: "auto", height: 35 }} />
           </Link>
           <button
             type="button"
             onClick={() => setDrawerOpen(false)}
             aria-label="Fechar menu"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: 32,
-              height: 32,
-              border: "none",
-              background: "transparent",
-              cursor: "pointer",
-              color: "var(--ink)",
-            }}
+            style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, border: "none", background: "transparent", cursor: "pointer", color: "rgba(255,255,255,0.7)" }}
           >
             <X size={20} />
           </button>
@@ -322,45 +342,22 @@ export function Navbar() {
               key={link.href}
               href={link.href}
               onClick={() => setDrawerOpen(false)}
-              className="font-sans"
-              style={{
-                fontSize: 16,
-                fontWeight: 500,
-                color: "var(--ink)",
-                textDecoration: "none",
-                padding: "14px 4px",
-                borderBottom: "1px solid var(--line-soft)",
-              }}
+              style={{ fontSize: 16, fontWeight: 500, color: "rgba(255,255,255,0.78)", textDecoration: "none", padding: "14px 4px", borderBottom: "1px solid rgba(255,255,255,0.07)", fontFamily: "var(--font-mono)" }}
             >
               {link.label}
             </a>
           ))}
         </nav>
 
-        <Link
+        <a
           href={WA_LINK}
           target="_blank"
           rel="noreferrer"
           onClick={() => setDrawerOpen(false)}
-          className="font-sans"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 8,
-            padding: "14px 20px",
-            borderRadius: 999,
-            background: "var(--blue)",
-            color: "white",
-            fontSize: 15,
-            fontWeight: 600,
-            textDecoration: "none",
-            marginTop: 24,
-          }}
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "14px 20px", borderRadius: 10, background: "var(--blue)", color: "white", fontSize: 13, fontFamily: "var(--font-mono)", letterSpacing: "0.1em", textDecoration: "none", marginTop: 24, textTransform: "uppercase" }}
         >
-          <Phone size={16} />
           Atendimento
-        </Link>
+        </a>
       </div>
     </>
   );

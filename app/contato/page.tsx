@@ -33,7 +33,7 @@ export default function ContactPage() {
   return (
     <>
       <Navbar />
-      <main style={{ paddingTop: 80, background: "var(--bg)", minHeight: "100vh" }}>
+      <main style={{ background: "var(--bg)", minHeight: "100vh" }}>
         {/* Header */}
         <section
           style={{
