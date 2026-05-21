@@ -240,7 +240,7 @@ export function Navbar() {
           {/* Mobile right */}
           <div
             className="flex md:hidden items-center"
-            style={{ justifyContent: "flex-end", gap: 8 }}
+            style={{ justifyContent: "flex-end", gap: 8, gridColumn: 3 }}
           >
             <button
               type="button"
