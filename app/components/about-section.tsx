@@ -73,8 +73,9 @@ export function AboutSection() {
               margin: "0 0 28px",
             }}
           >
-            A história{" "}
-            <em style={{ fontStyle: "italic", color: "var(--blue)" }}>da Halten.</em>
+            A história da
+            <br />
+            <span style={{ color: "var(--blue)" }}>Halten.</span>
           </h2>
           <p
             style={{
