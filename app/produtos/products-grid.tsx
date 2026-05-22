@@ -16,6 +16,7 @@ type Product = {
 type Props = {
   products: Product[];
   categories: string[];
+  initialQuery?: string;
 };
 
 const ClampSVG = () => (
@@ -27,10 +28,16 @@ const ClampSVG = () => (
   </svg>
 );
 
-export function ProductsGrid({ products, categories }: Props) {
+export function ProductsGrid({ products, categories, initialQuery = "" }: Props) {
   const [active, setActive] = useState<string>("all");
+  const [query, setQuery] = useState(initialQuery);
 
-  const filtered = active === "all" ? products : products.filter((p) => p.category === active);
+  const filtered = products.filter((p) => {
+    const matchCat = active === "all" || p.category === active;
+    const q = query.trim().toLowerCase();
+    const matchQuery = !q || p.name.toLowerCase().includes(q) || (p.category ?? "").toLowerCase().includes(q) || p.slug.toLowerCase().includes(q);
+    return matchCat && matchQuery;
+  });
 
   return (
     <div>

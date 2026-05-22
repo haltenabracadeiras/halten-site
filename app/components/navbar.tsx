@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Menu, Search, X } from "lucide-react";
 
 const navLinks = [
@@ -16,6 +17,7 @@ const navLinks = [
 const WA_LINK = "https://wa.me/5545991447046";
 
 export function Navbar() {
+  const router = useRouter();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -163,7 +165,13 @@ export function Navbar() {
                 ref={searchInputRef}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === "Escape" && closeSearch()}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") closeSearch();
+                  if (e.key === "Enter" && searchQuery.trim()) {
+                    router.push(`/produtos?q=${encodeURIComponent(searchQuery.trim())}`);
+                    closeSearch();
+                  }
+                }}
                 placeholder="Buscar produto..."
                 aria-hidden={!searchOpen}
                 style={{

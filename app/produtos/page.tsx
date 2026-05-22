@@ -32,7 +32,12 @@ async function getAllProducts() {
   return (data ?? []) as ProductRow[];
 }
 
-export default async function ProductsPage() {
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const { q } = await searchParams;
   const products = await getAllProducts();
   const categories = [
     ...new Set(products.map((p) => p.category).filter(Boolean) as string[]),
@@ -95,7 +100,7 @@ export default async function ProductsPage() {
         {/* Grid */}
         <section style={{ padding: "80px 32px 120px" }}>
           <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-            <ProductsGrid products={products} categories={categories} />
+            <ProductsGrid products={products} categories={categories} initialQuery={q ?? ""} />
           </div>
         </section>
       </main>
