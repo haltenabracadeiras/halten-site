@@ -266,160 +266,193 @@ export function ProductForm({ product, action, isNew }: Props) {
 
         {images.length > 0 && (
           <div style={{ border: "1px solid var(--line)", borderRadius: 12, overflow: "hidden", marginBottom: 8 }}>
-            {/* Preview principal */}
-            <div
-              style={{
-                background: "#0f1923",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                minHeight: 200,
-                position: "relative",
-                overflow: "hidden",
-              }}
-            >
-              <div style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.2)", position: "absolute", top: 10, left: 14, letterSpacing: "0.12em" }}>
-                REF · {String(activeImg + 1).padStart(2, "0")}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+
+              {/* Preview principal — esquerda */}
+              <div
+                style={{
+                  background: "#0f1923",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  minHeight: 220,
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <div style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.2)", position: "absolute", top: 10, left: 14, letterSpacing: "0.12em" }}>
+                  REF · {String(activeImg + 1).padStart(2, "0")}
+                </div>
+                <div style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.2)", position: "absolute", top: 10, right: 14, letterSpacing: "0.12em" }}>
+                  ZOOM · {imageZoom}%
+                </div>
+                {activeImgSrc && (
+                  <img
+                    src={activeImgSrc}
+                    alt="Preview"
+                    style={{
+                      maxWidth: "72%",
+                      maxHeight: 180,
+                      objectFit: "contain",
+                      transform: `scale(${imageZoom / 100})`,
+                      transformOrigin: "center",
+                      transition: "transform 0.2s",
+                    }}
+                  />
+                )}
               </div>
-              <div style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.2)", position: "absolute", top: 10, right: 14, letterSpacing: "0.12em" }}>
-                ZOOM · {imageZoom}%
-              </div>
-              {activeImgSrc && (
-                <img
-                  src={activeImgSrc}
-                  alt="Preview"
+
+              {/* Grid de thumbnails — direita */}
+              <div
+                style={{
+                  background: "var(--bg)",
+                  borderLeft: "1px solid var(--line)",
+                  padding: 12,
+                  overflowY: "auto",
+                  maxHeight: 300,
+                }}
+              >
+                <div
                   style={{
-                    maxWidth: "70%",
-                    maxHeight: 160,
-                    objectFit: "contain",
-                    transform: `scale(${imageZoom / 100})`,
-                    transformOrigin: "center",
-                    transition: "transform 0.2s",
+                    display: "grid",
+                    gridTemplateColumns: "repeat(3, 1fr)",
+                    gap: 8,
                   }}
-                />
-              )}
-            </div>
+                >
+                  {images.map((entry, i) => {
+                    const src =
+                      entry.type === "existing"
+                        ? (entry as Extract<ImageEntry, { type: "existing" }>).url
+                        : (entry as Extract<ImageEntry, { type: "new" }>).preview;
+                    const isActive = activeImg === i;
+                    const isDragging = dragImgIdx === i;
+                    const isDragOver = dragOverImgIdx === i && dragImgIdx !== i;
+                    const isCover = i === 0;
 
-            {/* Strip de thumbnails */}
-            <div
-              style={{
-                display: "flex",
-                gap: 6,
-                overflowX: "auto",
-                padding: "10px 12px",
-                background: "var(--bg)",
-                borderTop: "1px solid var(--line)",
-              }}
-            >
-              {images.map((entry, i) => {
-                const src =
-                  entry.type === "existing"
-                    ? (entry as Extract<ImageEntry, { type: "existing" }>).url
-                    : (entry as Extract<ImageEntry, { type: "new" }>).preview;
-                const isActive = activeImg === i;
-                const isDragging = dragImgIdx === i;
-                const isDragOver = dragOverImgIdx === i && dragImgIdx !== i;
-                return (
-                  <div
-                    key={i}
-                    draggable
-                    onDragStart={() => handleImgDragStart(i)}
-                    onDragOver={(e) => handleImgDragOver(e, i)}
-                    onDrop={() => handleImgDrop(i)}
-                    onDragEnd={handleImgDragEnd}
-                    style={{ flexShrink: 0, position: "relative", width: 72, opacity: isDragging ? 0.35 : 1 }}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => setActiveImg(i)}
-                      style={{
-                        width: 72,
-                        height: 72,
-                        padding: 3,
-                        border: isActive ? "2px solid #1c9bd7" : isDragOver ? "2px solid #1c9bd7" : "1.5px solid var(--line)",
-                        borderRadius: 8,
-                        overflow: "hidden",
-                        cursor: "pointer",
-                        background: "white",
-                        display: "block",
-                        boxSizing: "border-box",
-                        transition: "border-color 0.15s",
-                      }}
-                    >
-                      <img src={src} alt={`Imagem ${i + 1}`} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
-                    </button>
-
-                    {/* Drag handle */}
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: 3,
-                        left: 3,
-                        background: "rgba(15,25,35,0.55)",
-                        borderRadius: 3,
-                        padding: "2px",
-                        cursor: "grab",
-                        display: "flex",
-                        alignItems: "center",
-                        color: "rgba(255,255,255,0.8)",
-                        pointerEvents: "none",
-                      }}
-                    >
-                      <GripVertical size={9} />
-                    </div>
-
-                    {/* Estrela — definir como capa */}
-                    {i !== 0 && (
-                      <button
-                        type="button"
-                        title="Definir como capa"
-                        onClick={() => moveImageToTop(i)}
-                        style={{
-                          position: "absolute",
-                          top: 3,
-                          right: 3,
-                          background: "rgba(15,25,35,0.55)",
-                          border: "none",
-                          borderRadius: 3,
-                          padding: "2px",
-                          cursor: "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          color: "rgba(255,200,0,0.9)",
-                          lineHeight: 1,
-                        }}
+                    return (
+                      <div
+                        key={i}
+                        draggable
+                        onDragStart={() => handleImgDragStart(i)}
+                        onDragOver={(e) => handleImgDragOver(e, i)}
+                        onDrop={() => handleImgDrop(i)}
+                        onDragEnd={handleImgDragEnd}
+                        style={{ opacity: isDragging ? 0.35 : 1 }}
                       >
-                        <Star size={9} />
-                      </button>
-                    )}
+                        {/* Wrapper para overlays posicionados sobre a imagem */}
+                        <div style={{ position: "relative" }}>
+                          <button
+                            type="button"
+                            onClick={() => setActiveImg(i)}
+                            style={{
+                              width: "100%",
+                              aspectRatio: "1/1",
+                              padding: 4,
+                              border: isActive
+                                ? "2px solid #1c9bd7"
+                                : isDragOver
+                                ? "2px dashed #1c9bd7"
+                                : "1.5px solid var(--line)",
+                              borderRadius: 8,
+                              overflow: "hidden",
+                              cursor: "pointer",
+                              background: "white",
+                              display: "block",
+                              boxSizing: "border-box",
+                              transition: "border-color 0.15s",
+                            }}
+                          >
+                            <img
+                              src={src}
+                              alt={`Imagem ${i + 1}`}
+                              style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                            />
+                          </button>
 
-                    {/* Remover */}
-                    <button
-                      type="button"
-                      title="Remover imagem"
-                      onClick={() => removeImage(i)}
-                      style={{
-                        position: "absolute",
-                        bottom: 18,
-                        right: 3,
-                        background: "rgba(220,38,38,0.75)",
-                        border: "none",
-                        borderRadius: 3,
-                        padding: "1px 4px",
-                        cursor: "pointer",
-                        color: "white",
-                        fontSize: 10,
-                        lineHeight: 1,
-                      }}
-                    >×</button>
+                          {/* Drag handle — canto superior esquerdo */}
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: 5,
+                              left: 5,
+                              background: "rgba(15,25,35,0.55)",
+                              borderRadius: 3,
+                              padding: "2px",
+                              cursor: "grab",
+                              display: "flex",
+                              alignItems: "center",
+                              color: "rgba(255,255,255,0.75)",
+                              pointerEvents: "none",
+                            }}
+                          >
+                            <GripVertical size={9} />
+                          </div>
 
-                    {/* Label */}
-                    <div style={{ textAlign: "center", fontSize: 9, fontFamily: "var(--font-mono)", color: "var(--ink-dim)", marginTop: 3 }}>
-                      {i === 0 ? "CAPA" : String(i + 1).padStart(2, "0")}
-                    </div>
-                  </div>
-                );
-              })}
+                          {/* Estrela — canto superior direito (todas as imagens) */}
+                          <button
+                            type="button"
+                            title={isCover ? "Imagem de capa" : "Definir como capa"}
+                            onClick={() => moveImageToTop(i)}
+                            disabled={isCover}
+                            style={{
+                              position: "absolute",
+                              top: 5,
+                              right: 5,
+                              background: isCover ? "transparent" : "rgba(15,25,35,0.5)",
+                              border: "none",
+                              borderRadius: 3,
+                              padding: "2px",
+                              cursor: isCover ? "default" : "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              lineHeight: 1,
+                            }}
+                          >
+                            <Star
+                              size={11}
+                              fill={isCover ? "#fbbf24" : "none"}
+                              color={isCover ? "#fbbf24" : "rgba(255,255,255,0.65)"}
+                            />
+                          </button>
+
+                          {/* Remover — canto inferior direito */}
+                          <button
+                            type="button"
+                            title="Remover imagem"
+                            onClick={() => removeImage(i)}
+                            style={{
+                              position: "absolute",
+                              bottom: 5,
+                              right: 5,
+                              background: "rgba(220,38,38,0.75)",
+                              border: "none",
+                              borderRadius: 3,
+                              padding: "1px 4px",
+                              cursor: "pointer",
+                              color: "white",
+                              fontSize: 10,
+                              lineHeight: 1,
+                            }}
+                          >×</button>
+                        </div>
+
+                        {/* Label */}
+                        <div
+                          style={{
+                            textAlign: "center",
+                            fontSize: 9,
+                            fontFamily: "var(--font-mono)",
+                            color: "var(--ink-dim)",
+                            marginTop: 3,
+                          }}
+                        >
+                          {isCover ? "CAPA" : String(i + 1).padStart(2, "0")}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
         )}
