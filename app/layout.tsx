@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Syne, JetBrains_Mono, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { LenisProvider } from "./providers";
+import { CartProvider } from "./context/cart-context";
+import { CartDrawer } from "./components/cart-drawer";
 
 const syne = Syne({
   subsets: ["latin"],
@@ -42,7 +44,10 @@ export default function RootLayout({
       className={`${syne.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <LenisProvider>{children}</LenisProvider>
+        <CartProvider>
+          <LenisProvider>{children}</LenisProvider>
+          <CartDrawer />
+        </CartProvider>
       </body>
     </html>
   );

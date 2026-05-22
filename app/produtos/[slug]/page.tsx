@@ -4,6 +4,7 @@ import { Navbar } from "../../components/navbar";
 import { Footer } from "../../components/footer";
 import { getSupabaseAdmin } from "../../../lib/supabase";
 import { ImageViewer } from "./image-viewer";
+import { AddToCartButton } from "../../components/add-to-cart-button";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +34,7 @@ async function getProductBySlug(slug: string) {
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
     .from("products")
-    .select("id,name,slug,category,price,excerpt,description,details,images")
+    .select("id,name,slug,category,price,excerpt,description,details,images,cart_qty_one")
     .eq("slug", slug.trim())
     .eq("active", true)
     .limit(1)
@@ -568,35 +569,58 @@ export default async function ProductDetailPage({
                               {col.label}
                             </th>
                           ))}
+                          <th style={{ padding: "12px 16px", width: 1 }} />
                         </tr>
                       </thead>
                       <tbody>
-                        {tableRows.map((row, i) => (
-                          <tr
-                            key={i}
-                            style={{
-                              background: i % 2 === 0 ? "white" : "rgba(15,25,35,0.02)",
-                            }}
-                          >
-                            {tableTemplate!.columns.map((col) => (
+                        {tableRows.map((row, i) => {
+                          const highlightCol = tableTemplate!.columns.find((c) => c.highlight);
+                          const rowCode = highlightCol ? (row[highlightCol.key] ?? "") : "";
+                          const embalagemCol = tableTemplate!.columns.find((c) =>
+                            c.key.toLowerCase().includes("embalagem") || c.label.toLowerCase().includes("embalagem")
+                          );
+                          const rowEmbalagem = embalagemCol ? (row[embalagemCol.key] ?? "") : "";
+                          return (
+                            <tr
+                              key={i}
+                              style={{
+                                background: i % 2 === 0 ? "white" : "rgba(15,25,35,0.02)",
+                              }}
+                            >
+                              {tableTemplate!.columns.map((col) => (
+                                <td
+                                  key={col.key}
+                                  style={{
+                                    padding: "10px 16px",
+                                    color: col.highlight ? "#1c9bd7" : "var(--ink)",
+                                    fontWeight: col.highlight ? 700 : 400,
+                                    borderBottom:
+                                      i < tableRows.length - 1
+                                        ? "1px solid rgba(15,25,35,0.05)"
+                                        : "none",
+                                    whiteSpace: col.highlight ? "nowrap" : "normal",
+                                  }}
+                                >
+                                  {row[col.key] ?? "—"}
+                                </td>
+                              ))}
                               <td
-                                key={col.key}
                                 style={{
-                                  padding: "10px 16px",
-                                  color: col.highlight ? "#1c9bd7" : "var(--ink)",
-                                  fontWeight: col.highlight ? 700 : 400,
+                                  padding: "8px 16px",
                                   borderBottom:
                                     i < tableRows.length - 1
                                       ? "1px solid rgba(15,25,35,0.05)"
                                       : "none",
-                                  whiteSpace: col.highlight ? "nowrap" : "normal",
+                                  whiteSpace: "nowrap",
                                 }}
                               >
-                                {row[col.key] ?? "—"}
+                                {rowCode && (
+                                  <AddToCartButton code={rowCode} productName={product.name} embalagem={product.cart_qty_one ? undefined : rowEmbalagem} />
+                                )}
                               </td>
-                            ))}
-                          </tr>
-                        ))}
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>

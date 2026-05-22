@@ -70,6 +70,7 @@ export async function createProduct(formData: FormData) {
     position: Number(formData.get("position")) || 0,
     cnpj_required: formData.get("cnpj_required") === "true",
     whatsapp_text: (formData.get("whatsapp_text") as string) || null,
+    cart_qty_one: formData.get("cart_qty_one") === "true",
   }).select("id").single();
 
   revalidatePath("/admin/produtos");
@@ -97,6 +98,7 @@ export async function updateProduct(id: string, formData: FormData) {
       position: Number(formData.get("position")) || 0,
       cnpj_required: formData.get("cnpj_required") === "true",
       whatsapp_text: (formData.get("whatsapp_text") as string) || null,
+      cart_qty_one: formData.get("cart_qty_one") === "true",
     })
     .eq("id", id);
 

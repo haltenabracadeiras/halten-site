@@ -17,6 +17,7 @@ type Product = {
   position?: number | null;
   cnpj_required?: boolean | null;
   whatsapp_text?: string | null;
+  cart_qty_one?: boolean | null;
 };
 
 type Props = {
@@ -388,6 +389,21 @@ export function ProductForm({ product, action, isNew }: Props) {
             <option value="true">Sim — exigir CNPJ</option>
             <option value="false">Não</option>
           </select>
+        </div>
+
+        <div>
+          <label style={labelStyle}>Quantidade padrão no carrinho</label>
+          <select
+            name="cart_qty_one"
+            defaultValue={String(product?.cart_qty_one ?? false)}
+            style={inputStyle}
+          >
+            <option value="false">Usar quantidade da embalagem (padrão)</option>
+            <option value="true">Sempre iniciar com 1 (venda por pacote)</option>
+          </select>
+          <p style={{ fontSize: 11, color: "var(--ink-dim)", fontFamily: "var(--font-mono)", marginTop: 6 }}>
+            Use "1" para produtos vendidos por pacote fechado (ex: abraçadeira nylon 100 un).
+          </p>
         </div>
 
         <div>
