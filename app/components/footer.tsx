@@ -250,47 +250,22 @@ export function Footer() {
           >
             © {new Date().getFullYear()} Halten Abraçadeiras · Todos os direitos reservados
           </p>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 5 }}>
-            <span
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 8,
-                fontFamily: "var(--font-mono)",
-                fontSize: 11,
-                color: "rgba(255,255,255,0.22)",
-                letterSpacing: "0.06em",
-              }}
-            >
-              <span
-                style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: "50%",
-                  background: "#3fcf8e",
-                  boxShadow: "0 0 0 3px rgba(63,207,142,0.18)",
-                  display: "inline-block",
-                }}
-              />
-              Fabricado em Cascavel/PR · Brasil
-            </span>
-            <a
-              href="https://wa.me/5545991250788?text=Ol%C3%A1%20vi%20seu%20projeto%20da%20Halten%2C%20gostaria%20de%20falar%20sobre%3A"
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 10,
-                color: "rgba(255,255,255,0.18)",
-                letterSpacing: "0.06em",
-                textDecoration: "none",
-                transition: "color 0.2s",
-              }}
-              className="dev-credit"
-            >
-              Desenvolvido por Consoli Web Designer
-            </a>
-          </div>
+          <a
+            href="https://wa.me/5545991250788?text=Ol%C3%A1%20vi%20seu%20projeto%20da%20Halten%2C%20gostaria%20de%20falar%20sobre%3A"
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: 10,
+              color: "rgba(255,255,255,0.18)",
+              letterSpacing: "0.06em",
+              textDecoration: "none",
+              transition: "color 0.2s",
+            }}
+            className="dev-credit"
+          >
+            Desenvolvido por Consoli Web Designer
+          </a>
         </div>
       </div>
 
