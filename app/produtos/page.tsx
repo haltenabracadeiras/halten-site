@@ -19,7 +19,7 @@ async function getAllProducts() {
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
     .from("products")
-    .select("id,name,slug,category,price,excerpt,images")
+    .select("id,name,slug,category,price,excerpt,images,image_zoom")
     .eq("active", true)
     .order("position", { ascending: true });
 

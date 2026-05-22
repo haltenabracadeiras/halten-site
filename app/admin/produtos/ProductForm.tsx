@@ -18,6 +18,7 @@ type Product = {
   cnpj_required?: boolean | null;
   whatsapp_text?: string | null;
   cart_qty_one?: boolean | null;
+  image_zoom?: number | null;
 };
 
 type Props = {
@@ -65,6 +66,8 @@ export function ProductForm({ product, action, isNew }: Props) {
   const [images, setImages] = useState<ImageEntry[]>(() =>
     (product?.images ?? []).map((url) => ({ type: "existing", url }))
   );
+  const [activeImg, setActiveImg] = useState(0);
+  const [imageZoom, setImageZoom] = useState(product?.image_zoom ?? 100);
   const fileRef = useRef<HTMLInputElement>(null);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -205,100 +208,99 @@ export function ProductForm({ product, action, isNew }: Props) {
       <div>
         <label style={labelStyle}>Imagens do produto</label>
 
-        {/* Preview grid */}
         {images.length > 0 && (
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 10,
-              marginBottom: 12,
-              padding: 12,
-              background: "var(--bg)",
-              borderRadius: 10,
-              border: "1px solid var(--line-soft)",
-            }}
-          >
-            {images.map((entry, i) => (
-              <div
-                key={i}
-                style={{ position: "relative", flexShrink: 0 }}
-              >
-                <img
-                  src={entry.type === "existing" ? entry.url : entry.preview}
-                  alt={`Imagem ${i + 1}`}
-                  style={{
-                    width: 90,
-                    height: 68,
-                    objectFit: "cover",
-                    borderRadius: 8,
-                    border: "1.5px solid var(--line)",
-                    display: "block",
-                    opacity: entry.type === "new" ? 0.8 : 1,
-                  }}
-                />
-                {i === 0 && (
-                  <span
-                    style={{
-                      position: "absolute",
-                      bottom: 4,
-                      left: 4,
-                      fontSize: 9,
-                      background: "rgba(0,0,0,0.7)",
-                      color: "white",
-                      padding: "2px 6px",
-                      borderRadius: 4,
-                      fontFamily: "var(--font-mono)",
-                      letterSpacing: "0.05em",
-                    }}
-                  >
-                    Capa
-                  </span>
-                )}
-                {entry.type === "new" && (
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: 4,
-                      left: 4,
-                      fontSize: 9,
-                      background: "rgba(28,155,215,0.85)",
-                      color: "white",
-                      padding: "2px 6px",
-                      borderRadius: 4,
-                      fontFamily: "var(--font-mono)",
-                    }}
-                  >
-                    Nova
-                  </span>
-                )}
-                <button
-                  type="button"
-                  onClick={() => removeImage(i)}
-                  title="Remover"
-                  style={{
-                    position: "absolute",
-                    top: -6,
-                    right: -6,
-                    width: 20,
-                    height: 20,
-                    borderRadius: "50%",
-                    background: "#dc2626",
-                    border: "2px solid white",
-                    cursor: "pointer",
-                    color: "white",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    padding: 0,
-                  }}
-                >
-                  <X size={10} />
-                </button>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 160px", gap: 10, marginBottom: 12 }}>
+            {/* Preview principal */}
+            <div
+              style={{
+                background: "#0f1923",
+                borderRadius: 12,
+                border: "1px solid rgba(255,255,255,0.06)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                minHeight: 260,
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              <div style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.2)", position: "absolute", top: 10, left: 14, letterSpacing: "0.12em" }}>
+                REF · {String(activeImg + 1).padStart(2, "0")}
               </div>
-            ))}
+              <div style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.2)", position: "absolute", top: 10, right: 14, letterSpacing: "0.12em" }}>
+                ZOOM · {imageZoom}%
+              </div>
+              <img
+                src={images[activeImg].type === "existing" ? images[activeImg].url : (images[activeImg] as Extract<ImageEntry, {type:"new"}>).preview}
+                alt="Preview"
+                style={{
+                  maxWidth: "80%",
+                  maxHeight: 220,
+                  objectFit: "contain",
+                  transform: `scale(${imageZoom / 100})`,
+                  transformOrigin: "center",
+                  transition: "transform 0.2s",
+                }}
+              />
+            </div>
+
+            {/* Thumbnails */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, overflowY: "auto", maxHeight: 280 }}>
+              {images.map((entry, i) => {
+                const src = entry.type === "existing" ? entry.url : (entry as Extract<ImageEntry, {type:"new"}>).preview;
+                return (
+                  <div key={i} style={{ position: "relative", flexShrink: 0 }}>
+                    <button
+                      type="button"
+                      onClick={() => setActiveImg(i)}
+                      style={{
+                        width: "100%",
+                        aspectRatio: "4/3",
+                        padding: 0,
+                        border: activeImg === i ? "2px solid #1c9bd7" : "1.5px solid var(--line)",
+                        borderRadius: 8,
+                        overflow: "hidden",
+                        cursor: "pointer",
+                        background: "var(--bg)",
+                        display: "block",
+                      }}
+                    >
+                      <img src={src} alt={`Imagem ${i + 1}`} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                    </button>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 3 }}>
+                      <span style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "var(--ink-dim)" }}>
+                        {i === 0 ? "CAPA" : String(i + 1).padStart(2, "0")}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => { removeImage(i); if (activeImg >= i && activeImg > 0) setActiveImg(activeImg - 1); }}
+                        style={{ background: "none", border: "none", cursor: "pointer", color: "#fca5a5", padding: 0, fontSize: 13, lineHeight: 1 }}
+                      >×</button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
+
+        {/* Zoom slider */}
+        {images.length > 0 && (
+          <div style={{ marginBottom: 12, display: "flex", alignItems: "center", gap: 12 }}>
+            <label style={{ ...labelStyle, marginBottom: 0, whiteSpace: "nowrap" }}>Zoom no card</label>
+            <input
+              type="range"
+              name="image_zoom"
+              min={50}
+              max={150}
+              value={imageZoom}
+              onChange={(e) => setImageZoom(Number(e.target.value))}
+              style={{ flex: 1, accentColor: "#1c9bd7" }}
+            />
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--ink-mid)", minWidth: 36 }}>{imageZoom}%</span>
+          </div>
+        )}
+        {images.length === 0 && <input type="hidden" name="image_zoom" value={imageZoom} />}
 
         {/* Botão adicionar */}
         <input
@@ -324,7 +326,6 @@ export function ProductForm({ product, action, isNew }: Props) {
             color: "var(--ink-mid)",
             fontFamily: "var(--font-mono)",
             fontSize: 13,
-            transition: "border-color 0.15s ease",
           }}
         >
           <ImagePlus size={15} />

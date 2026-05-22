@@ -8,13 +8,14 @@ type ProductRow = {
   category: string | null;
   excerpt: string | null;
   images: string[] | null;
+  image_zoom: number | null;
 };
 
 async function getFeaturedProducts() {
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
     .from("products")
-    .select("id,name,slug,category,excerpt,images")
+    .select("id,name,slug,category,excerpt,images,image_zoom")
     .eq("featured", true)
     .eq("active", true)
     .order("position", { ascending: true })
@@ -153,7 +154,7 @@ export default async function ProductsSection() {
                         <img
                           src={imageUrl}
                           alt={product.name}
-                          style={{ width: "100%", height: "100%", objectFit: "contain", position: "absolute", inset: 0, padding: 12 }}
+                          style={{ width: "100%", height: "100%", objectFit: "contain", position: "absolute", inset: 0, padding: 12, transform: `scale(${(product.image_zoom ?? 100) / 100})`, transformOrigin: "center" }}
                         />
                       ) : (
                         <ClampSVG />
