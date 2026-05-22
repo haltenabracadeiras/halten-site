@@ -20,6 +20,7 @@ type ProductRow = {
   description: string | null;
   details: string[] | null;
   images: string[] | null;
+  cart_qty_one: boolean | null;
 };
 
 type ProductTable = {
