@@ -13,6 +13,7 @@ type ProductRow = {
   price: number | null;
   excerpt: string | null;
   images: string[] | null;
+  image_zoom: number | null;
 };
 
 async function getAllProducts() {
