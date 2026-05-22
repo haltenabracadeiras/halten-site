@@ -105,11 +105,11 @@ export function LoginForm() {
         {/* Logo */}
         <div style={{ display: "flex", justifyContent: "center", marginBottom: 8 }}>
           <Image
-            src="/logo.svg"
+            src="/icon-halten.svg"
             alt="Halten"
-            width={130}
-            height={40}
-            style={{ width: 130, height: "auto" }}
+            width={48}
+            height={48}
+            style={{ width: 48, height: 48 }}
           />
         </div>
 
