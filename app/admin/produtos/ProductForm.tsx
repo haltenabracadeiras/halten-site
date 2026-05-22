@@ -275,7 +275,7 @@ export function ProductForm({ product, action, isNew }: Props) {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  minHeight: 220,
+                  minHeight: 320,
                   position: "relative",
                   overflow: "hidden",
                 }}
@@ -309,7 +309,7 @@ export function ProductForm({ product, action, isNew }: Props) {
                   borderLeft: "1px solid var(--line)",
                   padding: 12,
                   overflowY: "auto",
-                  maxHeight: 300,
+                  maxHeight: 380,
                 }}
               >
                 <div
@@ -459,7 +459,7 @@ export function ProductForm({ product, action, isNew }: Props) {
 
         {/* Zoom slider compacto */}
         {images.length > 0 && (
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, padding: "2px 0" }}>
+          <div style={{ width: "50%", display: "flex", alignItems: "center", gap: 10, marginBottom: 10, padding: "2px 0" }}>
             <span style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "var(--ink-dim)", letterSpacing: "0.12em", whiteSpace: "nowrap" }}>ZOOM</span>
             <input
               type="range"
