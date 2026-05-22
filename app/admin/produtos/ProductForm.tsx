@@ -504,8 +504,9 @@ export function ProductForm({ product, action, isNew }: Props) {
           <ImagePlus size={15} />
           {images.length === 0 ? "Adicionar imagens" : "Adicionar mais imagens"}
         </button>
-        <p style={{ fontSize: 11, color: "var(--ink-dim)", fontFamily: "var(--font-mono)", marginTop: 6 }}>
-          A primeira imagem será a capa do produto. JPG, PNG, WebP — máx. 5 MB por arquivo.
+        <p style={{ fontSize: 11, color: "var(--ink-dim)", fontFamily: "var(--font-mono)", marginTop: 6, lineHeight: 1.7 }}>
+          A primeira imagem será a capa do produto. JPG, PNG, WebP — máx. 5 MB por arquivo.<br />
+          <span style={{ color: "var(--ink-mid)" }}>Recomendado: formato quadrado 1:1 · mínimo 800×800px · fundo branco ou transparente.</span>
         </p>
       </div>
 
