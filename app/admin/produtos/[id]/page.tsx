@@ -30,27 +30,51 @@ export default async function EditProdutoPage({ params }: { params: Promise<{ id
         <h1 className="font-sans" style={{ fontSize: 22, fontWeight: 700, color: "var(--ink)", margin: 0 }}>
           Editar Produto
         </h1>
-        <Link
-          href={`/produtos/${product.slug}`}
-          target="_blank"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 7,
-            padding: "8px 18px",
-            borderRadius: 999,
-            background: "var(--ink)",
-            color: "white",
-            fontSize: 11,
-            fontFamily: "var(--font-mono)",
-            fontWeight: 700,
-            letterSpacing: "0.08em",
-            textDecoration: "none",
-          }}
-        >
-          <Eye size={13} />
-          VER PUBLICADO
-        </Link>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <button
+            type="submit"
+            form="product-form"
+            className="font-sans"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 7,
+              padding: "8px 18px",
+              borderRadius: 999,
+              background: "var(--blue)",
+              color: "white",
+              fontSize: 11,
+              fontFamily: "var(--font-mono)",
+              fontWeight: 700,
+              letterSpacing: "0.08em",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            SALVAR
+          </button>
+          <Link
+            href={`/produtos/${product.slug}`}
+            target="_blank"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 7,
+              padding: "8px 18px",
+              borderRadius: 999,
+              background: "var(--ink)",
+              color: "white",
+              fontSize: 11,
+              fontFamily: "var(--font-mono)",
+              fontWeight: 700,
+              letterSpacing: "0.08em",
+              textDecoration: "none",
+            }}
+          >
+            <Eye size={13} />
+            VER PUBLICADO
+          </Link>
+        </div>
       </div>
 
       {/* Dados do produto */}

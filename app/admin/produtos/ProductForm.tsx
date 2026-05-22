@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useRef, useTransition } from "react";
+import { ImagePlus, Loader2, AlertCircle, GripVertical, Star } from "lucide-react";
 import Link from "next/link";
-import { X, ImagePlus, Loader2, AlertCircle } from "lucide-react";
 
 type Product = {
   id?: string;
@@ -68,6 +68,8 @@ export function ProductForm({ product, action, isNew }: Props) {
   );
   const [activeImg, setActiveImg] = useState(0);
   const [imageZoom, setImageZoom] = useState(product?.image_zoom ?? 100);
+  const [dragImgIdx, setDragImgIdx] = useState<number | null>(null);
+  const [dragOverImgIdx, setDragOverImgIdx] = useState<number | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -80,7 +82,6 @@ export function ProductForm({ product, action, isNew }: Props) {
       preview: URL.createObjectURL(file),
     }));
     setImages((prev) => [...prev, ...entries]);
-    // Limpa o input para permitir selecionar os mesmos arquivos novamente
     if (fileRef.current) fileRef.current.value = "";
   }
 
@@ -90,9 +91,58 @@ export function ProductForm({ product, action, isNew }: Props) {
       if (entry.type === "new") URL.revokeObjectURL(entry.preview);
       return prev.filter((_, i) => i !== idx);
     });
+    if (activeImg >= idx && activeImg > 0) setActiveImg(activeImg - 1);
   }
 
-  // Prepara os dados para o FormData
+  function moveImageToTop(idx: number) {
+    if (idx === 0) return;
+    setImages((prev) => {
+      const arr = [...prev];
+      const [item] = arr.splice(idx, 1);
+      arr.unshift(item);
+      return arr;
+    });
+    setActiveImg(0);
+  }
+
+  function handleImgDragStart(idx: number) {
+    setDragImgIdx(idx);
+  }
+
+  function handleImgDragOver(e: React.DragEvent, idx: number) {
+    e.preventDefault();
+    setDragOverImgIdx(idx);
+  }
+
+  function handleImgDrop(targetIdx: number) {
+    if (dragImgIdx === null || dragImgIdx === targetIdx) {
+      setDragImgIdx(null);
+      setDragOverImgIdx(null);
+      return;
+    }
+    const from = dragImgIdx;
+    const to = targetIdx;
+    setImages((prev) => {
+      const arr = [...prev];
+      const [item] = arr.splice(from, 1);
+      arr.splice(to, 0, item);
+      return arr;
+    });
+    setActiveImg((prev) => {
+      if (prev === from) return to;
+      if (from < to && prev > from && prev <= to) return prev - 1;
+      if (from > to && prev < from && prev >= to) return prev + 1;
+      return prev;
+    });
+    setDragImgIdx(null);
+    setDragOverImgIdx(null);
+  }
+
+  function handleImgDragEnd() {
+    setDragImgIdx(null);
+    setDragOverImgIdx(null);
+  }
+
   const existingUrls = images
     .filter((e): e is Extract<ImageEntry, { type: "existing" }> => e.type === "existing")
     .map((e) => e.url);
@@ -131,8 +181,14 @@ export function ProductForm({ product, action, isNew }: Props) {
     });
   }
 
+  const activeImgSrc = images[activeImg]
+    ? images[activeImg].type === "existing"
+      ? (images[activeImg] as Extract<ImageEntry, { type: "existing" }>).url
+      : (images[activeImg] as Extract<ImageEntry, { type: "new" }>).preview
+    : null;
+
   return (
-    <form onSubmit={handleFormSubmit} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+    <form id="product-form" onSubmit={handleFormSubmit} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
       {error && (
         <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "14px 16px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10 }}>
@@ -209,17 +265,15 @@ export function ProductForm({ product, action, isNew }: Props) {
         <label style={labelStyle}>Imagens do produto</label>
 
         {images.length > 0 && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 160px", gap: 10, marginBottom: 12 }}>
+          <div style={{ border: "1px solid var(--line)", borderRadius: 12, overflow: "hidden", marginBottom: 8 }}>
             {/* Preview principal */}
             <div
               style={{
                 background: "#0f1923",
-                borderRadius: 12,
-                border: "1px solid rgba(255,255,255,0.06)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                minHeight: 260,
+                minHeight: 200,
                 position: "relative",
                 overflow: "hidden",
               }}
@@ -230,52 +284,138 @@ export function ProductForm({ product, action, isNew }: Props) {
               <div style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.2)", position: "absolute", top: 10, right: 14, letterSpacing: "0.12em" }}>
                 ZOOM · {imageZoom}%
               </div>
-              <img
-                src={images[activeImg].type === "existing" ? images[activeImg].url : (images[activeImg] as Extract<ImageEntry, {type:"new"}>).preview}
-                alt="Preview"
-                style={{
-                  maxWidth: "80%",
-                  maxHeight: 220,
-                  objectFit: "contain",
-                  transform: `scale(${imageZoom / 100})`,
-                  transformOrigin: "center",
-                  transition: "transform 0.2s",
-                }}
-              />
+              {activeImgSrc && (
+                <img
+                  src={activeImgSrc}
+                  alt="Preview"
+                  style={{
+                    maxWidth: "70%",
+                    maxHeight: 160,
+                    objectFit: "contain",
+                    transform: `scale(${imageZoom / 100})`,
+                    transformOrigin: "center",
+                    transition: "transform 0.2s",
+                  }}
+                />
+              )}
             </div>
 
-            {/* Thumbnails */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 8, overflowY: "auto", maxHeight: 280 }}>
+            {/* Strip de thumbnails */}
+            <div
+              style={{
+                display: "flex",
+                gap: 6,
+                overflowX: "auto",
+                padding: "10px 12px",
+                background: "var(--bg)",
+                borderTop: "1px solid var(--line)",
+              }}
+            >
               {images.map((entry, i) => {
-                const src = entry.type === "existing" ? entry.url : (entry as Extract<ImageEntry, {type:"new"}>).preview;
+                const src =
+                  entry.type === "existing"
+                    ? (entry as Extract<ImageEntry, { type: "existing" }>).url
+                    : (entry as Extract<ImageEntry, { type: "new" }>).preview;
+                const isActive = activeImg === i;
+                const isDragging = dragImgIdx === i;
+                const isDragOver = dragOverImgIdx === i && dragImgIdx !== i;
                 return (
-                  <div key={i} style={{ position: "relative", flexShrink: 0 }}>
+                  <div
+                    key={i}
+                    draggable
+                    onDragStart={() => handleImgDragStart(i)}
+                    onDragOver={(e) => handleImgDragOver(e, i)}
+                    onDrop={() => handleImgDrop(i)}
+                    onDragEnd={handleImgDragEnd}
+                    style={{ flexShrink: 0, position: "relative", width: 72, opacity: isDragging ? 0.35 : 1 }}
+                  >
                     <button
                       type="button"
                       onClick={() => setActiveImg(i)}
                       style={{
-                        width: "100%",
-                        aspectRatio: "4/3",
-                        padding: 0,
-                        border: activeImg === i ? "2px solid #1c9bd7" : "1.5px solid var(--line)",
+                        width: 72,
+                        height: 72,
+                        padding: 3,
+                        border: isActive ? "2px solid #1c9bd7" : isDragOver ? "2px solid #1c9bd7" : "1.5px solid var(--line)",
                         borderRadius: 8,
                         overflow: "hidden",
                         cursor: "pointer",
-                        background: "var(--bg)",
+                        background: "white",
                         display: "block",
+                        boxSizing: "border-box",
+                        transition: "border-color 0.15s",
                       }}
                     >
                       <img src={src} alt={`Imagem ${i + 1}`} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
                     </button>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 3 }}>
-                      <span style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "var(--ink-dim)" }}>
-                        {i === 0 ? "CAPA" : String(i + 1).padStart(2, "0")}
-                      </span>
+
+                    {/* Drag handle */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 3,
+                        left: 3,
+                        background: "rgba(15,25,35,0.55)",
+                        borderRadius: 3,
+                        padding: "2px",
+                        cursor: "grab",
+                        display: "flex",
+                        alignItems: "center",
+                        color: "rgba(255,255,255,0.8)",
+                        pointerEvents: "none",
+                      }}
+                    >
+                      <GripVertical size={9} />
+                    </div>
+
+                    {/* Estrela — definir como capa */}
+                    {i !== 0 && (
                       <button
                         type="button"
-                        onClick={() => { removeImage(i); if (activeImg >= i && activeImg > 0) setActiveImg(activeImg - 1); }}
-                        style={{ background: "none", border: "none", cursor: "pointer", color: "#fca5a5", padding: 0, fontSize: 13, lineHeight: 1 }}
-                      >×</button>
+                        title="Definir como capa"
+                        onClick={() => moveImageToTop(i)}
+                        style={{
+                          position: "absolute",
+                          top: 3,
+                          right: 3,
+                          background: "rgba(15,25,35,0.55)",
+                          border: "none",
+                          borderRadius: 3,
+                          padding: "2px",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          color: "rgba(255,200,0,0.9)",
+                          lineHeight: 1,
+                        }}
+                      >
+                        <Star size={9} />
+                      </button>
+                    )}
+
+                    {/* Remover */}
+                    <button
+                      type="button"
+                      title="Remover imagem"
+                      onClick={() => removeImage(i)}
+                      style={{
+                        position: "absolute",
+                        bottom: 18,
+                        right: 3,
+                        background: "rgba(220,38,38,0.75)",
+                        border: "none",
+                        borderRadius: 3,
+                        padding: "1px 4px",
+                        cursor: "pointer",
+                        color: "white",
+                        fontSize: 10,
+                        lineHeight: 1,
+                      }}
+                    >×</button>
+
+                    {/* Label */}
+                    <div style={{ textAlign: "center", fontSize: 9, fontFamily: "var(--font-mono)", color: "var(--ink-dim)", marginTop: 3 }}>
+                      {i === 0 ? "CAPA" : String(i + 1).padStart(2, "0")}
                     </div>
                   </div>
                 );
@@ -284,10 +424,10 @@ export function ProductForm({ product, action, isNew }: Props) {
           </div>
         )}
 
-        {/* Zoom slider */}
+        {/* Zoom slider compacto */}
         {images.length > 0 && (
-          <div style={{ marginBottom: 12, display: "flex", alignItems: "center", gap: 12 }}>
-            <label style={{ ...labelStyle, marginBottom: 0, whiteSpace: "nowrap" }}>Zoom no card</label>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, padding: "2px 0" }}>
+            <span style={{ fontSize: 9, fontFamily: "var(--font-mono)", color: "var(--ink-dim)", letterSpacing: "0.12em", whiteSpace: "nowrap" }}>ZOOM</span>
             <input
               type="range"
               name="image_zoom"
@@ -295,9 +435,9 @@ export function ProductForm({ product, action, isNew }: Props) {
               max={150}
               value={imageZoom}
               onChange={(e) => setImageZoom(Number(e.target.value))}
-              style={{ flex: 1, accentColor: "#1c9bd7" }}
+              style={{ flex: 1, accentColor: "#1c9bd7", cursor: "pointer" }}
             />
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--ink-mid)", minWidth: 36 }}>{imageZoom}%</span>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--ink-mid)", minWidth: 28, textAlign: "right" }}>{imageZoom}%</span>
           </div>
         )}
         {images.length === 0 && <input type="hidden" name="image_zoom" value={imageZoom} />}
@@ -366,27 +506,13 @@ export function ProductForm({ product, action, isNew }: Props) {
           gap: 16,
         }}
       >
-        <p
-          style={{
-            fontSize: 11,
-            fontWeight: 700,
-            fontFamily: "var(--font-mono)",
-            color: "var(--ink)",
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            margin: 0,
-          }}
-        >
+        <p style={{ fontSize: 11, fontWeight: 700, fontFamily: "var(--font-mono)", color: "var(--ink)", letterSpacing: "0.1em", textTransform: "uppercase", margin: 0 }}>
           Configurações de contato B2B
         </p>
 
         <div>
           <label style={labelStyle}>CNPJ obrigatório para pedir preço?</label>
-          <select
-            name="cnpj_required"
-            defaultValue={String(product?.cnpj_required ?? false)}
-            style={inputStyle}
-          >
+          <select name="cnpj_required" defaultValue={String(product?.cnpj_required ?? false)} style={inputStyle}>
             <option value="true">Sim — exigir CNPJ</option>
             <option value="false">Não</option>
           </select>
@@ -394,11 +520,7 @@ export function ProductForm({ product, action, isNew }: Props) {
 
         <div>
           <label style={labelStyle}>Quantidade padrão no carrinho</label>
-          <select
-            name="cart_qty_one"
-            defaultValue={String(product?.cart_qty_one ?? false)}
-            style={inputStyle}
-          >
+          <select name="cart_qty_one" defaultValue={String(product?.cart_qty_one ?? false)} style={inputStyle}>
             <option value="false">Usar quantidade da embalagem (padrão)</option>
             <option value="true">Sempre iniciar com 1 (venda por pacote)</option>
           </select>
