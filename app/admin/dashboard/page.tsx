@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Package, Image as ImageIcon, Star, Eye } from "lucide-react";
+import { Package, Image as ImageIcon, Star, Eye, Users, TrendingUp, Calendar } from "lucide-react";
 import { getSupabaseAdmin } from "../../../lib/supabase";
 
 export const dynamic = "force-dynamic";
@@ -30,6 +30,22 @@ async function getStats() {
   };
 }
 
+async function getVisitorStats() {
+  const db = getSupabaseAdmin();
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const fifteenDaysAgo = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000);
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+  const [{ count: today }, { count: last15d }, { count: last30d }] = await Promise.all([
+    db.from("page_views").select("*", { count: "exact", head: true }).gte("created_at", todayStart.toISOString()),
+    db.from("page_views").select("*", { count: "exact", head: true }).gte("created_at", fifteenDaysAgo.toISOString()),
+    db.from("page_views").select("*", { count: "exact", head: true }).gte("created_at", thirtyDaysAgo.toISOString()),
+  ]);
+
+  return { today: today ?? 0, last15d: last15d ?? 0, last30d: last30d ?? 0 };
+}
+
 async function getRecentProducts() {
   const { data } = await getSupabaseAdmin()
     .from("products")
@@ -47,7 +63,7 @@ const statCards = [
 ] as const;
 
 export default async function DashboardPage() {
-  const [stats, recent] = await Promise.all([getStats(), getRecentProducts()]);
+  const [stats, recent, visitors] = await Promise.all([getStats(), getRecentProducts(), getVisitorStats()]);
 
   return (
     <div style={{ padding: 32 }}>
@@ -109,6 +125,63 @@ export default async function DashboardPage() {
             </p>
           </div>
         ))}
+      </div>
+
+      {/* Visitantes */}
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+          <Users size={15} color="var(--ink-mid)" />
+          <p className="font-sans" style={{ fontSize: 13, fontWeight: 700, color: "var(--ink-mid)", margin: 0, letterSpacing: "0.04em", textTransform: "uppercase" }}>
+            Visitantes do site
+          </p>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
+          {[
+            { label: "Hoje", value: visitors.today, icon: Calendar, color: "#10b981", sub: new Date().toLocaleDateString("pt-BR") },
+            { label: "Últimos 15 dias", value: visitors.last15d, icon: TrendingUp, color: "var(--blue)", sub: "acessos à página" },
+            { label: "Último mês", value: visitors.last30d, icon: Users, color: "#8b5cf6", sub: "acessos à página" },
+          ].map(({ label, value, icon: Icon, color, sub }) => (
+            <div
+              key={label}
+              style={{
+                background: "white",
+                borderRadius: 14,
+                border: "1px solid var(--line)",
+                padding: "20px 22px",
+                boxShadow: "0 2px 12px rgba(15,25,35,0.04)",
+                display: "flex",
+                alignItems: "center",
+                gap: 16,
+              }}
+            >
+              <div
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 12,
+                  background: `${color}18`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                <Icon size={18} color={color} />
+              </div>
+              <div>
+                <p style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--ink-dim)", margin: "0 0 2px", letterSpacing: "0.06em" }}>
+                  {label}
+                </p>
+                <p className="font-sans" style={{ fontSize: 28, fontWeight: 800, color: "var(--ink)", margin: 0, lineHeight: 1 }}>
+                  {value.toLocaleString("pt-BR")}
+                </p>
+                <p style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--ink-dim)", margin: "3px 0 0" }}>
+                  {sub}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Quick actions + Recent products */}

@@ -4,6 +4,7 @@ import "./globals.css";
 import { LenisProvider } from "./providers";
 import { CartProvider } from "./context/cart-context";
 import { CartDrawer } from "./components/cart-drawer";
+import { PageTracker } from "./components/page-tracker";
 
 const syne = Syne({
   subsets: ["latin"],
@@ -45,6 +46,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <CartProvider>
+          <PageTracker />
           <LenisProvider>{children}</LenisProvider>
           <CartDrawer />
         </CartProvider>
