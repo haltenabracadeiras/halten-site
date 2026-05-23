@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { LayoutDashboard, Image as ImageIcon, Package, Settings, LogOut, User, Table2 } from "lucide-react";
+import { LayoutDashboard, Image as ImageIcon, Package, Settings, LogOut, User, Table2, MapPin } from "lucide-react";
 import { logoutAction } from "./actions";
 
 const links = [
@@ -11,6 +11,7 @@ const links = [
   { href: "/admin/banners", label: "Banners", icon: ImageIcon },
   { href: "/admin/produtos", label: "Produtos", icon: Package },
   { href: "/admin/templates", label: "Templates de Tabela", icon: Table2 },
+  { href: "/admin/representantes", label: "Representantes", icon: MapPin },
   { href: "/admin/configuracoes", label: "Configurações", icon: Settings },
 ];
 
