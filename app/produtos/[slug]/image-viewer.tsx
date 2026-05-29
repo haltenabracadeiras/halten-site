@@ -44,20 +44,6 @@ export function ImageViewer({ images, slug, productName }: Props) {
           <span style={{ position: "absolute", bottom: 14, left: 14, width: 16, height: 16, borderLeft: "1px solid rgba(15,25,35,0.28)", borderBottom: "1px solid rgba(15,25,35,0.28)", zIndex: 4 }} />
           <span style={{ position: "absolute", bottom: 14, right: 14, width: 16, height: 16, borderRight: "1px solid rgba(15,25,35,0.28)", borderBottom: "1px solid rgba(15,25,35,0.28)", zIndex: 4 }} />
 
-          {/* Corner labels */}
-          <span style={{ position: "absolute", top: 18, left: 20, fontFamily: "var(--font-mono)", fontSize: 10, color: "rgba(15,25,35,0.42)", letterSpacing: "0.14em", textTransform: "uppercase", zIndex: 4 }}>
-            REF · {slug.toUpperCase()}
-          </span>
-          <span style={{ position: "absolute", top: 18, right: 20, fontFamily: "var(--font-mono)", fontSize: 10, color: "rgba(15,25,35,0.42)", letterSpacing: "0.14em", textTransform: "uppercase", zIndex: 4 }}>
-            VIEW · ORTHO
-          </span>
-          <span style={{ position: "absolute", bottom: 18, left: 20, fontFamily: "var(--font-mono)", fontSize: 10, color: "rgba(15,25,35,0.42)", letterSpacing: "0.14em", textTransform: "uppercase", zIndex: 4 }}>
-            SCALE · 1:2
-          </span>
-          <span style={{ position: "absolute", bottom: 18, right: 20, fontFamily: "var(--font-mono)", fontSize: 10, color: "rgba(15,25,35,0.42)", letterSpacing: "0.14em", textTransform: "uppercase", zIndex: 4 }}>
-            UNITS · MM
-          </span>
-
           {/* Nav pill */}
           {images.length > 1 && (
             <div
