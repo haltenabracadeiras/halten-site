@@ -2,24 +2,19 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { Plus, Trash2, GripVertical, Loader2, AlertCircle } from "lucide-react";
+import { Plus, Trash2, Loader2, AlertCircle } from "lucide-react";
 
 type ColumnDef = { key: string; label: string; highlight?: boolean };
 
 const PRESET_COLUMNS: { chip: string; group: string; col: ColumnDef }[] = [
-  { chip: "Código",             group: "código",    col: { key: "codigo",           label: "Código",                    highlight: true  } },
-  { chip: "Cód. INOX Super",    group: "código",    col: { key: "codigo_inox_super", label: "Código INOX Super 100%",   highlight: true  } },
-  { chip: "Cód. INOX/Carbono",  group: "código",    col: { key: "codigo_inox",      label: "Código INOX/Carbono Super", highlight: true  } },
-  { chip: "MM Mín.",            group: "diâmetro",  col: { key: "diam_min_mm",      label: "Diâm. Mín. MM",            highlight: false } },
-  { chip: "MM Máx.",            group: "diâmetro",  col: { key: "diam_max_mm",      label: "Diâm. Máx. MM",            highlight: false } },
-  { chip: "Pol. Mín.",          group: "diâmetro",  col: { key: "diam_min_pol",     label: "Diâm. Mín. Pol.",          highlight: false } },
-  { chip: "Pol. Máx.",          group: "diâmetro",  col: { key: "diam_max_pol",     label: "Diâm. Máx. Pol.",          highlight: false } },
-  { chip: "Embalagem",          group: "outros",    col: { key: "embalagem",        label: "Embalagem",                highlight: false } },
-  { chip: "MM",                 group: "outros",    col: { key: "mm",               label: "MM",                       highlight: false } },
-  { chip: "Furo",               group: "outros",    col: { key: "furo",             label: "Furo",                     highlight: false } },
-  { chip: "Descrição",          group: "outros",    col: { key: "descricao",        label: "Descrição",                highlight: false } },
-  { chip: "Largura MM",         group: "outros",    col: { key: "largura",          label: "Largura MM",               highlight: false } },
-  { chip: "Comprimento MM",     group: "outros",    col: { key: "comprimento",      label: "Comprimento MM",           highlight: false } },
+  { chip: "Código",                  group: "código",   col: { key: "codigo",        label: "Código",                   highlight: false } },
+  { chip: "Diâmetro Mín (MM)",       group: "diâmetro", col: { key: "diam_min",      label: "Diâmetro Mín (MM)",        highlight: false } },
+  { chip: "Diâmetro Máx (MM)",       group: "diâmetro", col: { key: "diam_max",      label: "Diâmetro Máx (MM)",        highlight: false } },
+  { chip: "Nº Original",             group: "outros",   col: { key: "n_original",    label: "Nº Original",              highlight: false } },
+  { chip: "Embalagem",               group: "outros",   col: { key: "embalagem",     label: "Embalagem",                highlight: false } },
+  { chip: "Material",                group: "outros",   col: { key: "material",      label: "Material",                 highlight: false } },
+  { chip: "Diâmetro Mín em Pol.",    group: "diâmetro", col: { key: "diam_min_pol",  label: "Diâmetro Mín em Pol.(MM)", highlight: false } },
+  { chip: "Diâmetro Máx em Pol.",    group: "diâmetro", col: { key: "diam_max_pol",  label: "Diâmetro Máx em Pol.(MM)", highlight: false } },
 ];
 
 type Template = {
@@ -89,6 +84,16 @@ export function TemplateForm({ template, action, isNew }: Props) {
 
   function removeColumn(index: number) {
     setColumns((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function moveColumn(from: number, to: number) {
+    if (to < 0 || to >= columns.length) return;
+    setColumns((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
   }
 
   function updateLabel(index: number, label: string) {
@@ -239,7 +244,7 @@ export function TemplateForm({ template, action, isNew }: Props) {
               key={index}
               style={{
                 display: "grid",
-                gridTemplateColumns: "28px 1fr 1fr auto 36px",
+                gridTemplateColumns: "52px 1fr 1fr auto 36px",
                 gap: 8,
                 alignItems: "center",
                 padding: "10px 12px",
@@ -248,7 +253,40 @@ export function TemplateForm({ template, action, isNew }: Props) {
                 border: col.highlight ? "1.5px solid var(--blue)" : "1.5px solid var(--line)",
               }}
             >
-              <GripVertical size={14} color="var(--ink-mute)" style={{ cursor: "grab" }} />
+              <div style={{ display: "flex", gap: 4 }}>
+                <button
+                  type="button"
+                  onClick={() => moveColumn(index, index - 1)}
+                  disabled={index === 0}
+                  title="Mover para cima"
+                  className="col-arrow"
+                  style={{
+                    width: 24, height: 24, border: "1px solid var(--line)", borderRadius: 6,
+                    background: "white", cursor: index === 0 ? "default" : "pointer",
+                    display: "grid", placeItems: "center", fontSize: 12,
+                    color: index === 0 ? "var(--line)" : "var(--ink-mid)",
+                    padding: 0, transition: ".15s",
+                  }}
+                >
+                  ↑
+                </button>
+                <button
+                  type="button"
+                  onClick={() => moveColumn(index, index + 1)}
+                  disabled={index === columns.length - 1}
+                  title="Mover para baixo"
+                  className="col-arrow"
+                  style={{
+                    width: 24, height: 24, border: "1px solid var(--line)", borderRadius: 6,
+                    background: "white", cursor: index === columns.length - 1 ? "default" : "pointer",
+                    display: "grid", placeItems: "center", fontSize: 12,
+                    color: index === columns.length - 1 ? "var(--line)" : "var(--ink-mid)",
+                    padding: 0, transition: ".15s",
+                  }}
+                >
+                  ↓
+                </button>
+              </div>
 
               <div>
                 <input
@@ -336,7 +374,10 @@ export function TemplateForm({ template, action, isNew }: Props) {
         </Link>
       </div>
 
-      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      <style>{`
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .col-arrow:not(:disabled):hover { background: var(--blue) !important; border-color: var(--blue) !important; color: white !important; }
+      `}</style>
     </form>
   );
 }

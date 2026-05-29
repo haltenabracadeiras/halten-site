@@ -36,6 +36,22 @@ type Props = {
   existingTable?: ExistingTable | null;
 };
 
+function parseTableConfig(existingTable: ExistingTable | null | undefined) {
+  const allRows = existingTable?.rows ?? [];
+  const configRow = allRows.find(r => "__config__" in r);
+  if (!configRow) return { rows: allRows, extraCols: [] as ColumnDef[], labelOverrides: {} as Record<string, string> };
+  try {
+    const config = JSON.parse(String(configRow.__config__));
+    return {
+      rows: allRows.filter(r => !("__config__" in r)),
+      extraCols: (config.extraCols ?? []) as ColumnDef[],
+      labelOverrides: (config.labelOverrides ?? {}) as Record<string, string>,
+    };
+  } catch {
+    return { rows: allRows.filter(r => !("__config__" in r)), extraCols: [] as ColumnDef[], labelOverrides: {} as Record<string, string> };
+  }
+}
+
 const labelStyle: React.CSSProperties = {
   display: "block",
   fontSize: 11,
@@ -70,7 +86,11 @@ export function ProductTableSection({ productId, templates, existingTable }: Pro
   const selectedTemplate = templates.find((t) => t.id === selectedTemplateId);
 
   // Rows: começa com as existentes, se houver
-  const [rows, setRows] = useState<Record<string, string>[]>(existingTable?.rows ?? []);
+  const _parsed = parseTableConfig(existingTable);
+  const [rows, setRows] = useState<Record<string, string>[]>(_parsed.rows);
+  const [extraColumns, setExtraColumns] = useState<ColumnDef[]>(_parsed.extraCols);
+  const [labelOverrides, setLabelOverrides] = useState<Record<string, string>>(_parsed.labelOverrides);
+  const [editingColKey, setEditingColKey] = useState<string | null>(null);
   const [rawData, setRawData] = useState<string[][]>([]);
   const [fileName, setFileName] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -80,6 +100,13 @@ export function ProductTableSection({ productId, templates, existingTable }: Pro
   const [fillTarget, setFillTarget] = useState<{ key: string; label: string; value: string } | null>(null);
   const [dragIdx, setDragIdx] = useState<number | null>(null);
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
+
+  const allColumns: ColumnDef[] = selectedTemplate
+    ? [
+        ...selectedTemplate.columns.map(c => ({ ...c, label: labelOverrides[c.key] ?? c.label })),
+        ...extraColumns,
+      ]
+    : [];
 
   function handleCellKey(e: React.KeyboardEvent<HTMLInputElement>, rowIdx: number, colIdx: number) {
     if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
@@ -120,7 +147,7 @@ export function ProductTableSection({ productId, templates, existingTable }: Pro
   function addRow() {
     if (!selectedTemplate) return;
     const empty: Record<string, string> = {};
-    selectedTemplate.columns.forEach((col) => { empty[col.key] = ""; });
+    allColumns.forEach((col) => { empty[col.key] = ""; });
     setRows(prev => [...prev, empty]);
   }
 
@@ -205,9 +232,14 @@ export function ProductTableSection({ productId, templates, existingTable }: Pro
     setError(null);
     setSuccess(false);
 
+    const hasConfig = extraColumns.length > 0 || Object.keys(labelOverrides).length > 0;
+    const rowsToSave: Record<string, string>[] = hasConfig
+      ? [{ __config__: JSON.stringify({ extraCols: extraColumns, labelOverrides }) }, ...rows]
+      : rows;
+
     startTransition(async () => {
       try {
-        await saveProductTable(productId, selectedTemplateId || null, rows);
+        await saveProductTable(productId, selectedTemplateId || null, rowsToSave);
         setSuccess(true);
       } catch (err) {
         setError((err as Error).message);
@@ -217,8 +249,8 @@ export function ProductTableSection({ productId, templates, existingTable }: Pro
 
   function exportExcel() {
     if (!selectedTemplate || !rows.length) return;
-    const header = selectedTemplate.columns.map((c) => c.label);
-    const data = rows.map((row) => selectedTemplate!.columns.map((c) => row[c.key] ?? ""));
+    const header = allColumns.map((c) => c.label);
+    const data = rows.map((row) => allColumns.map((c) => row[c.key] ?? ""));
     const ws = XLSX.utils.aoa_to_sheet([header, ...data]);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Tabela");
@@ -227,7 +259,7 @@ export function ProductTableSection({ productId, templates, existingTable }: Pro
 
   function exportPDF() {
     if (!selectedTemplate || !rows.length) return;
-    const cols = selectedTemplate.columns;
+    const cols = allColumns;
     const headerCells = cols.map((c) => `<th>${c.label}</th>`).join("");
     const bodyRows = rows.map((row) =>
       `<tr>${cols.map((c) => `<td style="${c.highlight ? "color:#1c9bd7;font-weight:700" : ""}">${row[c.key] ?? "—"}</td>`).join("")}</tr>`
@@ -408,25 +440,106 @@ export function ProductTableSection({ productId, templates, existingTable }: Pro
               <thead>
                 <tr style={{ background: "#1c9bd7" }}>
                   <th style={{ width: 28 }} />
-                  {selectedTemplate.columns.map((col) => (
-                    <th
-                      key={col.key}
-                      title="Clique para preencher toda a coluna"
-                      onClick={() => setFillTarget({ key: col.key, label: col.label, value: "" })}
+                  {allColumns.map((col) => {
+                    const isExtra = extraColumns.some(c => c.key === col.key);
+                    return (
+                      <th
+                        key={col.key}
+                        style={{
+                          padding: "10px 12px",
+                          textAlign: "left",
+                          color: "white",
+                          fontWeight: 700,
+                          letterSpacing: "0.04em",
+                          whiteSpace: "nowrap",
+                          userSelect: "none",
+                        }}
+                      >
+                        {editingColKey === col.key ? (
+                          <input
+                            autoFocus
+                            defaultValue={col.label}
+                            onBlur={(e) => {
+                              const newLabel = e.target.value.trim() || col.label;
+                              if (isExtra) {
+                                setExtraColumns(prev => prev.map(c => c.key === col.key ? { ...c, label: newLabel } : c));
+                              } else {
+                                setLabelOverrides(prev => ({ ...prev, [col.key]: newLabel }));
+                              }
+                              setEditingColKey(null);
+                            }}
+                            onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); if (e.key === "Escape") setEditingColKey(null); }}
+                            style={{
+                              background: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.5)",
+                              borderRadius: 4, color: "white", padding: "2px 6px", fontSize: 12,
+                              fontFamily: "var(--font-mono)", fontWeight: 700, outline: "none",
+                              minWidth: 80,
+                            }}
+                          />
+                        ) : (
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+                            <span
+                              title="Clique para preencher toda a coluna"
+                              onClick={() => setFillTarget({ key: col.key, label: col.label, value: "" })}
+                              style={{ cursor: "pointer" }}
+                            >
+                              {col.label}
+                            </span>
+                            <button
+                              type="button"
+                              title="Editar nome da coluna"
+                              onClick={(e) => { e.stopPropagation(); setEditingColKey(col.key); }}
+                              style={{
+                                background: "none", border: "none", color: "rgba(255,255,255,0.65)",
+                                cursor: "pointer", padding: "0 2px", fontSize: 11, lineHeight: 1,
+                                display: "inline-flex", alignItems: "center",
+                              }}
+                            >
+                              ✏
+                            </button>
+                            {isExtra && (
+                              <button
+                                type="button"
+                                title="Remover coluna"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setExtraColumns(prev => prev.filter(c => c.key !== col.key));
+                                  setRows(prev => prev.map(r => { const { [col.key]: _, ...rest } = r; return rest; }));
+                                }}
+                                style={{
+                                  background: "none", border: "none", color: "rgba(255,200,200,0.85)",
+                                  cursor: "pointer", padding: "0 2px", fontSize: 14, lineHeight: 1,
+                                }}
+                              >
+                                ×
+                              </button>
+                            )}
+                          </span>
+                        )}
+                      </th>
+                    );
+                  })}
+                  {/* Adicionar coluna */}
+                  <th style={{ width: 44, paddingLeft: 4 }}>
+                    <button
+                      type="button"
+                      title="Adicionar coluna"
+                      onClick={() => {
+                        const key = `c_${Date.now()}`;
+                        setExtraColumns(prev => [...prev, { key, label: "Nova Coluna" }]);
+                        setEditingColKey(key);
+                        setRows(prev => prev.map(r => ({ ...r, [key]: "" })));
+                      }}
                       style={{
-                        padding: "10px 12px",
-                        textAlign: "left",
-                        color: "white",
-                        fontWeight: 700,
-                        letterSpacing: "0.04em",
-                        whiteSpace: "nowrap",
-                        cursor: "pointer",
-                        userSelect: "none",
+                        width: 24, height: 24, borderRadius: "50%",
+                        background: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.45)",
+                        color: "white", cursor: "pointer", display: "grid", placeItems: "center",
+                        fontSize: 18, lineHeight: 1, fontWeight: 400,
                       }}
                     >
-                      {col.label} <span style={{ fontSize: 9, opacity: 0.7 }}>✏</span>
-                    </th>
-                  ))}
+                      +
+                    </button>
+                  </th>
                   <th style={{ width: 32 }} />
                 </tr>
               </thead>
@@ -453,7 +566,7 @@ export function ProductTableSection({ productId, templates, existingTable }: Pro
                         )))}
                       </svg>
                     </td>
-                    {selectedTemplate.columns.map((col, ci) => (
+                    {allColumns.map((col, ci) => (
                       <td key={col.key} style={{ padding: "3px 6px", borderBottom: "1px solid var(--line)" }}>
                         <input
                           type="text"

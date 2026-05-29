@@ -57,7 +57,31 @@ async function getProductTable(productId: string): Promise<ProductTable | null> 
     .eq("product_id", productId)
     .maybeSingle();
 
-  return data as ProductTable | null;
+  if (!data) return null;
+
+  const allRows = (data.rows ?? []) as Record<string, string>[];
+  const configRow = allRows.find(r => "__config__" in r);
+  const cleanRows = configRow ? allRows.filter(r => !("__config__" in r)) : allRows;
+
+  const tmpl = data.product_table_templates as unknown as { name: string; columns: ColumnDef[] } | null;
+  let columns = tmpl?.columns ?? [];
+
+  if (configRow) {
+    try {
+      const config = JSON.parse(String(configRow.__config__));
+      const overrides = (config.labelOverrides ?? {}) as Record<string, string>;
+      const extra = (config.extraCols ?? []) as ColumnDef[];
+      columns = [
+        ...columns.map(c => ({ ...c, label: overrides[c.key] ?? c.label })),
+        ...extra,
+      ];
+    } catch {}
+  }
+
+  return {
+    rows: cleanRows,
+    product_table_templates: tmpl ? { name: tmpl.name, columns } : null,
+  };
 }
 
 async function getProductConversion(productId: string): Promise<ProductConversion | null> {

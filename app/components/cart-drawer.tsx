@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { useCart } from "../context/cart-context";
 
 const WHATSAPP = "5545991447046";
@@ -10,8 +11,11 @@ function buildMessage(items: { code: string; productName: string; qty: number }[
 }
 
 export function CartDrawer() {
+  const pathname = usePathname();
   const { items, removeItem, updateQty, clearCart } = useCart();
   const [open, setOpen] = useState(false);
+
+  if (pathname?.startsWith("/admin")) return null;
 
   const total = items.reduce((s, i) => s + i.qty, 0);
 
