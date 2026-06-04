@@ -547,6 +547,31 @@ export default async function ProductDetailPage({
             >
               {hasTable && (
                 <div>
+                  {/* Quote hint banner */}
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 12,
+                      padding: "12px 18px",
+                      marginBottom: 16,
+                      borderRadius: 10,
+                      background: "rgba(28,155,215,0.07)",
+                      border: "1px solid rgba(28,155,215,0.18)",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flex: 1 }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1c9bd7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                        <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                      </svg>
+                      <p style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "rgba(15,25,35,0.65)", margin: 0, lineHeight: 1.5 }}>
+                        <strong style={{ color: "#1c9bd7", fontWeight: 700 }}>Monte seu orçamento:</strong>{" "}
+                        adicione os itens que precisa clicando nos botões abaixo e envie direto pelo WhatsApp — sem cadastro.
+                      </p>
+                    </div>
+                  </div>
+
                   <p
                     style={{
                       fontFamily: "var(--font-mono)",
@@ -594,17 +619,30 @@ export default async function ProductDetailPage({
                               {col.label}
                             </th>
                           ))}
-                          <th style={{ padding: "12px 16px", width: 1 }} />
+                          <th style={{
+                            padding: "12px 16px",
+                            textAlign: "center",
+                            fontFamily: "var(--font-mono)",
+                            fontSize: 9,
+                            fontWeight: 700,
+                            letterSpacing: "0.12em",
+                            textTransform: "uppercase",
+                            color: "#1c9bd7",
+                            background: "rgba(28,155,215,0.15)",
+                            whiteSpace: "nowrap",
+                          }}>
+                            Orçamento
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
                         {tableRows.map((row, i) => {
-                          const highlightCol = tableTemplate!.columns.find((c) => c.highlight);
-                          const rowCode = highlightCol ? (row[highlightCol.key] ?? "") : "";
+                          const highlightCols = tableTemplate!.columns.filter((c) => c.highlight);
                           const embalagemCol = tableTemplate!.columns.find((c) =>
                             c.key.toLowerCase().includes("embalagem") || c.label.toLowerCase().includes("embalagem")
                           );
                           const rowEmbalagem = embalagemCol ? (row[embalagemCol.key] ?? "") : "";
+                          const multiHighlight = highlightCols.length > 1;
                           return (
                             <tr
                               key={i}
@@ -639,9 +677,21 @@ export default async function ProductDetailPage({
                                   whiteSpace: "nowrap",
                                 }}
                               >
-                                {rowCode && (
-                                  <AddToCartButton code={rowCode} productName={product.name} embalagem={product.cart_qty_one ? undefined : rowEmbalagem} />
-                                )}
+                                <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "stretch", minWidth: 130 }}>
+                                  {highlightCols.map((col) => {
+                                    const code = row[col.key] ?? "";
+                                    if (!code) return null;
+                                    return (
+                                      <AddToCartButton
+                                        key={col.key}
+                                        code={code}
+                                        productName={product.name}
+                                        embalagem={product.cart_qty_one ? undefined : rowEmbalagem}
+                                        label={multiHighlight ? (col.label.split(" ").pop() ?? col.label) : undefined}
+                                      />
+                                    );
+                                  })}
+                                </div>
                               </td>
                             </tr>
                           );
