@@ -103,7 +103,7 @@ export default async function ProductsSection() {
                 margin: 0,
               }}
             >
-              Abraçadeiras desenvolvidos para projetos exigentes — montagem de motores, intercooler, sistemas hidráulicos, agrícola e cargas pesadas. Encontre a abraçadeira certa por modelo, dimensão ou aplicação.
+              Abraçadeiras desenvolvidas para projetos exigentes — montagem de motores, intercooler, sistemas hidráulicos, agrícola e cargas pesadas. Encontre a abraçadeira certa por modelo, dimensão ou aplicação.
             </p>
           </div>
         </div>

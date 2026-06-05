@@ -485,52 +485,6 @@ export default async function ProductDetailPage({
                   SOLICITAR ORÇAMENTO
                 </span>
               </a>
-
-              {/* Bottom 3-col bar */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr 1fr",
-                  borderRadius: 12,
-                  overflow: "hidden",
-                  border: "1px solid rgba(15,25,35,0.08)",
-                }}
-              >
-                {[
-                  { label: "Despacho", value: "até 24h" },
-                  { label: "Garantia", value: "12 meses" },
-                  { label: "Embalagem", value: "Industrial" },
-                ].map((item, i) => (
-                  <div
-                    key={item.label}
-                    style={{
-                      padding: "14px 12px",
-                      background: "white",
-                      textAlign: "center",
-                      borderLeft: i > 0 ? "1px solid rgba(15,25,35,0.08)" : "none",
-                    }}
-                  >
-                    <p
-                      style={{
-                        fontFamily: "var(--font-mono)",
-                        fontSize: 9,
-                        letterSpacing: "0.12em",
-                        textTransform: "uppercase",
-                        color: "rgba(15,25,35,0.35)",
-                        margin: "0 0 4px",
-                      }}
-                    >
-                      {item.label}
-                    </p>
-                    <p
-                      className="font-sans"
-                      style={{ fontSize: 13, fontWeight: 700, color: "var(--ink)", margin: 0 }}
-                    >
-                      {item.value}
-                    </p>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
 
