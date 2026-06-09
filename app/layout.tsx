@@ -26,11 +26,18 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://haltenabracadeiras.ind.br"),
   title: "Halten Abraçadeiras",
   description:
     "Soluções industriais em abraçadeiras e acessórios com catalogação moderna.",
-  icons: {
-    icon: "/icon-halten.svg",
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    url: "/",
+    siteName: "Halten Abraçadeiras",
+  },
+  twitter: {
+    card: "summary_large_image",
   },
 };
 
