@@ -7,7 +7,7 @@ import { RegionField } from "../../../components/RegionField";
 
 export default function NovoRepresentantePage() {
   return (
-    <div style={{ padding: 32, maxWidth: 560 }}>
+    <div style={{ padding: "var(--admin-pad)", maxWidth: 560 }}>
       <Link
         href="/admin/representantes"
         style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, fontFamily: "var(--font-mono)", color: "var(--ink-mid)", textDecoration: "none", marginBottom: 28 }}

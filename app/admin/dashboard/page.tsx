@@ -66,7 +66,7 @@ export default async function DashboardPage() {
   const [stats, recent, visitors] = await Promise.all([getStats(), getRecentProducts(), getVisitorStats()]);
 
   return (
-    <div style={{ padding: 32 }}>
+    <div style={{ padding: "var(--admin-pad)" }}>
       <div style={{ marginBottom: 32 }}>
         <h1
           className="font-sans"
@@ -135,7 +135,7 @@ export default async function DashboardPage() {
             Visitantes do site
           </p>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14 }}>
           {[
             { label: "Hoje", value: visitors.today, icon: Calendar, color: "#10b981", sub: new Date().toLocaleDateString("pt-BR") },
             { label: "Últimos 15 dias", value: visitors.last15d, icon: TrendingUp, color: "var(--blue)", sub: "acessos à página" },

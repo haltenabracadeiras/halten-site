@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { LayoutDashboard, Image as ImageIcon, Package, Settings, LogOut, User, Table2, MapPin } from "lucide-react";
+import { useEffect, useState } from "react";
+import { LayoutDashboard, Image as ImageIcon, Package, Settings, LogOut, User, Table2, MapPin, Menu, X } from "lucide-react";
 import { logoutAction } from "./actions";
 
 const links = [
@@ -19,28 +20,77 @@ type Props = { userEmail: string };
 
 export function AdminSidebar({ userEmail }: Props) {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+
+  // Fecha o drawer ao navegar entre páginas
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  // Trava o scroll do body enquanto o drawer está aberto
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   return (
-    <aside
-      style={{
-        width: 260,
-        flexShrink: 0,
-        background: "#0a1628",
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        position: "sticky",
-        top: 0,
-        borderRight: "1px solid rgba(255,255,255,0.06)",
-      }}
-    >
+    <>
+      {/* Topbar — só aparece no mobile (via CSS) */}
+      <header className="admin-topbar">
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label="Abrir menu"
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: 10, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "white", cursor: "pointer", flexShrink: 0 }}
+        >
+          <Menu size={20} />
+        </button>
+        <Link href="/admin/dashboard" style={{ display: "flex", alignItems: "center" }}>
+          <Image src="/logo-white.svg" alt="Halten Admin" width={92} height={26} style={{ width: 92, height: "auto" }} />
+        </Link>
+      </header>
+
+      {/* Overlay escuro atrás do drawer */}
+      <div
+        className={`admin-overlay${open ? " show" : ""}`}
+        onClick={() => setOpen(false)}
+        aria-hidden
+      />
+
+      <aside
+        className={`admin-sidebar${open ? " open" : ""}`}
+        style={{
+          width: 260,
+          flexShrink: 0,
+          background: "#0a1628",
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          position: "sticky",
+          top: 0,
+          borderRight: "1px solid rgba(255,255,255,0.06)",
+        }}
+      >
       {/* Logo */}
       <div
         style={{
           padding: "28px 24px 24px",
           borderBottom: "1px solid rgba(255,255,255,0.06)",
+          position: "relative",
         }}
       >
+        {/* Fechar — só no mobile */}
+        <button
+          type="button"
+          className="admin-drawer-close"
+          onClick={() => setOpen(false)}
+          aria-label="Fechar menu"
+          style={{ position: "absolute", top: 20, right: 16, width: 36, height: 36, alignItems: "center", justifyContent: "center", borderRadius: 9, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.7)", cursor: "pointer" }}
+        >
+          <X size={18} />
+        </button>
         <Link href="/admin/dashboard" style={{ display: "block" }}>
           <Image
             src="/logo-white.svg"
@@ -184,5 +234,6 @@ export function AdminSidebar({ userEmail }: Props) {
         </form>
       </div>
     </aside>
+    </>
   );
 }

@@ -25,7 +25,7 @@ export default async function EditProdutoPage({ params }: { params: Promise<{ id
   const action = updateProduct.bind(null, id);
 
   return (
-    <div style={{ padding: 32, maxWidth: 1400 }}>
+    <div style={{ padding: "var(--admin-pad)", maxWidth: 1400 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28 }}>
         <h1 className="font-sans" style={{ fontSize: 22, fontWeight: 700, color: "var(--ink)", margin: 0 }}>
           Editar Produto

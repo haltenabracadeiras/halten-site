@@ -3,7 +3,7 @@ import { createBanner } from "../actions";
 
 export default function NewBannerPage() {
   return (
-    <div style={{ padding: 32, maxWidth: 800 }}>
+    <div style={{ padding: "var(--admin-pad)", maxWidth: 800 }}>
       <h1 className="font-sans" style={{ fontSize: 22, fontWeight: 700, color: "var(--ink)", marginBottom: 28 }}>
         Novo Banner
       </h1>

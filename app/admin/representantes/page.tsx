@@ -22,7 +22,7 @@ export default async function RepresentativesPage() {
     .order("state", { ascending: true });
 
   return (
-    <div style={{ padding: 32 }}>
+    <div style={{ padding: "var(--admin-pad)" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28 }}>
         <div>
           <h1 className="font-sans" style={{ fontSize: 24, fontWeight: 700, color: "var(--ink)", margin: 0 }}>
@@ -53,7 +53,7 @@ export default async function RepresentativesPage() {
         </Link>
       </div>
 
-      <div style={{ background: "white", borderRadius: 16, border: "1px solid var(--line)", overflow: "hidden", boxShadow: "0 2px 12px rgba(15,25,35,0.04)" }}>
+      <div className="admin-table-card" style={{ background: "white", borderRadius: 16, border: "1px solid var(--line)", boxShadow: "0 2px 12px rgba(15,25,35,0.04)" }}>
         {!reps || reps.length === 0 ? (
           <div style={{ padding: 48, textAlign: "center", color: "var(--ink-dim)", fontFamily: "var(--font-mono)", fontSize: 14 }}>
             Nenhum representante cadastrado.{" "}

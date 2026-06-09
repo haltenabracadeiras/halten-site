@@ -3,7 +3,7 @@ import { createProduct } from "../actions";
 
 export default function NovoProdutoPage() {
   return (
-    <div style={{ padding: 32, maxWidth: 1400 }}>
+    <div style={{ padding: "var(--admin-pad)", maxWidth: 1400 }}>
       <h1 className="font-sans" style={{ fontSize: 22, fontWeight: 700, color: "var(--ink)", marginBottom: 28 }}>
         Novo Produto
       </h1>

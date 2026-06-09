@@ -14,7 +14,7 @@ export default async function EditBannerPage({ params }: { params: Promise<{ id:
   const action = updateBanner.bind(null, id);
 
   return (
-    <div style={{ padding: 32, maxWidth: 800 }}>
+    <div style={{ padding: "var(--admin-pad)", maxWidth: 800 }}>
       <h1 className="font-sans" style={{ fontSize: 22, fontWeight: 700, color: "var(--ink)", marginBottom: 28 }}>
         Editar Banner
       </h1>

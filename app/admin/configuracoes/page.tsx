@@ -63,7 +63,7 @@ export default async function ConfiguracoesPage() {
   const config = await getConfig();
 
   return (
-    <div style={{ padding: 32, maxWidth: 860 }}>
+    <div style={{ padding: "var(--admin-pad)", maxWidth: 860 }}>
       <div style={{ marginBottom: 28 }}>
         <h1 className="font-sans" style={{ fontSize: 24, fontWeight: 700, color: "var(--ink)", margin: 0 }}>
           Configurações

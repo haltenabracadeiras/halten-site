@@ -55,7 +55,7 @@ export default async function TemplatesPage() {
           Nenhum template cadastrado. Clique em "Novo Template" para começar.
         </div>
       ) : (
-        <div style={{ background: "white", borderRadius: 16, border: "1.5px solid var(--line)", overflow: "hidden" }}>
+        <div className="admin-table-card" style={{ background: "white", borderRadius: 16, border: "1.5px solid var(--line)" }}>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ background: "var(--bg)", borderBottom: "1.5px solid var(--line)" }}>
