@@ -2,7 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 
-type Rep = { id: string; name: string; whatsapp: string; state: string };
+type Rep = {
+  id: string;
+  name: string;
+  whatsapp: string;
+  state: string;
+  email?: string | null;
+  regiao?: string | null;
+};
 type StateInfo = { d: string; cx: number; cy: number };
 type Props = { representatives: Rep[] };
 
@@ -63,8 +70,14 @@ export function BrazilMap({ representatives }: Props) {
   const [selected, setSelected] = useState<string | null>(null);
   const loadedRef = useRef(false);
 
-  const repMap = new Map(representatives.map((r) => [r.state, r]));
-  const selectedRep = selected ? repMap.get(selected) : null;
+  // Agrupa por estado: um estado pode ter mais de um representante.
+  const repsByState = new Map<string, Rep[]>();
+  for (const r of representatives) {
+    const list = repsByState.get(r.state);
+    if (list) list.push(r);
+    else repsByState.set(r.state, [r]);
+  }
+  const selectedReps = selected ? repsByState.get(selected) ?? [] : [];
 
   useEffect(() => {
     if (loadedRef.current) return;
@@ -171,7 +184,8 @@ export function BrazilMap({ representatives }: Props) {
               </defs>
 
               {stateEntries.map(([id, { d, cx, cy }]) => {
-                const hasRep = repMap.has(id);
+                const repCount = repsByState.get(id)?.length ?? 0;
+                const hasRep = repCount > 0;
                 const isHov = hovered === id;
                 const isSel = selected === id;
 
@@ -244,6 +258,20 @@ export function BrazilMap({ representatives }: Props) {
                         />
                       </g>
                     )}
+
+                    {/* Contador quando há mais de um representante no estado */}
+                    {repCount > 1 && (
+                      <g style={{ pointerEvents: "none" }}>
+                        <circle cx={cx + 3200} cy={cy + 3200} r={1700} fill="#1c9bd7" stroke="white" strokeWidth={220} />
+                        <text
+                          x={cx + 3200} y={cy + 3200}
+                          textAnchor="middle" dominantBaseline="central"
+                          style={{ fontSize: 2300, fontFamily: "monospace", fontWeight: 700, fill: "white", userSelect: "none" }}
+                        >
+                          {repCount}
+                        </text>
+                      </g>
+                    )}
                   </g>
                 );
               })}
@@ -264,9 +292,9 @@ export function BrazilMap({ representatives }: Props) {
 
       {/* Painel lateral */}
       <div style={{ flex: "1 1 280px", maxWidth: 380 }}>
-        {selectedRep ? (
+        {selectedReps.length > 0 ? (
           <div
-            key={selectedRep.id}
+            key={selected}
             style={{
               background: "linear-gradient(135deg, rgba(28,155,215,0.12) 0%, rgba(10,30,60,0.6) 100%)",
               border: "1px solid rgba(28,155,215,0.4)",
@@ -277,30 +305,58 @@ export function BrazilMap({ representatives }: Props) {
           >
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
               <div style={{ width: 42, height: 42, borderRadius: 10, background: "rgba(28,155,215,0.2)", border: "1px solid rgba(28,155,215,0.35)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <span style={{ fontSize: 13, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#4cc8f8" }}>{selectedRep.state}</span>
+                <span style={{ fontSize: 13, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#4cc8f8" }}>{selected}</span>
               </div>
               <div>
-                <p style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.4)", margin: 0, textTransform: "uppercase", letterSpacing: "0.12em" }}>Representante</p>
-                <p style={{ fontSize: 14, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.7)", margin: 0 }}>{STATE_NAMES[selectedRep.state] ?? selectedRep.state}</p>
+                <p style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.4)", margin: 0, textTransform: "uppercase", letterSpacing: "0.12em" }}>
+                  {selectedReps.length > 1 ? `${selectedReps.length} Representantes` : "Representante"}
+                </p>
+                <p style={{ fontSize: 14, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.7)", margin: 0 }}>{selected ? STATE_NAMES[selected] ?? selected : ""}</p>
               </div>
             </div>
-            <h3 style={{ fontSize: 22, fontWeight: 700, color: "white", margin: "0 0 8px", lineHeight: 1.2 }}>
-              {selectedRep.name}
-            </h3>
-            <p style={{ fontSize: 13, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.4)", margin: "0 0 28px" }}>
-              Entre em contato via WhatsApp
-            </p>
-            <a
-              href={`https://wa.me/${selectedRep.whatsapp.replace(/^\+/, "")}`}
-              target="_blank" rel="noreferrer"
-              style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "14px 24px", borderRadius: 12, background: "#25D366", color: "white", fontSize: 14, fontFamily: "var(--font-mono)", fontWeight: 600, textDecoration: "none", boxShadow: "0 8px 24px -8px rgba(37,211,102,0.6)" }}
-            >
-              {WA_ICON}
-              Falar no WhatsApp
-            </a>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              {selectedReps.map((rep) => (
+                <div
+                  key={rep.id}
+                  style={{
+                    background: selectedReps.length > 1 ? "rgba(255,255,255,0.03)" : "transparent",
+                    border: selectedReps.length > 1 ? "1px solid rgba(255,255,255,0.08)" : "none",
+                    borderRadius: 14,
+                    padding: selectedReps.length > 1 ? 20 : 0,
+                  }}
+                >
+                  {rep.regiao && (
+                    <span style={{ display: "inline-block", marginBottom: 8, padding: "3px 10px", borderRadius: 999, background: "rgba(28,155,215,0.18)", border: "1px solid rgba(28,155,215,0.35)", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 600, color: "#7dd6ff", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                      Região {rep.regiao}
+                    </span>
+                  )}
+                  <h3 style={{ fontSize: selectedReps.length > 1 ? 18 : 22, fontWeight: 700, color: "white", margin: "0 0 14px", lineHeight: 1.25 }}>
+                    {rep.name}
+                  </h3>
+                  <a
+                    href={`https://wa.me/${rep.whatsapp.replace(/^\+/, "")}`}
+                    target="_blank" rel="noreferrer"
+                    style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "12px 22px", borderRadius: 12, background: "#25D366", color: "white", fontSize: 14, fontFamily: "var(--font-mono)", fontWeight: 600, textDecoration: "none", boxShadow: "0 8px 24px -8px rgba(37,211,102,0.6)" }}
+                  >
+                    {WA_ICON}
+                    Falar no WhatsApp
+                  </a>
+                  {rep.email && (
+                    <a
+                      href={`mailto:${rep.email}`}
+                      style={{ display: "block", marginTop: 12, fontSize: 13, fontFamily: "var(--font-mono)", color: "rgba(125,214,255,0.85)", textDecoration: "none", wordBreak: "break-all" }}
+                    >
+                      {rep.email}
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+
             <button
               onClick={() => setSelected(null)}
-              style={{ display: "block", marginTop: 16, background: "none", border: "none", cursor: "pointer", fontSize: 12, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.3)", padding: 0 }}
+              style={{ display: "block", marginTop: 20, background: "none", border: "none", cursor: "pointer", fontSize: 12, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.3)", padding: 0 }}
             >
               Fechar ×
             </button>
@@ -315,7 +371,7 @@ export function BrazilMap({ representatives }: Props) {
             </div>
             <p style={{ fontSize: 14, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.5)", margin: "0 0 6px", fontWeight: 500 }}>Selecione um estado</p>
             <p style={{ fontSize: 12, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.25)", margin: 0 }}>
-              {repMap.size > 0 ? "Clique em um estado azul para ver o representante" : "Nenhum representante cadastrado ainda"}
+              {repsByState.size > 0 ? "Clique em um estado azul para ver o representante" : "Nenhum representante cadastrado ainda"}
             </p>
           </div>
         )}

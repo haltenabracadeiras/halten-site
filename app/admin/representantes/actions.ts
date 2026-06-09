@@ -9,13 +9,21 @@ function normalizeWhatsapp(raw: string): string {
   return digits.startsWith("55") ? digits : `55${digits}`;
 }
 
+/** Campo de texto opcional: string vazia vira null para não poluir o banco. */
+function optionalText(raw: FormDataEntryValue | null): string | null {
+  const value = (raw as string | null)?.trim();
+  return value ? value : null;
+}
+
 export async function createRepresentative(formData: FormData) {
   const db = getSupabaseAdmin();
   const name = formData.get("name") as string;
   const whatsapp = normalizeWhatsapp(formData.get("whatsapp") as string);
   const state = formData.get("state") as string;
+  const email = optionalText(formData.get("email"));
+  const regiao = optionalText(formData.get("regiao"));
 
-  const { error } = await db.from("representatives").insert({ name, whatsapp, state });
+  const { error } = await db.from("representatives").insert({ name, whatsapp, state, email, regiao });
   if (error) throw new Error(error.message);
 
   revalidatePath("/admin/representantes");
@@ -28,8 +36,10 @@ export async function updateRepresentative(id: string, formData: FormData) {
   const name = formData.get("name") as string;
   const whatsapp = normalizeWhatsapp(formData.get("whatsapp") as string);
   const state = formData.get("state") as string;
+  const email = optionalText(formData.get("email"));
+  const regiao = optionalText(formData.get("regiao"));
 
-  const { error } = await db.from("representatives").update({ name, whatsapp, state }).eq("id", id);
+  const { error } = await db.from("representatives").update({ name, whatsapp, state, email, regiao }).eq("id", id);
   if (error) throw new Error(error.message);
 
   revalidatePath("/admin/representantes");

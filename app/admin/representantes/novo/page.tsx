@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { createRepresentative } from "../actions";
 import { BRAZIL_STATES } from "../../../representantes/states";
 import { PhoneInput } from "../../../components/PhoneInput";
+import { RegionField } from "../../../components/RegionField";
 
 export default function NovoRepresentantePage() {
   return (
@@ -54,6 +55,20 @@ export default function NovoRepresentantePage() {
           </span>
           <PhoneInput name="whatsapp" required />
         </label>
+
+        <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <span style={{ fontSize: 12, fontFamily: "var(--font-mono)", fontWeight: 600, color: "var(--ink-dim)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            E-mail
+          </span>
+          <input
+            name="email"
+            type="email"
+            placeholder="Ex: contato@empresa.com.br"
+            style={{ padding: "10px 14px", borderRadius: 10, border: "1px solid var(--line)", fontSize: 14, fontFamily: "var(--font-mono)", color: "var(--ink)", background: "white" }}
+          />
+        </label>
+
+        <RegionField />
 
         <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
           <button

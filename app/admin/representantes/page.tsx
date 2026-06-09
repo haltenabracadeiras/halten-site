@@ -6,7 +6,7 @@ import { BRAZIL_STATES } from "../../representantes/states";
 
 export const dynamic = "force-dynamic";
 
-type Rep = { id: string; name: string; whatsapp: string; state: string; active: boolean };
+type Rep = { id: string; name: string; whatsapp: string; state: string; active: boolean; email: string | null; regiao: string | null };
 
 function formatPhone(stored: string): string {
   const n = stored.replace(/\D/g, "").replace(/^55/, "");
@@ -63,7 +63,7 @@ export default async function RepresentativesPage() {
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ borderBottom: "1px solid var(--line)", background: "var(--bg)" }}>
-                {["Estado", "Nome", "WhatsApp", "Status", "Ações"].map((h) => (
+                {["Estado", "Nome", "WhatsApp", "E-mail", "Status", "Ações"].map((h) => (
                   <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ink-dim)" }}>
                     {h}
                   </th>
@@ -81,10 +81,20 @@ export default async function RepresentativesPage() {
                       </span>
                     </td>
                     <td style={{ padding: "14px 16px", fontSize: 13, fontFamily: "var(--font-mono)", color: "var(--ink)", fontWeight: 500 }}>
-                      {r.name}
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                        {r.name}
+                        {r.regiao && (
+                          <span style={{ padding: "2px 8px", borderRadius: 6, background: "rgba(28,155,215,0.08)", color: "var(--blue)", fontSize: 11, fontWeight: 600 }}>
+                            {r.regiao}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td style={{ padding: "14px 16px", fontSize: 13, fontFamily: "var(--font-mono)", color: "var(--ink-mid)" }}>
                       {formatPhone(r.whatsapp)}
+                    </td>
+                    <td style={{ padding: "14px 16px", fontSize: 13, fontFamily: "var(--font-mono)", color: "var(--ink-mid)" }}>
+                      {r.email ?? <span style={{ color: "var(--ink-dim)" }}>—</span>}
                     </td>
                     <td style={{ padding: "14px 16px" }}>
                       <form action={toggleRepresentativeActive.bind(null, r.id, r.active)}>

@@ -9,7 +9,7 @@ export const metadata = { title: "Representantes — Halten Abraçadeiras" };
 export default async function RepresentativesPublicPage() {
   const { data: reps } = await getSupabaseAdmin()
     .from("representatives")
-    .select("id, name, whatsapp, state")
+    .select("id, name, whatsapp, state, email, regiao")
     .eq("active", true)
     .order("state", { ascending: true });
 

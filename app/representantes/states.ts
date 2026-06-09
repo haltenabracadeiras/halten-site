@@ -29,3 +29,16 @@ export const BRAZIL_STATES = [
 ] as const;
 
 export type StateId = (typeof BRAZIL_STATES)[number]["id"];
+
+/** Regiões internas de um estado — usadas quando há mais de um representante no mesmo estado. */
+export const STATE_REGIONS = [
+  "Norte",
+  "Sul",
+  "Leste",
+  "Oeste",
+  "Nordeste",
+  "Noroeste",
+  "Sudeste",
+  "Sudoeste",
+  "Centro",
+] as const;
