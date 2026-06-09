@@ -3,6 +3,7 @@ import { Plus, Pencil } from "lucide-react";
 import { getSupabaseAdmin } from "../../../lib/supabase";
 import { deleteRepresentative, toggleRepresentativeActive } from "./actions";
 import { BRAZIL_STATES } from "../../representantes/states";
+import { RowActions } from "../RowActions";
 
 export const dynamic = "force-dynamic";
 
@@ -64,7 +65,7 @@ export default async function RepresentativesPage() {
             <thead>
               <tr style={{ borderBottom: "1px solid var(--line)", background: "var(--bg)" }}>
                 {["Estado", "Nome", "WhatsApp", "E-mail", "Status", "Ações"].map((h) => (
-                  <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ink-dim)" }}>
+                  <th key={h} className={h === "Ações" ? "col-actions" : undefined} style={{ padding: "12px 16px", textAlign: "left", fontSize: 11, fontFamily: "var(--font-mono)", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ink-dim)" }}>
                     {h}
                   </th>
                 ))}
@@ -106,8 +107,11 @@ export default async function RepresentativesPage() {
                         </button>
                       </form>
                     </td>
-                    <td style={{ padding: "14px 16px" }}>
-                      <div style={{ display: "flex", gap: 8 }}>
+                    <td className="col-actions" style={{ padding: "14px 16px" }}>
+                      <RowActions
+                        editHref={`/admin/representantes/${r.id}`}
+                        deleteAction={deleteRepresentative.bind(null, r.id)}
+                      >
                         <Link
                           href={`/admin/representantes/${r.id}`}
                           style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "6px 12px", borderRadius: 8, border: "1px solid var(--line)", fontSize: 12, fontFamily: "var(--font-mono)", color: "var(--ink)", textDecoration: "none" }}
@@ -123,7 +127,7 @@ export default async function RepresentativesPage() {
                             Excluir
                           </button>
                         </form>
-                      </div>
+                      </RowActions>
                     </td>
                   </tr>
                 );

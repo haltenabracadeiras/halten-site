@@ -141,6 +141,11 @@ img {
   overflow: hidden;
 }
 
+/* Ações da linha: botões inline no desktop, kebab no mobile */
+.row-actions-kebab {
+  display: none;
+}
+
 @media (max-width: 860px) {
   :root {
     --admin-pad: 16px;
@@ -204,5 +209,27 @@ img {
 
   .admin-table-card table {
     min-width: 600px;
+  }
+
+  /* Troca botões inline pelo kebab */
+  .row-actions-inline {
+    display: none !important;
+  }
+
+  .row-actions-kebab {
+    display: inline-flex;
+  }
+
+  /* Coluna de ações fixa à direita, sempre visível durante o scroll */
+  .admin-table-card th.col-actions,
+  .admin-table-card td.col-actions {
+    position: sticky;
+    right: 0;
+    background: white;
+    box-shadow: -10px 0 14px -10px rgba(15, 25, 35, 0.25);
+  }
+
+  .admin-table-card thead th.col-actions {
+    background: var(--bg);
   }
 }

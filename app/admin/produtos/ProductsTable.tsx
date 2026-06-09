@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Pencil, Search } from "lucide-react";
 import { deleteProduct, toggleProductFeatured, toggleProductActive } from "./actions";
+import { RowActions } from "../RowActions";
 
 type Product = {
   id: string;
@@ -84,6 +85,7 @@ export function ProductsTable({ products }: { products: Product[] }) {
               {["Pos", "Imagem", "Produto", "Categoria", "Destaque", "Status", "Ações"].map((h) => (
                 <th
                   key={h}
+                  className={h === "Ações" ? "col-actions" : undefined}
                   style={{
                     padding: "12px 16px",
                     textAlign: "left",
@@ -177,8 +179,11 @@ export function ProductsTable({ products }: { products: Product[] }) {
                     </button>
                   </form>
                 </td>
-                <td style={{ padding: "14px 16px" }}>
-                  <div style={{ display: "flex", gap: 8 }}>
+                <td className="col-actions" style={{ padding: "14px 16px" }}>
+                  <RowActions
+                    editHref={`/admin/produtos/${p.id}`}
+                    deleteAction={deleteProduct.bind(null, p.id)}
+                  >
                     <Link
                       href={`/admin/produtos/${p.id}`}
                       style={{
@@ -220,7 +225,7 @@ export function ProductsTable({ products }: { products: Product[] }) {
                         EXCLUIR
                       </button>
                     </form>
-                  </div>
+                  </RowActions>
                 </td>
               </tr>
             ))}
