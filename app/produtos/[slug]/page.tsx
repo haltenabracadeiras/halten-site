@@ -539,6 +539,7 @@ export default async function ProductDetailPage({
                     [ Tabela Técnica · {tableTemplate!.name} ]
                   </p>
                   <div
+                    className="tt-wrap"
                     style={{
                       overflowX: "auto",
                       borderRadius: 16,
@@ -547,6 +548,7 @@ export default async function ProductDetailPage({
                     }}
                   >
                     <table
+                      className="tt-table"
                       style={{
                         width: "100%",
                         borderCollapse: "collapse",
@@ -562,12 +564,13 @@ export default async function ProductDetailPage({
                               style={{
                                 padding: "12px 16px",
                                 textAlign: "left",
+                                verticalAlign: "bottom",
                                 color: "white",
                                 fontWeight: 700,
                                 fontSize: 10,
-                                letterSpacing: "0.1em",
+                                letterSpacing: "0.05em",
+                                lineHeight: 1.35,
                                 textTransform: "uppercase",
-                                whiteSpace: "nowrap",
                               }}
                             >
                               {col.label}
@@ -576,6 +579,7 @@ export default async function ProductDetailPage({
                           <th style={{
                             padding: "12px 16px",
                             textAlign: "center",
+                            verticalAlign: "bottom",
                             fontFamily: "var(--font-mono)",
                             fontSize: 9,
                             fontWeight: 700,
@@ -600,6 +604,7 @@ export default async function ProductDetailPage({
                           return (
                             <tr
                               key={i}
+                              className="tt-row"
                               style={{
                                 background: i % 2 === 0 ? "white" : "rgba(15,25,35,0.02)",
                               }}
@@ -607,6 +612,8 @@ export default async function ProductDetailPage({
                               {tableTemplate!.columns.map((col) => (
                                 <td
                                   key={col.key}
+                                  className={col.highlight ? "tt-cell tt-hl" : "tt-cell"}
+                                  data-label={col.label}
                                   style={{
                                     padding: "10px 16px",
                                     color: col.highlight ? "#1c9bd7" : "var(--ink)",
@@ -622,6 +629,7 @@ export default async function ProductDetailPage({
                                 </td>
                               ))}
                               <td
+                                className="tt-cart"
                                 style={{
                                   padding: "8px 16px",
                                   borderBottom:
@@ -671,6 +679,7 @@ export default async function ProductDetailPage({
                     [ Tabela de Conversões ]
                   </p>
                   <div
+                    className="tt-wrap"
                     style={{
                       overflowX: "auto",
                       borderRadius: 16,
@@ -679,6 +688,7 @@ export default async function ProductDetailPage({
                     }}
                   >
                     <table
+                      className="tt-table"
                       style={{
                         width: "100%",
                         borderCollapse: "collapse",
@@ -692,12 +702,13 @@ export default async function ProductDetailPage({
                             style={{
                               padding: "12px 16px",
                               textAlign: "left",
+                              verticalAlign: "bottom",
                               color: "white",
                               fontWeight: 700,
                               fontSize: 10,
-                              letterSpacing: "0.1em",
+                              letterSpacing: "0.05em",
+                              lineHeight: 1.35,
                               textTransform: "uppercase",
-                              whiteSpace: "nowrap",
                               width: "30%",
                             }}
                           >
@@ -707,10 +718,12 @@ export default async function ProductDetailPage({
                             style={{
                               padding: "12px 16px",
                               textAlign: "left",
+                              verticalAlign: "bottom",
                               color: "white",
                               fontWeight: 700,
                               fontSize: 10,
-                              letterSpacing: "0.1em",
+                              letterSpacing: "0.05em",
+                              lineHeight: 1.35,
                               textTransform: "uppercase",
                             }}
                           >
@@ -722,11 +735,14 @@ export default async function ProductDetailPage({
                         {conversionRows.map((row, i) => (
                           <tr
                             key={i}
+                            className="tt-row"
                             style={{
                               background: i % 2 === 0 ? "white" : "rgba(15,25,35,0.02)",
                             }}
                           >
                             <td
+                              className="tt-cell tt-hl"
+                              data-label="Código Halten"
                               style={{
                                 padding: "10px 16px",
                                 fontWeight: 700,
@@ -741,6 +757,8 @@ export default async function ProductDetailPage({
                               {row.codigo_halten}
                             </td>
                             <td
+                              className="tt-cell"
+                              data-label="Códigos Originais"
                               style={{
                                 padding: "10px 16px",
                                 color: "rgba(15,25,35,0.55)",
@@ -769,6 +787,34 @@ export default async function ProductDetailPage({
         .whats-cta:hover { background: #16a34a !important; }
         @media (max-width: 860px) {
           .slug-wrap { grid-template-columns: 1fr !important; }
+
+          /* Tabelas (técnica e conversões) viram cards no mobile */
+          .tt-wrap { overflow: visible !important; border: none !important; background: transparent !important; border-radius: 0 !important; }
+          .tt-table, .tt-table tbody { display: block; }
+          .tt-table thead { display: none; }
+          .tt-row {
+            display: flex; flex-direction: column;
+            background: white !important;
+            border: 1px solid rgba(15,25,35,0.08); border-radius: 14px;
+            margin-bottom: 12px; overflow: hidden;
+          }
+          .tt-cell {
+            display: grid; grid-template-columns: 42% 1fr; gap: 12px;
+            padding: 9px 16px !important;
+            border-bottom: 1px solid rgba(15,25,35,0.05) !important;
+            white-space: normal !important; font-size: 12.5px;
+          }
+          .tt-cell::before {
+            content: attr(data-label);
+            font-size: 9.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+            color: rgba(15,25,35,0.45); padding-top: 2px;
+          }
+          .tt-cell:empty { display: none; }
+          .tt-hl { order: -1; display: block; background: var(--ink); color: #1c9bd7 !important; font-size: 16px; padding: 14px 16px !important; border-bottom: none !important; }
+          .tt-hl::before { display: block; color: rgba(255,255,255,0.5); margin-bottom: 3px; padding-top: 0; }
+          .tt-cart { display: block; padding: 12px 16px 14px !important; border-bottom: none !important; }
+          .tt-cart > div { min-width: 0 !important; }
+          .tt-cart button { padding: 11px 12px !important; font-size: 11px !important; }
         }
       `}</style>
     </>
