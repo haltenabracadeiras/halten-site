@@ -31,7 +31,8 @@ export type OpcoesCinta = {
 };
 
 export type Cinta = {
-  desenhar(aperto: number): { folgaX: number; folgaY: number };
+  /** raio: arredondado do canto da fita (pela linha do meio), para o conteúdo acompanhar */
+  desenhar(aperto: number): { folgaX: number; folgaY: number; raio: number };
   intro(): gsap.core.Timeline;
   brilhar(): void;
   destruir(): void;
@@ -148,7 +149,7 @@ export function criarCinta(svg: SVGSVGElement, alvo: HTMLElement, op: OpcoesCint
     const porcaX = oDx + ow;
     sextavado(porca, porcaX, nw, by, raioSext, aperto * op.giros * Math.PI * 2);
 
-    return { folgaX, folgaY };
+    return { folgaX, folgaY, raio: r };
   }
 
   function intro() {

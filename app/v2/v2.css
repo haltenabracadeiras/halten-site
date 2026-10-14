@@ -1719,11 +1719,12 @@ html:not(.v2-js) .v2 .outdoor-controles {
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   gap: clamp(40px, 6vw, 110px);
-  align-items: start;
+  align-items: center;
 }
 
+/* a cena trava no meio da tela enquanto as telas do app passam (cenaApp); antes o texto rolava e só o celular ficava */
 .v2 .app-texto {
-  padding: 8vh 0 36vh;
+  padding: 0;
   display: grid;
   gap: 26px;
   justify-items: start;
@@ -1821,8 +1822,7 @@ html:not(.v2-js) .v2 .outdoor-controles {
 }
 
 .v2 .app-visual {
-  position: sticky;
-  top: max(14vh, 90px);
+  position: relative;
   display: grid;
   place-items: center;
   padding: 4vh 0;
@@ -1849,7 +1849,8 @@ html:not(.v2-js) .v2 .outdoor-controles {
 
 .v2 .celular {
   position: relative;
-  width: min(300px, 64vw);
+  /* cabe inteiro na altura da tela enquanto a cena está travada */
+  width: min(300px, 64vw, calc((100dvh - 150px) * 560 / 1214));
   aspect-ratio: 560 / 1214;
   padding: 11px;
   border-radius: 46px;
@@ -1929,6 +1930,7 @@ html:not(.v2-js) .v2 .outdoor-controles {
 .v2 .botao-grande.travado {
   background: var(--azul);
   border-color: var(--azul);
+  border-radius: var(--raio-cinta, 6px);
   color: #fff;
 }
 

@@ -631,20 +631,34 @@ function cenaApp(raiz: HTMLElement) {
   const secao = q(raiz, "#app");
   const celular = q(secao, "[data-celular]");
   const telas = qq(secao, "[data-tela]");
-  const largo = window.matchMedia("(min-width: 961px)").matches;
+  // as telas seguintes baixam já: com a cena travada elas aparecem rápido e não podem vir pretas
+  telas.forEach((t) => ((t as HTMLImageElement).loading = "eager"));
 
   gsap.set(telas.slice(1), { yPercent: 100 });
-  const tl = gsap.timeline({
-    scrollTrigger: largo
-      ? { trigger: secao, start: "top 20%", end: "bottom 80%", scrub: 0.6 }
-      : { trigger: celular, start: "top 75%", end: "bottom 15%", scrub: 0.6 },
-  });
-  telas.slice(1).forEach((t, i) => {
-    tl.to(t, { yPercent: 0, duration: 1, ease: "power2.inOut" }, i * 1.5).to(
-      telas[i],
-      { yPercent: -30, opacity: 0, duration: 1, ease: "power2.inOut" },
-      "<",
-    );
+
+  // a cena trava no meio da tela enquanto as telas do app passam (como o outdoor):
+  // no computador trava texto + celular; no celular, só o aparelho (o texto não cabe junto)
+  const mm = gsap.matchMedia();
+  mm.add({ largo: "(min-width: 961px)", estreito: "(max-width: 960px)" }, (ctx) => {
+    const { largo } = ctx.conditions as { largo: boolean };
+    const preso = q(secao, largo ? ".app-grade" : ".app-visual");
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: preso,
+        start: "center center",
+        end: () => `+=${Math.round(window.innerHeight * 0.75 * (telas.length - 1))}`,
+        pin: true,
+        scrub: 0.5,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+      },
+    });
+    tl.to({}, { duration: 0.35 }); // a primeira tela fica um instante
+    telas.slice(1).forEach((t, i) => {
+      tl.to(t, { yPercent: 0, duration: 1, ease: "power2.inOut" })
+        .to(telas[i], { yPercent: -30, opacity: 0, duration: 1, ease: "power2.inOut" }, "<")
+        .to({}, { duration: 0.5 }); // e cada tela também
+    });
   });
 
   gsap.from(celular, {
@@ -652,6 +666,8 @@ function cenaApp(raiz: HTMLElement) {
     rotation: -7,
     scrollTrigger: { trigger: secao, start: "top 95%", end: "top 25%", scrub: 0.7 },
   });
+
+  return () => mm.revert();
 }
 
 /* ───────────── 7 · Fechamento ───────────── */
@@ -660,14 +676,19 @@ function cenaFim(raiz: HTMLElement, reduzido: boolean) {
   const alvo = q(raiz, "[data-fim-alvo]");
   const svg = q<SVGSVGElement>(raiz, "[data-cinta-fim]");
   const botao = q(raiz, "[data-fim-botao]");
+  // travada, a fita encosta no botão (a borda de dentro do aço toca o azul): sem anel escuro entre os dois
   const opcoes = () => {
     const sw = limitar(window.innerWidth * 0.0075, 7, 11);
-    return { espessura: sw, folga: [70, 12] as [number, number], vao: [sw * 10, sw * 2.6] as [number, number], giros: 5 };
+    return { espessura: sw, folga: [70, sw / 2 + 1] as [number, number], vao: [sw * 10, sw * 2.6] as [number, number], giros: 5 };
   };
   let cinta = criarCinta(svg, alvo, opcoes());
   let a = reduzido ? 1 : 0;
   let travado = false;
-  const aplicar = () => cinta.desenhar(a);
+  const aplicar = () => {
+    const { folgaX, raio } = cinta.desenhar(a);
+    // o botão ganha o mesmo arredondado de dentro da fita, para encaixar nela
+    if (a > 0.99) botao.style.setProperty("--raio-cinta", `${Math.max(6, raio - folgaX).toFixed(1)}px`);
+  };
   const refazer = () => {
     cinta.destruir();
     cinta = criarCinta(svg, alvo, opcoes());
@@ -753,7 +774,7 @@ export function iniciarV2(raiz: HTMLElement, medidor: Medidor) {
         const pl = cenaPlaca(raiz);
         if (pl) limpezas.push(pl);
         cenaBrasil(raiz);
-        cenaApp(raiz);
+        limpezas.push(cenaApp(raiz));
       }
       limpezas.push(cenaFim(raiz, reduzido));
       topo(raiz);
