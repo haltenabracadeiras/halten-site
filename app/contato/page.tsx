@@ -233,7 +233,7 @@ export default function ContactPage() {
                     Horário
                   </p>
                   <p style={{ fontSize: 14, fontFamily: "var(--font-mono)", opacity: 0.9, margin: 0 }}>
-                    Segunda a sexta · 08:00 às 17:30
+                    Segunda a sexta · 08:00 às 18:00
                   </p>
                 </div>
               </div>
