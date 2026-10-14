@@ -29,6 +29,7 @@ Prévia em `/v2`, no ar só para o cliente ver (rota com `noindex`). A home ofic
 | # | Cena | VÊ | SENTE | PASSA A ACREDITAR | Energia | Família de efeito |
 |---|---|---|---|---|---|---|
 | 1 | **O aperto** (fixa, 3 telas) | "APERTA DE VERDADE." enorme dentro de uma cinta de aço solta; medidor "Ø 132,0 mm · solta" | tensão → alívio no TRAVA | "isso segura" | alta | assinatura (cinta + eixo de largura) |
+| 1b | **O outdoor do pátio** (13/10) | os banners ativos do admin num outdoor iluminado: refletores acendem piscando, a arte troca como painel de rolo; produto que o banner aponta ganha selo "Lançamento" na esteira | novidade | "eles lançam produto" | média | luz que acende + painel de rolo |
 | 2 | **Onde trabalha** | parágrafo gigante, alinhado à esquerda, acendendo palavra a palavra; vibração treme, pressão comprime | peso, ambiente pesado | "é peça para trabalho duro" | calma | texto que se monta (rolagem) |
 | 3 | **A linha — PICO** (fixa, 7 telas) | esteira industrial: as 18 abraçadeiras reais param, uma a uma, no portal de medição, com nome gigante, faixa de diâmetro real, nº de códigos e link | vitrine, abundância, precisão | "eles têm a linha completa" | **máxima** | trilho + portal de inspeção |
 | 4 | **A fábrica** (fundo vira aço claro) | placa de identificação rebitada (razão social, CNPJ, endereço, 2022) + missão, visão e valores | sobriedade, seriedade | "é empresa de verdade" | calma | fundo que viaja + digitar + revelações |
@@ -53,6 +54,24 @@ diâmetro) e segue.
 - Tipografia: **Archivo** variável (eixo de largura 62–125, peso 100–900) para títulos e texto, e
   **JetBrains Mono** para rótulos, códigos e medidas, como numa folha técnica.
 - Escala: 13 / 16 / 18 / 24 / 36 / 56 / 88 / gigante. Espaçamento: 8 / 16 / 24 / 40 / 64 / 104 / 168.
+
+## Páginas internas v2 (14/10, prévia no localhost)
+
+| Prévia | Substitui | O que mudou |
+|---|---|---|
+| `/representantes-v2` | `/representantes` | cena "Presença" virou página: mapa clicável, ficha rebitada, lista, link `#uf` |
+| `/produtos-v2` | `/produtos` | busca por nome, medida (Ø) ou código Halten/original; selo de lançamento |
+| `/produtos-v2/[slug]` | `/produtos/[slug]` | portal de inspeção, cota da medida, ficha técnica tirada da descrição, tabela com filtro, anterior/próximo |
+| `/contato-v2` | `/contato` + `/localizacao` | formulário (abre o WhatsApp) + canais + placa + mapa numa página só |
+| `/quem-somos-v2` | `/quem-somos` | números do banco, aplicações, placa, missão/visão/valores |
+| `/catalogo-v2/[id]` | `/catalogo/[id]` | mesmo leitor da revista, no asfalto e voltando para o site (não conta clique) |
+
+Peças comuns: `_partes/contato.ts` (ROTAS, contatos), `_partes/moldura.tsx` (topo e rodapé),
+`_partes/revelar.tsx`, `_dados/produto.ts`, `v2-paginas.css`. `/links` fica como está.
+
+**Ao publicar:** trocar `ROTAS` em `_partes/contato.ts` pelos endereços oficiais, mover cada
+`xxx-v2` para o lugar da original (ou redirecionar), tirar o `noindex` e os "(prévia v2)" dos títulos,
+e fazer o admin de Links revalidar as páginas estáticas que mostram o link do catálogo (topo).
 
 ## Trava anti-repetição (construcoes.md)
 

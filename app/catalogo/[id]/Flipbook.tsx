@@ -7,9 +7,17 @@ import { ChevronLeft, ChevronRight, X, Download, Loader2, Plus, Minus } from "lu
 type Props = {
   fileUrl: string;
   title: string;
+  /** para onde o X leva (a prévia v2 volta para o site, não para a /links) */
+  voltar?: string;
+  fundo?: string;
 };
 
-export function Flipbook({ fileUrl, title }: Props) {
+export function Flipbook({
+  fileUrl,
+  title,
+  voltar = "/links",
+  fundo = "radial-gradient(circle at 50% 0%, #243044 0%, #0e141f 70%)",
+}: Props) {
   const [pages, setPages] = useState<string[]>([]);
   const [total, setTotal] = useState(0);
   const [loaded, setLoaded] = useState(0);
@@ -120,7 +128,7 @@ export function Flipbook({ fileUrl, title }: Props) {
         left: 0,
         right: 0,
         height: "100dvh",
-        background: "radial-gradient(circle at 50% 0%, #243044 0%, #0e141f 70%)",
+        background: fundo,
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
@@ -137,7 +145,7 @@ export function Flipbook({ fileUrl, title }: Props) {
           flexShrink: 0,
         }}
       >
-        <Link href="/links" aria-label="Voltar" style={barBtn}>
+        <Link href={voltar} aria-label="Voltar" style={barBtn}>
           <X size={18} />
         </Link>
         <p

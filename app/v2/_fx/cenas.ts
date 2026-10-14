@@ -156,6 +156,163 @@ function cenaAperto(raiz: HTMLElement, medidor: Medidor, reduzido: boolean) {
   };
 }
 
+/* ───────────── 1b · O outdoor do pátio ───────────── */
+
+const OUTDOOR_SEGUNDOS = 6.5; // por arte, o mesmo tempo do carrossel da home atual
+
+function cenaOutdoor(raiz: HTMLElement, reduzido: boolean) {
+  const secao = raiz.querySelector<HTMLElement>("#novidades");
+  if (!secao) return;
+  const outdoor = q(secao, "[data-outdoor]");
+  const painel = q(secao, ".outdoor-painel");
+  const slides = qq(secao, "[data-outdoor-slide]");
+  const N = slides.length;
+
+  // as luzes do pátio acendem quando o outdoor aparece, piscando como lâmpada de vapor
+  let aceso = reduzido;
+  if (!reduzido) gsap.set(outdoor, { "--luz": 0 });
+  const acender = () => {
+    aceso = true;
+    gsap
+      .timeline()
+      .to(outdoor, { "--luz": 0.55, duration: 0.06 })
+      .to(outdoor, { "--luz": 0.08, duration: 0.08 }, "+=0.06")
+      .to(outdoor, { "--luz": 0.8, duration: 0.05 }, "+=0.14")
+      .to(outdoor, { "--luz": 0.3, duration: 0.07 })
+      .to(outdoor, { "--luz": 1, duration: 0.6, ease: "power2.out" }, "+=0.08");
+  };
+
+  // a tela real decide (e não o ScrollTrigger, que mede antes de a abertura fixa ganhar altura)
+  let aoVer: (visivel: boolean) => void = () => {};
+  const io = new IntersectionObserver(
+    (entradas) => {
+      const e = entradas[entradas.length - 1];
+      if (!aceso && e.intersectionRatio >= 0.35) acender();
+      aoVer(e.isIntersecting);
+    },
+    { threshold: [0, 0.35] },
+  );
+  io.observe(outdoor);
+
+  if (N < 2) return () => io.disconnect();
+
+  const marcas = qq<HTMLButtonElement>(secao, "[data-outdoor-ir]");
+  const barras = marcas.map((m) => q(m, "i"));
+  const contador = secao.querySelector<HTMLElement>("[data-outdoor-n]");
+  let atual = 0;
+
+  function marcar(i: number) {
+    slides.forEach((s, j) => {
+      s.toggleAttribute("inert", j !== i);
+      s.setAttribute("aria-hidden", String(j !== i));
+    });
+    marcas.forEach((m, j) => {
+      m.classList.toggle("ativo", j === i);
+      m.setAttribute("aria-current", String(j === i));
+    });
+    if (contador) contador.textContent = String(i + 1).padStart(2, "0");
+  }
+
+  // o relógio só corre com o outdoor na tela, sem o mouse em cima, sem foco dentro e com a aba à vista
+  const parado = new Set<string>(["fora"]);
+  let relogio: gsap.core.Tween | null = null;
+
+  function armar() {
+    relogio?.kill();
+    gsap.set(barras, { scaleX: 0 });
+    if (reduzido) {
+      gsap.set(barras[atual], { scaleX: 1 });
+      return;
+    }
+    relogio = gsap.to(barras[atual], {
+      scaleX: 1,
+      duration: OUTDOOR_SEGUNDOS,
+      ease: "none",
+      paused: parado.size > 0,
+      onComplete: () => ir(atual + 1, 1),
+    });
+  }
+  const parar = (motivo: string) => {
+    parado.add(motivo);
+    relogio?.pause();
+  };
+  const seguir = (motivo: string) => {
+    parado.delete(motivo);
+    if (!parado.size) relogio?.resume();
+  };
+
+  // painel de rolo: a arte atual sobe e a próxima entra por baixo (voltando, o contrário)
+  function ir(alvo: number, dir: number) {
+    const i = (alvo + N) % N;
+    if (i === atual) return;
+    const velho = slides[atual];
+    const novo = slides[i];
+    gsap.killTweensOf([velho, novo]);
+    if (reduzido) {
+      gsap.set(velho, { yPercent: 100 });
+      gsap.set(novo, { yPercent: 0 });
+    } else {
+      gsap.fromTo(novo, { yPercent: 100 * dir }, { yPercent: 0, duration: 0.9, ease: "power3.inOut" });
+      gsap.to(velho, { yPercent: -100 * dir, duration: 0.9, ease: "power3.inOut" });
+    }
+    atual = i;
+    marcar(i);
+    armar();
+  }
+
+  gsap.set(slides, { yPercent: (j: number) => (j === 0 ? 0 : 100) });
+  marcar(0);
+  armar();
+
+  q(secao, "[data-outdoor-ant]").addEventListener("click", () => ir(atual - 1, -1));
+  q(secao, "[data-outdoor-prox]").addEventListener("click", () => ir(atual + 1, 1));
+  marcas.forEach((m, j) => m.addEventListener("click", () => ir(j, j > atual ? 1 : -1)));
+
+  aoVer = (visivel) => (visivel ? seguir("fora") : parar("fora"));
+  outdoor.addEventListener("pointerenter", (e) => e.pointerType === "mouse" && parar("mouse"));
+  outdoor.addEventListener("pointerleave", (e) => e.pointerType === "mouse" && seguir("mouse"));
+  secao.addEventListener("focusin", () => parar("foco"));
+  secao.addEventListener("focusout", (e) => {
+    if (!secao.contains(e.relatedTarget as Node | null)) seguir("foco");
+  });
+  const aba = () => (document.hidden ? parar("aba") : seguir("aba"));
+  document.addEventListener("visibilitychange", aba);
+
+  // no celular, arrastar para o lado troca a arte (e não abre o link sem querer)
+  let x0 = 0;
+  let y0 = 0;
+  let arrastou = false;
+  painel.addEventListener("pointerdown", (e) => {
+    x0 = e.clientX;
+    y0 = e.clientY;
+    arrastou = false;
+  });
+  painel.addEventListener("pointerup", (e) => {
+    if (e.pointerType === "mouse") return;
+    const dx = e.clientX - x0;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(e.clientY - y0) * 1.4) {
+      arrastou = true;
+      ir(atual + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
+    }
+  });
+  painel.addEventListener(
+    "click",
+    (e) => {
+      if (arrastou) {
+        e.preventDefault();
+        arrastou = false;
+      }
+    },
+    true,
+  );
+
+  return () => {
+    io.disconnect();
+    document.removeEventListener("visibilitychange", aba);
+    relogio?.kill();
+  };
+}
+
 /* ───────────── 2 · Onde trabalha ───────────── */
 
 function quebrarPalavras(el: HTMLElement) {
@@ -235,6 +392,7 @@ function cenaLinha(raiz: HTMLElement) {
   const fichaCodigos = q(secao, "[data-linha-ficha-codigos]");
   const fichaPalavra = q(secao, "[data-linha-ficha-palavra]");
   const fichaLink = q<HTMLAnchorElement>(secao, "[data-linha-link]");
+  const selo = q(secao, "[data-linha-selo]");
   const fita = q(secao, ".esteira-fita");
   const scan = q(secao, ".portal-scan");
   const rolos = qq(secao, ".esteira-rolo");
@@ -245,6 +403,7 @@ function cenaLinha(raiz: HTMLElement) {
     faixa: li.dataset.faixa || "—",
     codigos: li.dataset.codigos ?? "",
     href: li.querySelector("a")?.getAttribute("href") ?? "#",
+    lancamento: li.hasAttribute("data-lancamento"),
   }));
 
   // esteira indexada: anda, para no portal, anda de novo
@@ -288,6 +447,7 @@ function cenaLinha(raiz: HTMLElement) {
     fichaLink.href = dados[i].href;
     fichaLink.setAttribute("aria-label", `Tabela técnica — ${dados[i].nome}`);
     marcas.forEach((m, j) => m.classList.toggle("ativo", j === i));
+    selo?.classList.toggle("ligado", dados[i].lancamento);
     if (animar) {
       gsap.killTweensOf([velho, novo]);
       gsap.fromTo(novo, { yPercent: 105 * dir, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: 0.55, ease: "power3.out" });
@@ -589,6 +749,9 @@ export function iniciarV2(raiz: HTMLElement, medidor: Medidor) {
   motor.onload = () => {
     if (!vivo) return;
     ctx.add(() => {
+      // depois do motor: a posição do outdoor depende da altura da abertura fixa
+      const o = cenaOutdoor(raiz, reduzido);
+      if (o) limpezas.push(o);
       if (!reduzido) {
         cenaManifesto(raiz);
         const l = cenaLinha(raiz);

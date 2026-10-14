@@ -1,43 +1,25 @@
-/* eslint-disable @next/next/no-html-link-for-pages --
-   A v2 é uma prévia isolada: os links saem com recarga completa para o motor de rolagem
+/* A v2 é uma prévia isolada: os links são <a> comuns (recarga completa) para o motor de rolagem
    (que mexe no <html> e no fundo do <body>) não vazar para as outras páginas. */
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
-import { Archivo } from "next/font/google";
 import "./sites-incriveis.css";
 import "./v2.css";
 import { carregarDadosV2 } from "./_dados/linha";
 import { BRASIL_VIEWBOX, CASCAVEL, ESTADOS } from "./_dados/brasil";
+import { NOMES_UF, ROTULO_DESLOCADO, rotaAte } from "./_dados/mapa";
+import { linkDoCatalogo } from "./_dados/catalogo";
+import { archivo } from "./_partes/fonte";
+import { ROTAS, WHATSAPP_COMERCIAL as WHATSAPP, rotaInterna } from "./_partes/contato";
+import { Rodape, Topo } from "./_partes/moldura";
 import { Movimento } from "./_fx/movimento";
-
-const archivo = Archivo({
-  subsets: ["latin"],
-  axes: ["wdth"],
-  variable: "--font-v2",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Halten Abraçadeiras — v2 (prévia)",
   robots: { index: false, follow: false },
 };
 
-const WHATSAPP = "https://wa.me/5545991517308?text=" + encodeURIComponent("Olá, Halten! Gostaria de fazer um orçamento.");
 const APP_STORE = "https://apps.apple.com/br/app/halten-abra%C3%A7adeiras/id6761189859";
 const GOOGLE_PLAY = "https://play.google.com/store/apps/details?id=br.com.ideia2001.HaltenAbracadeiras&hl=pt_BR";
-
-const NOMES_UF: Record<string, string> = {
-  AC: "Acre", AL: "Alagoas", AM: "Amazonas", AP: "Amapá", BA: "Bahia", CE: "Ceará", DF: "Distrito Federal",
-  ES: "Espírito Santo", GO: "Goiás", MA: "Maranhão", MG: "Minas Gerais", MS: "Mato Grosso do Sul",
-  MT: "Mato Grosso", PA: "Pará", PB: "Paraíba", PE: "Pernambuco", PI: "Piauí", PR: "Paraná",
-  RJ: "Rio de Janeiro", RN: "Rio Grande do Norte", RO: "Rondônia", RR: "Roraima", RS: "Rio Grande do Sul",
-  SC: "Santa Catarina", SE: "Sergipe", SP: "São Paulo", TO: "Tocantins",
-};
-
-// Rótulos do litoral saem para o mar, com linha de chamada (os estados são pequenos demais).
-const ROTULO_DESLOCADO: Record<string, [number, number]> = {
-  RN: [78, -18], PB: [80, 0], PE: [84, 6], AL: [74, 22], SE: [64, 30], ES: [70, 18], RJ: [52, 40], SC: [74, 10],
-};
 
 /** Letra a letra, já no HTML (o leitor de tela lê o aria-label do título). */
 function letras(texto: string) {
@@ -50,27 +32,9 @@ function letras(texto: string) {
   );
 }
 
-function rotaAte(uf: string) {
-  const [cx, cy] = CASCAVEL;
-  const [sx, sy] = ESTADOS[uf].c;
-  const dx = sx - cx;
-  const dy = sy - cy;
-  const dist = Math.hypot(dx, dy) || 1;
-  let nx = -dy / dist;
-  let ny = dx / dist;
-  if (ny > 0) {
-    nx = -nx;
-    ny = -ny;
-  }
-  const curva = Math.min(dist * 0.28, 120);
-  const qx = (cx + sx) / 2 + nx * curva;
-  const qy = (cy + sy) / 2 + ny * curva;
-  return { d: `M${cx} ${cy}Q${qx.toFixed(1)} ${qy.toFixed(1)} ${sx} ${sy}`, dist };
-}
-
 export default async function V2Page() {
-  const dados = await carregarDadosV2();
-  const { pecas, totalCodigos, medidor, representantes, estados } = dados;
+  const [dados, catalogo] = await Promise.all([carregarDadosV2(), linkDoCatalogo()]);
+  const { pecas, totalCodigos, medidor, representantes, estados, banners } = dados;
   const rotas = estados
     .filter((uf) => uf !== "PR" && ESTADOS[uf])
     .map((uf) => ({ uf, ...rotaAte(uf) }))
@@ -102,22 +66,7 @@ export default async function V2Page() {
       </svg>
 
       {/* ───────────── Topo ───────────── */}
-      <header className="topo" data-topo>
-        <a href="/" className="topo-marca" aria-label="Halten Abraçadeiras — início">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-240-60.svg" alt="Halten Abraçadeiras" width={160} height={40} />
-        </a>
-        <nav className="topo-nav" aria-label="Principal">
-          <a href="/produtos">Produtos</a>
-          <a href="/quem-somos">Quem somos</a>
-          <a href="/representantes">Representantes</a>
-          <a href="/catalogo">Catálogo</a>
-          <a href="/contato">Contato</a>
-        </nav>
-        <a className="topo-cta" href={WHATSAPP} target="_blank" rel="noreferrer">
-          Orçamento
-        </a>
-      </header>
+      <Topo />
 
       {/* ───────────── 1 · O aperto ───────────── */}
       <section
@@ -172,6 +121,87 @@ export default async function V2Page() {
         </div>
       </section>
 
+      {/* ───────────── 1b · O outdoor do pátio (banners do admin) ───────────── */}
+      {banners.length > 0 ? (
+        <section id="novidades" className="cena cena-outdoor" data-fx-fundo="#090C0F" data-fx-tinta="#E9EDF0">
+          <div className="outdoor-cabeca">
+            <p className="rotulo">Novidades</p>
+            {banners.length > 1 ? (
+              <p className="outdoor-contador" aria-hidden="true">
+                <b data-outdoor-n>01</b> / {String(banners.length).padStart(2, "0")}
+              </p>
+            ) : null}
+          </div>
+
+          <div className="outdoor" data-outdoor>
+            <div className="outdoor-refletores" aria-hidden="true">
+              <i className="refletor" />
+              <i className="refletor" />
+              <i className="refletor" />
+            </div>
+            <div className="outdoor-moldura" role="region" aria-roledescription="carrossel" aria-label="Novidades da Halten">
+              <div className="outdoor-painel">
+                {banners.map((b, i) => {
+                  const arte = (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={b.imagem}
+                      alt={b.alt}
+                      width={1920}
+                      height={650}
+                      loading={i === 0 ? "eager" : "lazy"}
+                      decoding="async"
+                    />
+                  );
+                  return (
+                    <div
+                      key={b.id}
+                      className="outdoor-slide"
+                      data-outdoor-slide={i}
+                      role="group"
+                      aria-roledescription="slide"
+                      aria-label={`${i + 1} de ${banners.length}`}
+                    >
+                      {b.link ? (
+                        <a href={b.externo ? b.link : rotaInterna(b.link)} {...(b.externo ? { target: "_blank", rel: "noreferrer" } : {})}>
+                          {arte}
+                        </a>
+                      ) : (
+                        arte
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="outdoor-pes" aria-hidden="true">
+              <i />
+              <i />
+            </div>
+          </div>
+
+          {banners.length > 1 ? (
+            <div className="outdoor-controles">
+              <button type="button" className="outdoor-seta" data-outdoor-ant aria-label="Novidade anterior">
+                <span aria-hidden="true">←</span>
+              </button>
+              <div className="outdoor-regua">
+                {banners.map((b, i) => (
+                  <button key={b.id} type="button" data-outdoor-ir={i} aria-label={`Mostrar novidade ${i + 1}`}>
+                    <span>
+                      <i />
+                    </span>
+                  </button>
+                ))}
+              </div>
+              <button type="button" className="outdoor-seta" data-outdoor-prox aria-label="Próxima novidade">
+                <span aria-hidden="true">→</span>
+              </button>
+            </div>
+          ) : null}
+        </section>
+      ) : null}
+
       {/* ───────────── 2 · Onde trabalha ───────────── */}
       <section id="aplicacoes" className="cena cena-manifesto" data-fx-fundo="#090C0F" data-fx-tinta="#E9EDF0">
         <p className="rotulo">Aplicações</p>
@@ -200,6 +230,10 @@ export default async function V2Page() {
           </div>
 
           <div className="linha-luz" aria-hidden="true" />
+          <p className="linha-selo" data-linha-selo aria-hidden="true">
+            <i />
+            Lançamento
+          </p>
           <div className="linha-nome" data-linha-nome aria-hidden="true">
             <span>{pecas[0]?.curto}</span>
             <span />
@@ -227,9 +261,11 @@ export default async function V2Page() {
                 data-nome={p.curto}
                 data-faixa={p.faixa ?? ""}
                 data-codigos={p.codigos}
+                data-lancamento={p.lancamento ? "" : undefined}
                 style={{ "--zoom": String(p.zoom / 100) } as CSSProperties}
               >
-                <a href={`/produtos/${p.slug}`}>
+                <a href={ROTAS.produto(p.slug)}>
+                  {p.lancamento ? <em className="peca-selo">Lançamento</em> : null}
                   <span className="peca-foto">
                     {p.imagem ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -256,7 +292,7 @@ export default async function V2Page() {
               <b data-linha-ficha-codigos>{pecas[0]?.codigos}</b>{" "}
               <span data-linha-ficha-palavra>{pecas[0]?.codigos === 1 ? "código" : "códigos"}</span> na tabela técnica
             </p>
-            <a className="ficha-link" data-linha-link href={`/produtos/${pecas[0]?.slug}`}>
+            <a className="ficha-link" data-linha-link href={ROTAS.produto(pecas[0]?.slug ?? "")}>
               Ver tabela <span aria-hidden="true">→</span>
             </a>
           </div>
@@ -385,7 +421,7 @@ export default async function V2Page() {
                 <dd>{representantes}</dd>
               </div>
             </dl>
-            <a className="botao botao-escuro" href="/representantes">
+            <a className="botao botao-escuro" href={ROTAS.representantes}>
               Encontre seu representante
             </a>
           </div>
@@ -468,7 +504,7 @@ export default async function V2Page() {
                 </span>
               </a>
             </div>
-            <a className="app-catalogo" href="/catalogo" data-fx="surgir">
+            <a className="app-catalogo" href={catalogo.href} {...(catalogo.externo ? { target: "_blank", rel: "noreferrer" } : {})} data-fx="surgir">
               Prefere folhear? Abrir o catálogo digital <span aria-hidden="true">→</span>
             </a>
           </div>
@@ -557,31 +593,7 @@ export default async function V2Page() {
         </ul>
       </section>
 
-      <footer className="rodape">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo-240-60.svg" alt="Halten Abraçadeiras" width={140} height={35} />
-        <nav aria-label="Rodapé">
-          <a href="/">Início</a>
-          <a href="/produtos">Produtos</a>
-          <a href="/quem-somos">Quem somos</a>
-          <a href="/representantes">Representantes</a>
-          <a href="/contato">Contato</a>
-          <a href="https://www.instagram.com/haltenabracadeiras/" target="_blank" rel="noreferrer">
-            Instagram
-          </a>
-        </nav>
-        <p>
-          © {new Date().getFullYear()} Halten Abraçadeiras · CNPJ 43.453.407/0001-87
-        </p>
-        <a
-          className="rodape-credito"
-          href="https://wa.me/5545991250788?text=Ol%C3%A1%20vi%20seu%20projeto%20da%20Halten%2C%20gostaria%20de%20falar%20sobre%3A"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Desenvolvido por Consoli Web Designer
-        </a>
-      </footer>
+      <Rodape />
 
       <Movimento medidor={{ min: medidor.min, max: medidor.max }} />
     </main>

@@ -422,6 +422,310 @@
 
 /* ───────────── 2 · Onde trabalha ───────────── */
 
+/* ───────────── 1b · O outdoor do pátio ─────────────
+   Os banners do admin num painel iluminado no escuro: o azul das artes vira a luz do outdoor
+   contra a noite. --luz (0→1) acende refletores, arte e reflexo; sem JS já nasce aceso. */
+
+.v2 .cena-outdoor {
+  padding: 16vh var(--margem) 6vh;
+}
+
+.v2 .outdoor-cabeca,
+.v2 .outdoor,
+.v2 .outdoor-controles {
+  max-width: 1240px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.v2 .outdoor-cabeca {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.v2 .outdoor-contador {
+  font-family: var(--f-mono);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: var(--suave);
+}
+
+.v2 .outdoor-contador b {
+  color: var(--tinta);
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.v2 .outdoor {
+  --luz: 1;
+  --braco: clamp(30px, 4.2vw, 58px);
+  position: relative;
+  padding-top: var(--braco);
+}
+
+/* refletores presos acima do painel, cada um com o braço e o cone de luz */
+.v2 .outdoor-refletores {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.v2 .refletor {
+  position: absolute;
+  top: 0;
+  width: clamp(26px, 3vw, 44px);
+  height: clamp(8px, 0.8vw, 12px);
+  translate: -50% 0;
+  border-radius: 3px 3px 7px 7px;
+  /* a lente acende junto com a luz */
+  background:
+    radial-gradient(ellipse 40% 60% at 50% 100%, rgba(255, 244, 214, calc(0.95 * var(--luz))), transparent 70%),
+    linear-gradient(180deg, #46505a, #1a2129);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.v2 .refletor:nth-child(1) {
+  left: 18%;
+}
+
+.v2 .refletor:nth-child(2) {
+  left: 50%;
+}
+
+.v2 .refletor:nth-child(3) {
+  left: 82%;
+}
+
+.v2 .refletor::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 2px;
+  height: calc(var(--braco) - 100%);
+  translate: -50% 0;
+  background: linear-gradient(90deg, #262e35, #6f7a85, #262e35);
+}
+
+.v2 .refletor::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 70%;
+  width: clamp(170px, 27vw, 380px);
+  height: clamp(110px, 19vw, 290px);
+  translate: -50% 0;
+  clip-path: polygon(44% 0, 56% 0, 100% 100%, 0 100%);
+  background: radial-gradient(ellipse 52% 100% at 50% 0, rgba(255, 240, 206, 0.3), rgba(255, 240, 206, 0.06) 55%, transparent 80%);
+  opacity: var(--luz);
+}
+
+.v2 .outdoor-moldura {
+  position: relative;
+  z-index: 1;
+  padding: clamp(4px, 0.55vw, 8px);
+  border-radius: 6px;
+  background: linear-gradient(180deg, #e6ebef 0, #aeb8c1 30%, #6f7a85 72%, #4a545e 100%);
+  box-shadow:
+    0 50px 90px -40px rgba(0, 0, 0, 0.9),
+    0 0 150px -30px rgba(28, 155, 215, calc(0.4 * var(--luz)));
+}
+
+.v2 .outdoor-painel {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  aspect-ratio: 1920 / 650;
+  border-radius: 3px;
+  background: #05070a;
+  touch-action: pan-y;
+}
+
+/* vidro do painel: sombra na borda de cima, onde o refletor não alcança */
+.v2 .outdoor-painel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.55),
+    inset 0 22px 34px -22px rgba(0, 0, 0, 0.7);
+}
+
+.v2 .outdoor-slide {
+  grid-area: 1 / 1;
+  min-width: 0;
+}
+
+.v2 .outdoor-slide a {
+  display: block;
+  height: 100%;
+}
+
+.v2 .outdoor-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: brightness(calc(0.3 + 0.7 * var(--luz))) saturate(calc(0.55 + 0.45 * var(--luz)));
+}
+
+/* sem JS: fica a primeira arte, parada */
+html:not(.v2-js) .v2 .outdoor-slide:not(:first-child) {
+  visibility: hidden;
+}
+
+/* os pés do outdoor e o chão do pátio, com o azul refletido */
+.v2 .outdoor-pes {
+  position: relative;
+  height: clamp(40px, 6.5vw, 96px);
+}
+
+.v2 .outdoor-pes i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: clamp(8px, 0.9vw, 14px);
+  background: linear-gradient(90deg, #1a2129, #6f7a85 42%, #3a434c 70%, #141a20);
+}
+
+.v2 .outdoor-pes i:nth-child(1) {
+  left: 22%;
+}
+
+.v2 .outdoor-pes i:nth-child(2) {
+  right: 22%;
+}
+
+.v2 .outdoor-pes::before {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: -46px;
+  height: 92px;
+  pointer-events: none;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(28, 155, 215, calc(0.2 * var(--luz))), transparent 72%);
+}
+
+.v2 .outdoor-pes::after {
+  content: "";
+  position: absolute;
+  left: -6%;
+  right: -6%;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(233, 237, 240, 0.2) 22%, rgba(233, 237, 240, 0.2) 78%, transparent);
+}
+
+.v2 .outdoor-controles {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 26px;
+}
+
+html:not(.v2-js) .v2 .outdoor-controles {
+  display: none;
+}
+
+.v2 .outdoor-seta {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 1px solid rgba(233, 237, 240, 0.22);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--tinta);
+  font-family: var(--f-mono);
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.v2 .outdoor-seta:hover {
+  background: var(--tinta);
+  border-color: var(--tinta);
+  color: var(--noite);
+}
+
+.v2 .outdoor-regua {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+}
+
+.v2 .outdoor-regua button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  height: 46px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.v2 .outdoor-regua span {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 2px;
+  overflow: hidden;
+  background: rgba(233, 237, 240, 0.16);
+  transition: background 0.2s;
+}
+
+.v2 .outdoor-regua button:hover span,
+.v2 .outdoor-regua button.ativo span {
+  background: rgba(233, 237, 240, 0.3);
+}
+
+.v2 .outdoor-regua i {
+  position: absolute;
+  inset: 0;
+  background: var(--azul);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+}
+
+@media (max-width: 640px) {
+  .v2 .cena-outdoor {
+    padding: 12vh var(--margem) 4vh;
+  }
+  .v2 .refletor:nth-child(2) {
+    display: none;
+  }
+  .v2 .refletor:nth-child(1) {
+    left: 24%;
+  }
+  .v2 .refletor:nth-child(3) {
+    left: 76%;
+  }
+  .v2 .outdoor-controles {
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .v2 .outdoor-seta {
+    width: 44px;
+    height: 44px;
+  }
+  .v2 .outdoor-regua {
+    gap: 6px;
+  }
+}
+
 .v2 .cena-manifesto {
   padding: 26vh var(--margem) 30vh;
 }
@@ -609,6 +913,80 @@
   font-variation-settings: "wdth" 72;
   letter-spacing: -0.01em;
   text-transform: uppercase;
+}
+
+/* selo de lançamento: produto que um banner do admin aponta; preso na borda de cima do portal */
+.v2 .linha-selo {
+  display: none;
+}
+
+.v2 .linha-ativa .linha-selo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: calc(var(--linha-centro) - var(--portal) * 0.53);
+  padding: 6px 12px;
+  border: 1px solid var(--azul);
+  border-radius: 999px;
+  background: #0b1720;
+  color: var(--azul);
+  font-family: var(--f-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0;
+  /* só transform: com translate junto, o minificador do CSS descarta o translate */
+  transform: translate(-50%, -50%) translateY(8px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.v2 .linha-ativa .linha-selo.ligado {
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
+
+.v2 .linha-selo i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--azul);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .v2 .linha-selo.ligado i {
+    animation: v2-selo 1.6s ease-out infinite;
+  }
+}
+
+@keyframes v2-selo {
+  0% {
+    box-shadow: 0 0 0 0 rgba(28, 155, 215, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 0 8px rgba(28, 155, 215, 0);
+  }
+}
+
+/* na grade sem esteira, o selo vai no cartão */
+.v2 .peca-selo {
+  align-self: flex-start;
+  padding: 4px 10px;
+  border: 1px solid var(--azul);
+  border-radius: 999px;
+  color: var(--azul);
+  font-family: var(--f-mono);
+  font-size: 10px;
+  font-style: normal;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.v2 .linha-ativa .peca-selo {
+  display: none;
 }
 
 .v2 .linha-ativa .linha-portal {

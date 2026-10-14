@@ -32,6 +32,7 @@ export async function createBanner(formData: FormData) {
 
   revalidatePath("/admin/banners");
   revalidatePath("/");
+  revalidatePath("/v2");
   redirect("/admin/banners");
 }
 
@@ -54,6 +55,7 @@ export async function updateBanner(id: string, formData: FormData) {
 
   revalidatePath("/admin/banners");
   revalidatePath("/");
+  revalidatePath("/v2");
   redirect("/admin/banners");
 }
 
@@ -62,6 +64,7 @@ export async function deleteBanner(id: string) {
   await db.from("banners").delete().eq("id", id);
   revalidatePath("/admin/banners");
   revalidatePath("/");
+  revalidatePath("/v2");
 }
 
 export async function toggleBannerActive(id: string, current: boolean) {
@@ -69,4 +72,5 @@ export async function toggleBannerActive(id: string, current: boolean) {
   await db.from("banners").update({ active: !current }).eq("id", id);
   revalidatePath("/admin/banners");
   revalidatePath("/");
+  revalidatePath("/v2");
 }
