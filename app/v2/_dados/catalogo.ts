@@ -4,10 +4,10 @@ import { ROTAS } from "../_partes/contato";
 const CATALOGO_EXTERNO = "https://www.baixecatalogo.com.br/catalogo/halten-abracadeiras";
 
 /**
- * O catálogo digital é o link "catálogo" ativo do admin de Links (a revista em PDF).
+ * O catálogo digital do site é o link "catálogo" ativo do admin de Links (a revista em PDF).
  * Trocar o PDF lá muda o catálogo aqui também. Sem ele, cai no catálogo externo.
  */
-export async function linkDoCatalogo(): Promise<{ href: string; externo: boolean }> {
+export async function enderecoDoCatalogo(): Promise<string> {
   try {
     const { data } = await getSupabaseAdmin()
       .from("links")
@@ -17,7 +17,7 @@ export async function linkDoCatalogo(): Promise<{ href: string; externo: boolean
       .order("position", { ascending: true })
       .limit(1)
       .maybeSingle();
-    if (data?.id) return { href: ROTAS.catalogo(data.id), externo: false };
+    if (data?.id) return ROTAS.revista(data.id);
   } catch {}
-  return { href: CATALOGO_EXTERNO, externo: true };
+  return CATALOGO_EXTERNO;
 }

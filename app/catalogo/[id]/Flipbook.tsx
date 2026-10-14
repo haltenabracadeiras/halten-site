@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight, X, Download, Loader2, Plus, Minus } from "lu
 type Props = {
   fileUrl: string;
   title: string;
-  /** para onde o X leva (a prévia v2 volta para o site, não para a /links) */
+  /** para onde o X leva (aberta pelo site, volta para o site, não para a /links) */
   voltar?: string;
   fundo?: string;
 };

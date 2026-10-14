@@ -103,6 +103,16 @@ export function slugDoLink(link: string | null) {
   return link?.match(/^\/produtos\/([^/?#]+)/)?.[1] ?? null;
 }
 
+/**
+ * Representantes contados por empresa, não por linha do cadastro: quem atende vários estados
+ * (ex.: a mesma empresa em AL, PE e RN) tem uma linha por estado, mas é um representante só.
+ */
+export function contarRepresentantes(reps: { name?: unknown; whatsapp?: unknown }[]) {
+  return new Set(
+    reps.map((r) => String(r.whatsapp ?? "").replace(/\D/g, "") || String(r.name ?? "").trim().toUpperCase()),
+  ).size;
+}
+
 export function linhasReais(rows: Linha[] | null | undefined) {
   return (rows ?? []).filter((r) => !("__config__" in r));
 }
@@ -193,7 +203,7 @@ export async function carregarDadosV2(): Promise<DadosV2> {
     supabase.from("products").select("id,name,slug,images,image_zoom").eq("active", true),
     supabase.from("product_tables").select("product_id, rows, product_table_templates(columns)"),
     supabase.from("product_conversions").select("product_id, rows"),
-    supabase.from("representatives").select("state").eq("active", true),
+    supabase.from("representatives").select("state, name, whatsapp").eq("active", true),
     // mesma regra da home atual (ativos, pela posição); no empate, o mais novo primeiro
     supabase
       .from("banners")
@@ -272,7 +282,7 @@ export async function carregarDadosV2(): Promise<DadosV2> {
     pecas,
     totalCodigos,
     medidor: medidor ?? { codigo: "TCH120132", produto: "Tucho Canaleta", min: 120, max: 132 },
-    representantes: reps?.length ?? 0,
+    representantes: contarRepresentantes(reps ?? []),
     estados,
     banners: bannersV2,
   };

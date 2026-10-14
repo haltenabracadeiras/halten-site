@@ -1,60 +1,173 @@
-import { Navbar } from "../components/navbar";
-import { Footer } from "../components/footer";
-import { AboutSection } from "../components/about-section";
+import type { Metadata } from "next";
+import "../v2/v2.css";
+import "../v2/v2-paginas.css";
+import { carregarDadosV2 } from "../v2/_dados/linha";
+import { CONTATO, ROTAS } from "../v2/_partes/contato";
+import { archivo } from "../v2/_partes/fonte";
+import { Rodape, Topo } from "../v2/_partes/moldura";
+import { Revelar } from "../v2/_partes/revelar";
 
-export default function AboutPage() {
+export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Quem somos — Halten Abraçadeiras",
+  description:
+    "Fábrica de abraçadeiras em Cascavel/PR desde 2022: qualidade, transparência e inovação para o mercado de fixação industrial.",
+};
+
+const APLICACOES = ["Montagem de motores", "Intercooler", "Sistemas hidráulicos", "Máquinas agrícolas", "Cargas pesadas"];
+
+const PILARES = [
+  {
+    k: "Missão",
+    titulo: "Fornecer soluções técnicas que apertam de verdade.",
+    texto: "Abraçadeiras que garantem operações mais seguras e eficientes para o setor industrial brasileiro.",
+  },
+  {
+    k: "Visão",
+    titulo: "Ser a referência nacional em fixação.",
+    texto: "Reconhecida pela qualidade, pela inovação no processo produtivo e pelo cuidado com o cliente — peça a peça.",
+  },
+  {
+    k: "Valores",
+    titulo: "Integridade, robustez e atendimento dedicado.",
+    texto:
+      "Resultado do cliente como métrica principal. Comprometimento com prazo, qualidade e a verdade técnica em cada catálogo.",
+  },
+];
+
+export default async function QuemSomosV2Page() {
+  const { pecas, totalCodigos, representantes } = await carregarDadosV2();
+
   return (
-    <>
-      <Navbar />
-      <main>
-        {/* Hero header */}
-        <section style={{ background: "var(--ink)", padding: "96px 32px 80px" }}>
-          <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-            <p
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 11,
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-                color: "rgba(255,255,255,0.35)",
-                marginBottom: 20,
-              }}
-            >
-              [ Quem somos ]
-            </p>
-            <h1
-              className="font-sans"
-              style={{
-                fontSize: "clamp(48px,6vw,80px)",
-                fontWeight: 700,
-                lineHeight: 0.95,
-                letterSpacing: "-0.03em",
-                color: "white",
-                margin: 0,
-              }}
-            >
-              A história{" "}
-              <em style={{ fontStyle: "italic", color: "var(--blue)" }}>da Halten.</em>
-            </h1>
-            <p
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 14,
-                lineHeight: 1.7,
-                color: "rgba(255,255,255,0.55)",
-                maxWidth: 520,
-                marginTop: 20,
-              }}
-            >
-              Nascemos com o propósito de oferecer abraçadeiras de alta qualidade para o mercado industrial brasileiro, com transparência, ética e inovação.
-            </p>
-          </div>
-        </section>
+    <main className={`v2 pg ${archivo.variable}`} id="v2">
+      <Topo />
 
-        {/* Conteúdo — reutiliza o mesmo bloco da home */}
-        <AboutSection />
-      </main>
-      <Footer />
-    </>
+      <header className="pg-cabeca qs-cabeca">
+        <p className="rotulo" data-revela>
+          Quem somos
+        </p>
+        <h1 className="pg-titulo" data-revela>
+          Uma fábrica jovem, com propósito claro.
+        </h1>
+        <p className="pg-lead" data-revela>
+          Nascemos em 2022, em Cascavel/PR, para oferecer abraçadeiras de alta qualidade ao mercado industrial
+          brasileiro, com transparência, ética e inovação em cada etapa do processo.
+        </p>
+        <dl className="qs-numeros" data-revela>
+          <div>
+            <dt>Desde</dt>
+            <dd>2022</dd>
+          </div>
+          <div>
+            <dt>Modelos na linha</dt>
+            <dd>{pecas.length}</dd>
+          </div>
+          <div>
+            <dt>Códigos com tabela técnica</dt>
+            <dd>{totalCodigos}</dd>
+          </div>
+          <div>
+            <dt>Estados atendidos</dt>
+            <dd>
+              26<small> + DF</small>
+            </dd>
+          </div>
+        </dl>
+      </header>
+
+      <section className="qs-onde" aria-labelledby="qs-onde-titulo">
+        <p className="rotulo" id="qs-onde-titulo" data-revela>
+          Onde a Halten trabalha
+        </p>
+        <ul className="qs-aplicacoes">
+          {APLICACOES.map((a, i) => (
+            <li key={a} data-revela>
+              <span>{String(i + 1).padStart(2, "0")}</span>
+              {a}
+            </li>
+          ))}
+        </ul>
+        <p className="qs-onde-pe" data-revela>
+          Abraçadeiras desenvolvidas para suportar <em>vibração</em>, <em>pressão</em> e{" "}
+          <em>ciclos térmicos</em>.
+        </p>
+      </section>
+
+      <section className="qs-fabrica">
+        <div className="qs-fabrica-grade">
+          <figure className="placa qs-placa" data-revela>
+            <i className="rebite r1" />
+            <i className="rebite r2" />
+            <i className="rebite r3" />
+            <i className="rebite r4" />
+            <p className="placa-razao">{CONTATO.razao}</p>
+            <dl className="placa-dados">
+              <div>
+                <dt>CNPJ</dt>
+                <dd>{CONTATO.cnpj}</dd>
+              </div>
+              <div>
+                <dt>Fábrica</dt>
+                <dd>
+                  {CONTATO.endereco} — {CONTATO.bairro}
+                </dd>
+              </div>
+              <div>
+                <dt>Cidade</dt>
+                <dd>
+                  {CONTATO.cidade} · CEP {CONTATO.cep}
+                </dd>
+              </div>
+              <div>
+                <dt>Desde</dt>
+                <dd>2022</dd>
+              </div>
+            </dl>
+            <figcaption>Placa de identificação</figcaption>
+          </figure>
+
+          <div className="qs-fabrica-texto">
+            <p className="rotulo" data-revela>
+              A fábrica
+            </p>
+            <h2 data-revela>Cascavel/PR, capital industrial do Oeste.</h2>
+            <p className="qs-fabrica-lead" data-revela>
+              Uma empresa jovem com propósito claro: trazer qualidade, transparência e inovação para o mercado de
+              fixação industrial.
+            </p>
+            <ol className="pilares">
+              {PILARES.map((p) => (
+                <li key={p.k} data-revela>
+                  <span className="pilar-k">{p.k}</span>
+                  <div>
+                    <h3>{p.titulo}</h3>
+                    <p>{p.texto}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section className="qs-fim" aria-label="Próximos passos">
+        <a className="qs-saida" href={ROTAS.produtos} data-revela>
+          <span className="rotulo">A linha</span>
+          <b>
+            Conheça os {pecas.length} modelos <span aria-hidden="true">→</span>
+          </b>
+        </a>
+        <a className="qs-saida" href={ROTAS.representantes} data-revela>
+          <span className="rotulo">Rede comercial</span>
+          <b>
+            Fale com um dos {representantes} representantes <span aria-hidden="true">→</span>
+          </b>
+        </a>
+      </section>
+
+      <Rodape />
+      <Revelar />
+    </main>
   );
 }

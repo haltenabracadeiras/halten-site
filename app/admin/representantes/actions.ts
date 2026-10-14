@@ -28,6 +28,7 @@ export async function createRepresentative(formData: FormData) {
 
   revalidatePath("/admin/representantes");
   revalidatePath("/representantes");
+  revalidatePath("/"); // a home mostra quantos representantes e estados
   redirect("/admin/representantes");
 }
 
@@ -44,6 +45,7 @@ export async function updateRepresentative(id: string, formData: FormData) {
 
   revalidatePath("/admin/representantes");
   revalidatePath("/representantes");
+  revalidatePath("/"); // a home mostra quantos representantes e estados
   redirect("/admin/representantes");
 }
 
@@ -54,6 +56,7 @@ export async function deleteRepresentative(id: string) {
 
   revalidatePath("/admin/representantes");
   revalidatePath("/representantes");
+  revalidatePath("/"); // a home mostra quantos representantes e estados
 }
 
 export async function toggleRepresentativeActive(id: string, current: boolean) {
@@ -63,4 +66,5 @@ export async function toggleRepresentativeActive(id: string, current: boolean) {
 
   revalidatePath("/admin/representantes");
   revalidatePath("/representantes");
+  revalidatePath("/"); // a home mostra quantos representantes e estados
 }

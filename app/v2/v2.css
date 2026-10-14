@@ -426,14 +426,27 @@
    Os banners do admin num painel iluminado no escuro: o azul das artes vira a luz do outdoor
    contra a noite. --luz (0→1) acende refletores, arte e reflexo; sem JS já nasce aceso. */
 
-.v2 .cena-outdoor {
+.v2 .outdoor-palco {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   padding: 16vh var(--margem) 6vh;
 }
 
+/* com várias artes a cena fica presa (fx-palco, 100vh) e a rolagem troca os banners */
+.v2 .cena-outdoor .fx-palco {
+  padding: 76px var(--margem) 24px;
+}
+
+.fx-reduzido .v2 .cena-outdoor .fx-palco {
+  padding: 14vh var(--margem) 8vh;
+}
+
+/* o outdoor inteiro cabe na altura da tela (a arte é 1920×650) */
 .v2 .outdoor-cabeca,
 .v2 .outdoor,
 .v2 .outdoor-controles {
-  max-width: 1240px;
+  width: min(100%, 1240px, calc((100dvh - 330px) * 2.95));
   margin-left: auto;
   margin-right: auto;
 }
@@ -562,6 +575,11 @@
   min-width: 0;
 }
 
+/* antes do JS posicionar, as artes seguintes esperam abaixo do painel */
+.v2 .outdoor-slide:not(:first-child) {
+  transform: translateY(100%);
+}
+
 .v2 .outdoor-slide a {
   display: block;
   height: 100%;
@@ -653,7 +671,12 @@ html:not(.v2-js) .v2 .outdoor-controles {
   transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
-.v2 .outdoor-seta:hover {
+.v2 .outdoor-seta:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.v2 .outdoor-seta:not(:disabled):hover {
   background: var(--tinta);
   border-color: var(--tinta);
   color: var(--noite);
@@ -701,8 +724,11 @@ html:not(.v2-js) .v2 .outdoor-controles {
 }
 
 @media (max-width: 640px) {
-  .v2 .cena-outdoor {
+  .v2 .outdoor-palco {
     padding: 12vh var(--margem) 4vh;
+  }
+  .v2 .cena-outdoor .fx-palco {
+    padding: 70px var(--margem) 16px;
   }
   .v2 .refletor:nth-child(2) {
     display: none;
@@ -1525,12 +1551,15 @@ html:not(.v2-js) .v2 .outdoor-controles {
 }
 
 .v2 .brasil-numeros {
-  display: flex;
-  gap: 40px;
+  display: grid;
+  grid-auto-flow: column;
+  align-items: end;
+  gap: 32px;
   margin: 6px 0 10px;
 }
 
 .v2 .brasil-numeros dt {
+  max-width: 12ch;
   font-family: var(--f-mono);
   font-size: 11px;
   letter-spacing: 0.14em;
@@ -1540,7 +1569,7 @@ html:not(.v2-js) .v2 .outdoor-controles {
 
 .v2 .brasil-numeros dd {
   margin: 4px 0 0;
-  font-size: 64px;
+  font-size: 58px;
   line-height: 1;
   font-weight: 800;
   font-variation-settings: "wdth" 75;
@@ -1574,6 +1603,36 @@ html:not(.v2-js) .v2 .outdoor-controles {
 
 .v2 .uf[data-uf="PR"] {
   fill: rgba(28, 155, 215, 0.5);
+}
+
+/* na home, o Brasil todo é atendido (azul claro); com representante, azul mais forte.
+   "escuro" é o estado antes da onda que sai de Cascavel chegar (só com JS) */
+.v2 .cena-brasil .uf {
+  fill: rgba(28, 155, 215, 0.13);
+}
+
+.v2 .cena-brasil .uf-atendido {
+  fill: rgba(28, 155, 215, 0.42);
+}
+
+.v2 .cena-brasil .uf-atendido.apagado {
+  fill: rgba(28, 155, 215, 0.13);
+  stroke: rgba(11, 16, 20, 0.3);
+}
+
+.v2 .cena-brasil .uf[data-uf="PR"] {
+  fill: rgba(28, 155, 215, 0.6);
+}
+
+.v2 .cena-brasil .uf.escuro {
+  fill: rgba(11, 16, 20, 0.05);
+  stroke: rgba(11, 16, 20, 0.3);
+}
+
+.v2 .brasil-numeros dd small {
+  font-size: 0.42em;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .v2 .rota {
@@ -2140,7 +2199,7 @@ html:not(.v2-js) .v2 .outdoor-controles {
     font-size: 16px;
   }
   .v2 .brasil-numeros {
-    gap: 28px;
+    gap: 18px;
     margin: 0;
   }
   .v2 .brasil-numeros dd {

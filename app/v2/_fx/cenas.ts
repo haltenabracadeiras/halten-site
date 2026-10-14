@@ -158,8 +158,6 @@ function cenaAperto(raiz: HTMLElement, medidor: Medidor, reduzido: boolean) {
 
 /* ───────────── 1b · O outdoor do pátio ───────────── */
 
-const OUTDOOR_SEGUNDOS = 6.5; // por arte, o mesmo tempo do carrossel da home atual
-
 function cenaOutdoor(raiz: HTMLElement, reduzido: boolean) {
   const secao = raiz.querySelector<HTMLElement>("#novidades");
   if (!secao) return;
@@ -181,14 +179,11 @@ function cenaOutdoor(raiz: HTMLElement, reduzido: boolean) {
       .to(outdoor, { "--luz": 0.3, duration: 0.07 })
       .to(outdoor, { "--luz": 1, duration: 0.6, ease: "power2.out" }, "+=0.08");
   };
-
   // a tela real decide (e não o ScrollTrigger, que mede antes de a abertura fixa ganhar altura)
-  let aoVer: (visivel: boolean) => void = () => {};
   const io = new IntersectionObserver(
     (entradas) => {
       const e = entradas[entradas.length - 1];
       if (!aceso && e.intersectionRatio >= 0.35) acender();
-      aoVer(e.isIntersecting);
     },
     { threshold: [0, 0.35] },
   );
@@ -196,12 +191,18 @@ function cenaOutdoor(raiz: HTMLElement, reduzido: boolean) {
 
   if (N < 2) return () => io.disconnect();
 
+  // as artes seguintes baixam já (a página carregou): senão a 2ª, 3ª… aparecem pretas por um instante
+  qq<HTMLImageElement>(secao, ".outdoor-slide img").forEach((img) => (img.loading = "eager"));
+
   const marcas = qq<HTMLButtonElement>(secao, "[data-outdoor-ir]");
   const barras = marcas.map((m) => q(m, "i"));
   const contador = secao.querySelector<HTMLElement>("[data-outdoor-n]");
-  let atual = 0;
+  const ant = q<HTMLButtonElement>(secao, "[data-outdoor-ant]");
+  const prox = q<HTMLButtonElement>(secao, "[data-outdoor-prox]");
+  let atual = -1;
 
   function marcar(i: number) {
+    atual = i;
     slides.forEach((s, j) => {
       s.toggleAttribute("inert", j !== i);
       s.setAttribute("aria-hidden", String(j !== i));
@@ -211,74 +212,58 @@ function cenaOutdoor(raiz: HTMLElement, reduzido: boolean) {
       m.setAttribute("aria-current", String(j === i));
     });
     if (contador) contador.textContent = String(i + 1).padStart(2, "0");
+    ant.disabled = i === 0;
+    prox.disabled = i === N - 1;
   }
 
-  // o relógio só corre com o outdoor na tela, sem o mouse em cima, sem foco dentro e com a aba à vista
-  const parado = new Set<string>(["fora"]);
-  let relogio: gsap.core.Tween | null = null;
-
-  function armar() {
-    relogio?.kill();
-    gsap.set(barras, { scaleX: 0 });
-    if (reduzido) {
-      gsap.set(barras[atual], { scaleX: 1 });
-      return;
-    }
-    relogio = gsap.to(barras[atual], {
-      scaleX: 1,
-      duration: OUTDOOR_SEGUNDOS,
-      ease: "none",
-      paused: parado.size > 0,
-      onComplete: () => ir(atual + 1, 1),
+  // painel de rolo: c é a posição contínua (0 = 1ª arte, 1 = 2ª…); a arte sobe, a próxima entra por baixo
+  function posicionar(c: number) {
+    slides.forEach((s, j) => {
+      const d = limitar(j - c, -1, 1);
+      s.style.transform = `translate3d(0,${(d * 100).toFixed(2)}%,0)`;
+      s.style.visibility = Math.abs(j - c) >= 1 ? "hidden" : "";
     });
+    barras.forEach((b, j) => (b.style.transform = `scaleX(${limitar(c - j + 1).toFixed(3)})`));
+    const i = Math.round(c);
+    if (i !== atual) marcar(i);
   }
-  const parar = (motivo: string) => {
-    parado.add(motivo);
-    relogio?.pause();
-  };
-  const seguir = (motivo: string) => {
-    parado.delete(motivo);
-    if (!parado.size) relogio?.resume();
-  };
+  posicionar(0);
 
-  // painel de rolo: a arte atual sobe e a próxima entra por baixo (voltando, o contrário)
-  function ir(alvo: number, dir: number) {
-    const i = (alvo + N) % N;
-    if (i === atual) return;
-    const velho = slides[atual];
-    const novo = slides[i];
-    gsap.killTweensOf([velho, novo]);
-    if (reduzido) {
-      gsap.set(velho, { yPercent: 100 });
-      gsap.set(novo, { yPercent: 0 });
-    } else {
-      gsap.fromTo(novo, { yPercent: 100 * dir }, { yPercent: 0, duration: 0.9, ease: "power3.inOut" });
-      gsap.to(velho, { yPercent: -100 * dir, duration: 0.9, ease: "power3.inOut" });
-    }
-    atual = i;
-    marcar(i);
-    armar();
+  // sem movimento (ou sem a cena presa): as setas trocam direto
+  let ir = (i: number) => posicionar(limitar(i, 0, N - 1));
+
+  if (!reduzido) {
+    // rolagem → arte, com parada em cada uma (como a esteira): fica, rola, fica
+    const INI = 0.06;
+    const FAIXA = 0.88;
+    const cDe = (p: number) => {
+      const u = limitar((p - INI) / FAIXA) * (N - 1);
+      const k = Math.floor(u);
+      if (k >= N - 1) return N - 1;
+      const f = u - k;
+      return k + (f < 0.3 ? 0 : f > 0.8 ? 1 : suave((f - 0.3) / 0.5));
+    };
+    const pDe = (i: number) => INI + ((i + 0.05) / (N - 1)) * FAIXA;
+
+    const proxy = { p: 0 };
+    const st = gsap.to(proxy, {
+      p: 1,
+      ease: "none",
+      scrollTrigger: { trigger: secao, start: "top top", end: "bottom bottom", scrub: 0.4 },
+      onUpdate: () => posicionar(cDe(proxy.p)),
+    }).scrollTrigger!;
+
+    ir = (i: number) => {
+      const alvo = limitar(i, 0, N - 1);
+      window.scrollTo({ top: st.start + pDe(alvo) * (st.end - st.start), behavior: "smooth" });
+    };
   }
 
-  gsap.set(slides, { yPercent: (j: number) => (j === 0 ? 0 : 100) });
-  marcar(0);
-  armar();
+  ant.addEventListener("click", () => ir(atual - 1));
+  prox.addEventListener("click", () => ir(atual + 1));
+  marcas.forEach((m, j) => m.addEventListener("click", () => ir(j)));
 
-  q(secao, "[data-outdoor-ant]").addEventListener("click", () => ir(atual - 1, -1));
-  q(secao, "[data-outdoor-prox]").addEventListener("click", () => ir(atual + 1, 1));
-  marcas.forEach((m, j) => m.addEventListener("click", () => ir(j, j > atual ? 1 : -1)));
-
-  aoVer = (visivel) => (visivel ? seguir("fora") : parar("fora"));
-  outdoor.addEventListener("pointerenter", (e) => e.pointerType === "mouse" && parar("mouse"));
-  outdoor.addEventListener("pointerleave", (e) => e.pointerType === "mouse" && seguir("mouse"));
-  secao.addEventListener("focusin", () => parar("foco"));
-  secao.addEventListener("focusout", (e) => {
-    if (!secao.contains(e.relatedTarget as Node | null)) seguir("foco");
-  });
-  const aba = () => (document.hidden ? parar("aba") : seguir("aba"));
-  document.addEventListener("visibilitychange", aba);
-
-  // no celular, arrastar para o lado troca a arte (e não abre o link sem querer)
+  // no celular, arrastar para o lado também troca a arte (e não abre o link sem querer)
   let x0 = 0;
   let y0 = 0;
   let arrastou = false;
@@ -292,7 +277,7 @@ function cenaOutdoor(raiz: HTMLElement, reduzido: boolean) {
     const dx = e.clientX - x0;
     if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(e.clientY - y0) * 1.4) {
       arrastou = true;
-      ir(atual + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
+      ir(atual + (dx < 0 ? 1 : -1));
     }
   });
   painel.addEventListener(
@@ -306,11 +291,7 @@ function cenaOutdoor(raiz: HTMLElement, reduzido: boolean) {
     true,
   );
 
-  return () => {
-    io.disconnect();
-    document.removeEventListener("visibilitychange", aba);
-    relogio?.kill();
-  };
+  return () => io.disconnect();
 }
 
 /* ───────────── 2 · Onde trabalha ───────────── */
@@ -587,7 +568,19 @@ function cenaBrasil(raiz: HTMLElement) {
   });
   contador.textContent = "01";
 
-  const INI = 0.12;
+  // primeiro o Brasil inteiro acende, em onda a partir de Cascavel (a Halten atende todos os estados);
+  // depois as rotas destacam os estados que têm representante
+  const [cx, cy] = (q(secao, ".mapa-cascavel").getAttribute("transform")?.match(/[\d.]+/g) ?? ["0", "0"]).map(Number);
+  const onda = qq<SVGPathElement>(secao, ".mapa-estados .uf")
+    .map((el) => {
+      const b = el.getBBox();
+      return { el, d: Math.hypot(b.x + b.width / 2 - cx, b.y + b.height / 2 - cy) };
+    })
+    .sort((a, b) => a.d - b.d);
+  onda.forEach(({ el }) => el.classList.add("escuro"));
+  const ONDA = 0.2;
+
+  const INI = 0.24;
   const CADA = (0.84 - INI) / Math.max(itens.length, 1);
   const DUR = CADA * 1.6;
 
@@ -598,6 +591,7 @@ function cenaBrasil(raiz: HTMLElement) {
     scrollTrigger: { trigger: secao, start: "top top", end: "bottom bottom", scrub: 0.6 },
     onUpdate: () => {
       const p = proxy.p;
+      onda.forEach(({ el }, i) => el.classList.toggle("escuro", p < 0.01 + (i / onda.length) * ONDA));
       let acesos = 1; // o Paraná (casa) já começa aceso
       itens.forEach((it, i) => {
         const k = limitar((p - (INI + i * CADA)) / DUR);

@@ -1,17 +1,16 @@
 /* Endereços e contatos das páginas v2. Sem nada de servidor: pode ser importado por componente de cliente. */
 
-/**
- * Para onde cada link das páginas v2 leva. Enquanto tudo é prévia, uma v2 leva para a outra;
- * ao publicar, é só trocar aqui pelos endereços oficiais ("/", "/produtos", ...).
- */
+/** Para onde cada link das páginas v2 leva (os antigos /xxx-v2 redirecionam para cá, ver next.config.ts). */
 export const ROTAS = {
-  inicio: "/v2",
-  produtos: "/produtos-v2",
-  produto: (slug: string) => `/produtos-v2/${slug}`,
-  quemSomos: "/quem-somos-v2",
-  representantes: "/representantes-v2",
-  contato: "/contato-v2",
-  catalogo: (id: string) => `/catalogo-v2/${id}`,
+  inicio: "/",
+  produtos: "/produtos",
+  produto: (slug: string) => `/produtos/${slug}`,
+  quemSomos: "/quem-somos",
+  representantes: "/representantes",
+  contato: "/contato",
+  /** sempre a revista ativa do admin de Links (app/catalogo/route.ts resolve qual é) */
+  catalogo: "/catalogo",
+  revista: (id: string) => `/catalogo/${id}?origem=site`,
 };
 
 /** Link do admin que aponta para um produto ("/produtos/x" ou URL completa do site) → página v2 do produto. */

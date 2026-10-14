@@ -1,6 +1,6 @@
 # BRIEF — Home v2 da Halten Abraçadeiras ("Aperta de verdade")
 
-Prévia em `/v2`, no ar só para o cliente ver (rota com `noindex`). A home oficial (`/`) não muda.
+Home oficial desde 14/10/2026 (antes foi prévia em `/v2`). As peças da v2 ficam nesta pasta (`_dados`, `_partes`, `_fx`, CSS).
 
 ## As 7 respostas
 
@@ -55,23 +55,26 @@ diâmetro) e segue.
   **JetBrains Mono** para rótulos, códigos e medidas, como numa folha técnica.
 - Escala: 13 / 16 / 18 / 24 / 36 / 56 / 88 / gigante. Espaçamento: 8 / 16 / 24 / 40 / 64 / 104 / 168.
 
-## Páginas internas v2 (14/10, prévia no localhost)
+## Páginas (oficiais desde 14/10/2026)
 
-| Prévia | Substitui | O que mudou |
-|---|---|---|
-| `/representantes-v2` | `/representantes` | cena "Presença" virou página: mapa clicável, ficha rebitada, lista, link `#uf` |
-| `/produtos-v2` | `/produtos` | busca por nome, medida (Ø) ou código Halten/original; selo de lançamento |
-| `/produtos-v2/[slug]` | `/produtos/[slug]` | portal de inspeção, cota da medida, ficha técnica tirada da descrição, tabela com filtro, anterior/próximo |
-| `/contato-v2` | `/contato` + `/localizacao` | formulário (abre o WhatsApp) + canais + placa + mapa numa página só |
-| `/quem-somos-v2` | `/quem-somos` | números do banco, aplicações, placa, missão/visão/valores |
-| `/catalogo-v2/[id]` | `/catalogo/[id]` | mesmo leitor da revista, no asfalto e voltando para o site (não conta clique) |
+| Página | O que tem |
+|---|---|
+| `/` | a home "Aperta de verdade" + outdoor dos banners (preso na tela: a rolagem troca as artes) |
+| `/produtos` | busca por nome, medida (Ø) ou código Halten/original; selo de lançamento |
+| `/produtos/[slug]` | portal de inspeção, cota da medida, ficha técnica tirada da descrição, tabela com filtro e orçamento, anterior/próximo |
+| `/contato` | formulário (abre o WhatsApp) + canais + placa + mapa (a antiga `/localizacao` redireciona para cá) |
+| `/quem-somos` | números do banco, aplicações, placa, missão/visão/valores |
+| `/representantes` | mapa clicável, ficha rebitada, lista por estado, link `#uf` |
+| `/catalogo` | leva à revista ativa do admin de Links (`/catalogo/<id>?origem=site`: fundo da v2, o X volta ao site) |
 
-Peças comuns: `_partes/contato.ts` (ROTAS, contatos), `_partes/moldura.tsx` (topo e rodapé),
-`_partes/revelar.tsx`, `_dados/produto.ts`, `v2-paginas.css`. `/links` fica como está.
+- A Halten atende os 26 estados + DF; os representantes cobrem só alguns estados. Representante é contado
+  por empresa (mesmo WhatsApp = um só), não por linha do cadastro (`contarRepresentantes`).
+- Endereços dos links num lugar só: `ROTAS` em `_partes/contato.ts`.
+- Os `/xxx-v2` da prévia redirecionam para as oficiais (`next.config.ts`).
+- `/links` ficou como era.
 
-**Ao publicar:** trocar `ROTAS` em `_partes/contato.ts` pelos endereços oficiais, mover cada
-`xxx-v2` para o lugar da original (ou redirecionar), tirar o `noindex` e os "(prévia v2)" dos títulos,
-e fazer o admin de Links revalidar as páginas estáticas que mostram o link do catálogo (topo).
+**Para voltar atrás:** as páginas antigas estão em `app/(v1)/` (`/v1`, `/produtos-v1`, `/contato-v1`,
+`/localizacao-v1`, `/quem-somos-v1`, `/representantes-v1`), fora do Google. Ou `git revert` do commit da troca.
 
 ## Trava anti-repetição (construcoes.md)
 

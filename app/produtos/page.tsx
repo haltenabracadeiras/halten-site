@@ -1,110 +1,46 @@
-import { Navbar } from "../components/navbar";
-import { Footer } from "../components/footer";
-import { ProductsGrid } from "./products-grid";
-import { getSupabaseAdmin } from "../../lib/supabase";
+import type { Metadata } from "next";
+import "../v2/v2.css";
+import "../v2/v2-paginas.css";
+import { carregarDadosV2 } from "../v2/_dados/linha";
+import { archivo } from "../v2/_partes/fonte";
+import { Rodape, Topo } from "../v2/_partes/moldura";
+import { Revelar } from "../v2/_partes/revelar";
+import { ListaProdutos } from "./lista";
 
+// produto novo ou trocado no admin aparece na hora
 export const dynamic = "force-dynamic";
 
-type ProductRow = {
-  id: string;
-  name: string;
-  slug: string;
-  category: string | null;
-  price: number | null;
-  excerpt: string | null;
-  images: string[] | null;
-  image_zoom: number | null;
+export const metadata: Metadata = {
+  title: "Produtos — Halten Abraçadeiras",
+  description:
+    "A linha completa de abraçadeiras Halten, da linha pesada ao nylon, com tabela técnica. Busque por nome, medida ou código Halten e original.",
 };
 
-async function getAllProducts() {
-  const supabase = getSupabaseAdmin();
-  const { data, error } = await supabase
-    .from("products")
-    .select("id,name,slug,category,price,excerpt,images,image_zoom")
-    .eq("active", true)
-    .order("position", { ascending: true });
-
-  if (error) {
-    console.error("[produtos] Supabase error:", error.message);
-    return [];
-  }
-
-  return (data ?? []) as ProductRow[];
-}
-
-export default async function ProductsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ q?: string }>;
-}) {
+export default async function ProdutosV2Page({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const { q } = await searchParams;
-  const products = await getAllProducts();
-  const categories = [
-    ...new Set(products.map((p) => p.category).filter(Boolean) as string[]),
-  ];
+  const { pecas, totalCodigos } = await carregarDadosV2();
 
   return (
-    <>
-      <Navbar />
-      <main style={{ background: "var(--paper)" }}>
-        {/* Hero header */}
-        <section
-          style={{
-            background: "var(--ink)",
-            padding: "96px 32px 80px",
-          }}
-        >
-          <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-            <p
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 11,
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-                color: "rgba(255,255,255,0.35)",
-                marginBottom: 20,
-              }}
-            >
-              [ Catálogo · Produtos ]
-            </p>
-            <h1
-              className="font-sans"
-              style={{
-                fontSize: "clamp(48px,6vw,80px)",
-                fontWeight: 700,
-                lineHeight: 0.95,
-                letterSpacing: "-0.03em",
-                color: "white",
-                margin: 0,
-              }}
-            >
-              Linha completa{" "}
-              <em style={{ fontStyle: "italic", color: "var(--blue)" }}>de abraçadeiras.</em>
-            </h1>
-            <p
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 14,
-                lineHeight: 1.7,
-                color: "rgba(255,255,255,0.55)",
-                maxWidth: 520,
-                marginTop: 20,
-                marginBottom: 0,
-              }}
-            >
-              Abraçadeiras para os projetos mais exigentes — montagem de motores, intercooler, sistemas hidráulicos, agrícola e cargas pesadas.
-            </p>
-          </div>
-        </section>
+    <main className={`v2 pg ${archivo.variable}`} id="v2">
+      <Topo />
 
-        {/* Grid */}
-        <section style={{ padding: "80px 32px 120px" }}>
-          <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-            <ProductsGrid products={products} categories={categories} initialQuery={q ?? ""} />
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </>
+      <header className="pg-cabeca">
+        <p className="rotulo" data-revela>
+          Produtos <i>·</i> linha completa
+        </p>
+        <h1 className="pg-titulo" data-revela>
+          A linha Halten.
+        </h1>
+        <p className="pg-lead" data-revela>
+          {pecas.length} modelos e {totalCodigos} códigos com tabela técnica, da linha pesada ao nylon. Busque pelo nome,
+          pela medida ou por um código, Halten ou original.
+        </p>
+      </header>
+
+      <ListaProdutos pecas={pecas} inicial={q ?? ""} />
+
+      <Rodape />
+      <Revelar />
+    </main>
   );
 }

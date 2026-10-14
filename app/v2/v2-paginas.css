@@ -1454,3 +1454,9 @@
     border-left: 0;
   }
 }
+
+/* "26 + DF": o "+ DF" menor, ao lado do número */
+.v2 .qs-numeros dd small {
+  font-size: 0.42em;
+  font-weight: 700;
+}

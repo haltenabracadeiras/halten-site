@@ -12,8 +12,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return { title: data?.title ? `${data.title} — Halten` : "Catálogo — Halten" };
 }
 
-export default async function CatalogoPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default async function CatalogoPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ origem?: string }>;
+}) {
+  const [{ id }, { origem }] = await Promise.all([params, searchParams]);
   const db = getSupabaseAdmin();
 
   const { data: link } = await db.from("links").select("id, title, url").eq("id", id).single();
@@ -22,10 +28,14 @@ export default async function CatalogoPage({ params }: { params: Promise<{ id: s
   // Conta o clique (mesma métrica do botão na /links)
   await db.rpc("increment_link_clicks", { link_id: id });
 
+  // aberta pelo menu do site: fundo da v2 e o X volta para o site; pela /links, fica como sempre foi
+  const doSite = origem === "site";
+
   return (
     <Flipbook
       fileUrl={`/catalogo/${id}/file?v=${fileVersion(link.url)}`}
       title={link.title ?? "Catálogo"}
+      {...(doSite ? { voltar: "/", fundo: "radial-gradient(ellipse 70% 60% at 50% 0%, #1a2129 0%, #090c0f 72%)" } : {})}
     />
   );
 }

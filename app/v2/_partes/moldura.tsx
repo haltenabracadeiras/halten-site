@@ -1,11 +1,9 @@
-/* As páginas v2 são prévias isoladas: os links são <a> comuns (recarga completa) para o motor de rolagem
+/* Topo e rodapé das páginas v2. Os links são <a> comuns (recarga completa) para o motor de rolagem
    da home (que mexe no <html> e no fundo do <body>) não vazar para as outras páginas. */
-import { linkDoCatalogo } from "../_dados/catalogo";
 import { ROTAS, WHATSAPP_COMERCIAL } from "./contato";
 
 /** Topo de vidro escuro das páginas v2. */
-export async function Topo() {
-  const catalogo = await linkDoCatalogo();
+export function Topo() {
   return (
     <header className="topo" data-topo>
       <a href={ROTAS.inicio} className="topo-marca" aria-label="Halten Abraçadeiras — início">
@@ -16,9 +14,7 @@ export async function Topo() {
         <a href={ROTAS.produtos}>Produtos</a>
         <a href={ROTAS.quemSomos}>Quem somos</a>
         <a href={ROTAS.representantes}>Representantes</a>
-        <a href={catalogo.href} {...(catalogo.externo ? { target: "_blank", rel: "noreferrer" } : {})}>
-          Catálogo
-        </a>
+        <a href={ROTAS.catalogo}>Catálogo</a>
         <a href={ROTAS.contato}>Contato</a>
       </nav>
       <a className="topo-cta" href={WHATSAPP_COMERCIAL} target="_blank" rel="noreferrer">
