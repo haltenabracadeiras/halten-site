@@ -1,10 +1,13 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { WHATSAPP_NUMERO, linkWhatsapp } from "../v2/_partes/contato";
+import { linkWhatsapp } from "../v2/_partes/contato";
+import { useWhatsapp } from "../components/config-site";
+import { rastrearCliqueWhatsapp } from "../components/rastreamento";
 
 /** Como no site atual: o formulário monta a mensagem e abre o WhatsApp comercial (nada é guardado). */
 export function Formulario() {
+  const whatsapp = useWhatsapp();
   const [f, setF] = useState({ nome: "", empresa: "", email: "", telefone: "", mensagem: "" });
   const mudar = (k: keyof typeof f) => (e: { target: { value: string } }) => setF({ ...f, [k]: e.target.value });
 
@@ -18,7 +21,9 @@ export function Formulario() {
       `E-mail: ${f.email.trim()}`,
     ];
     if (f.telefone.trim()) linhas.push(`Telefone: ${f.telefone.trim()}`);
-    window.open(linkWhatsapp(WHATSAPP_NUMERO, linhas.join("\n")), "_blank", "noopener");
+    const url = linkWhatsapp(whatsapp, linhas.join("\n"));
+    rastrearCliqueWhatsapp(url);
+    window.open(url, "_blank", "noopener");
   }
 
   return (

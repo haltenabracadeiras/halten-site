@@ -1,0 +1,228 @@
+/* Política de Privacidade — texto longo na linguagem das páginas v2 (tokens em v2.css). */
+
+.v2.pol .pg-titulo {
+  max-width: 12ch;
+}
+
+.v2 .pol-data {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--suave);
+}
+
+.v2 .pol-corpo {
+  display: grid;
+  grid-template-columns: minmax(200px, 260px) minmax(0, 1fr);
+  gap: 56px;
+  align-items: start;
+  padding: 0 var(--margem) 130px;
+  border-top: 1px solid rgba(233, 237, 240, 0.08);
+  padding-top: 56px;
+}
+
+/* índice que acompanha a leitura */
+.v2 .pol-indice {
+  position: sticky;
+  top: 110px;
+  display: grid;
+  gap: 14px;
+}
+
+.v2 .pol-indice ol {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: pol;
+}
+
+.v2 .pol-indice li {
+  counter-increment: pol;
+  font-size: 15px;
+  line-height: 1.35;
+  color: var(--suave);
+}
+
+.v2 .pol-indice li::before {
+  content: counter(pol, decimal-leading-zero);
+  margin-right: 10px;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--azul);
+}
+
+.v2 .pol-indice a:hover {
+  color: var(--tinta);
+}
+
+/* texto */
+.v2 .pol-texto {
+  max-width: 76ch;
+  counter-reset: secao;
+}
+
+.v2 .pol-texto section {
+  scroll-margin-top: 110px;
+  padding-bottom: 48px;
+}
+
+.v2 .pol-texto section + section {
+  padding-top: 48px;
+  border-top: 1px solid rgba(233, 237, 240, 0.08);
+}
+
+.v2 .pol-texto h2 {
+  counter-increment: secao;
+  margin-bottom: 18px;
+  font-size: clamp(26px, 3vw, 38px);
+  font-weight: 800;
+  font-variation-settings: "wdth" 80;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.v2 .pol-texto h2::before {
+  content: counter(secao, decimal-leading-zero);
+  display: block;
+  margin-bottom: 10px;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: var(--azul);
+}
+
+.v2 .pol-texto h3 {
+  margin: 32px 0 12px;
+  font-size: 20px;
+  font-weight: 750;
+}
+
+.v2 .pol-texto p,
+.v2 .pol-texto li {
+  font-size: 17px;
+  color: #c3cad1;
+}
+
+.v2 .pol-texto p + p,
+.v2 .pol-texto ul + p,
+.v2 .pol-texto p + ul {
+  margin-top: 14px;
+}
+
+.v2 .pol-texto ul {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 1.2em;
+}
+
+.v2 .pol-texto li::marker {
+  color: var(--azul);
+}
+
+.v2 .pol-texto b {
+  color: var(--tinta);
+  font-weight: 650;
+}
+
+.v2 .pol-texto a {
+  color: var(--tinta);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--azul) 70%, transparent);
+}
+
+.v2 .pol-texto a:hover {
+  color: var(--azul);
+}
+
+.v2 .pol-acao {
+  margin-top: 26px;
+}
+
+/* tabela de cookies */
+.v2 .pol-tabela {
+  margin: 24px 0 8px;
+  overflow-x: auto;
+  border: 1px solid rgba(233, 237, 240, 0.1);
+  border-radius: 8px;
+}
+
+.v2 .pol-tabela table {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: collapse;
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+
+.v2 .pol-tabela :is(th, td) {
+  padding: 13px 16px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid rgba(233, 237, 240, 0.08);
+  color: #c3cad1;
+}
+
+.v2 .pol-tabela thead th {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--suave);
+  background: var(--chassi);
+}
+
+.v2 .pol-tabela thead th:nth-child(2) {
+  width: 42%;
+}
+
+.v2 .pol-tabela tbody th {
+  color: var(--tinta);
+  font-weight: 700;
+  background: rgba(16, 21, 26, 0.6);
+  border-right: 1px solid rgba(233, 237, 240, 0.08);
+}
+
+.v2 .pol-tabela small {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--suave);
+}
+
+.v2 .pol-tabela code {
+  font-family: var(--f-mono);
+  font-size: 13px;
+  color: var(--tinta);
+}
+
+.v2 .pol-tabela tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.v2 .pol-tabela:focus-visible {
+  outline: 2px solid var(--azul);
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .v2 .pol-corpo {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 36px;
+    padding-top: 40px;
+  }
+
+  .v2 .pol-indice {
+    position: static;
+  }
+}

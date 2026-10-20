@@ -66,12 +66,18 @@ diâmetro) e segue.
 | `/quem-somos` | números do banco, aplicações, placa, missão/visão/valores |
 | `/representantes` | mapa clicável, ficha rebitada, lista por estado, link `#uf` |
 | `/catalogo` | leva à revista ativa do admin de Links (`/catalogo/<id>?origem=site`: fundo da v2, o X volta ao site) |
+| `/politica-de-privacidade` | política (LGPD) com a seção de cookies; linkada no banner de cookies e no rodapé |
 
 - A Halten atende os 26 estados + DF; os representantes cobrem só alguns estados. Representante é contado
   por empresa (mesmo WhatsApp = um só), não por linha do cadastro (`contarRepresentantes`).
 - Endereços dos links num lugar só: `ROTAS` em `_partes/contato.ts`.
 - Os `/xxx-v2` da prévia redirecionam para as oficiais (`next.config.ts`).
 - `/links` ficou como era.
+- WhatsApp comercial, GA4 e Meta Pixel vêm de Admin → Configurações (`getConfigSite`, `lib/configuracoes.ts`;
+  cache de 60s, o salvar do admin refaz o site na hora). Nos componentes de cliente: `useWhatsapp()`.
+- Banner de cookies (`app/components/consentimento.tsx`): GA4 e Pixel só carregam com a categoria aceita;
+  todo clique em link de WhatsApp vira `clique_whatsapp` (GA4) e `Contact` (Pixel) em `rastreamento.tsx`.
+  Mudou ferramenta ou texto do banner? Suba `VERSAO_BANNER` para perguntar de novo a todos.
 
 **Para voltar atrás:** as páginas antigas estão em `app/(v1)/` (`/v1`, `/produtos-v1`, `/contato-v1`,
 `/localizacao-v1`, `/quem-somos-v1`, `/representantes-v1`), fora do Google. Ou `git revert` do commit da troca.

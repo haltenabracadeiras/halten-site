@@ -1,23 +1,27 @@
 import type { Metadata } from "next";
 import "../v2/v2.css";
 import "../v2/v2-paginas.css";
-import { CONTATO, ROTAS, WHATSAPP_COMERCIAL } from "../v2/_partes/contato";
+import { getConfigSite } from "../../lib/configuracoes";
+import { CONTATO, ROTAS, formatarTelefone, whatsappComercial } from "../v2/_partes/contato";
 import { archivo } from "../v2/_partes/fonte";
 import { Rodape, Topo } from "../v2/_partes/moldura";
 import { Revelar } from "../v2/_partes/revelar";
 import { Formulario } from "./formulario";
 
-export const metadata: Metadata = {
-  title: "Contato — Halten Abraçadeiras",
-  description:
-    "Fale com a fábrica da Halten em Cascavel/PR: WhatsApp (45) 99151-7308, telefone (45) 3197-2130 e contato@halten.ind.br. Seg a sex, das 08:00 às 18:00.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { whatsapp } = await getConfigSite();
+  return {
+    title: "Contato — Halten Abraçadeiras",
+    description: `Fale com a fábrica da Halten em Cascavel/PR: WhatsApp ${formatarTelefone(whatsapp)}, telefone (45) 3197-2130 e contato@halten.ind.br. Seg a sex, das 08:00 às 18:00.`,
+  };
+}
 
 // o mesmo mapa da página de localização atual
 const MAPA =
   "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3765!2d-53.4007868!3d-24.957148!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94f3d5ebc7600681:0x29b1524dc2f68e56!2sHalten+Abra%C3%A7adeiras!5e0!3m2!1spt-BR!2sbr!4v1748873600000!5m2!1spt-BR!2sbr";
 
-export default function ContatoV2Page() {
+export default async function ContatoV2Page() {
+  const { whatsapp } = await getConfigSite();
   return (
     <main className={`v2 pg ${archivo.variable}`} id="v2">
       <Topo />
@@ -37,8 +41,8 @@ export default function ContatoV2Page() {
           <ul className="ct-lista" data-revela>
             <li>
               <span>WhatsApp comercial</span>
-              <a href={WHATSAPP_COMERCIAL} target="_blank" rel="noreferrer">
-                {CONTATO.whatsapp}
+              <a href={whatsappComercial(whatsapp)} target="_blank" rel="noreferrer">
+                {formatarTelefone(whatsapp)}
               </a>
             </li>
             <li>

@@ -5,7 +5,8 @@ import { getSupabaseAdmin } from "../../lib/supabase";
 import { contarRepresentantes } from "../v2/_dados/linha";
 import { NOMES_UF } from "../v2/_dados/mapa";
 import { archivo } from "../v2/_partes/fonte";
-import { WHATSAPP_COMERCIAL, linkWhatsapp } from "../v2/_partes/contato";
+import { getConfigSite } from "../../lib/configuracoes";
+import { formatarTelefone, linkWhatsapp, whatsappComercial } from "../v2/_partes/contato";
 import { Rodape, Topo } from "../v2/_partes/moldura";
 import { MapaRepresentantes, type Representante } from "./mapa-representantes";
 
@@ -17,15 +18,6 @@ export const metadata: Metadata = {
   description:
     "A Halten atende todo o Brasil. Encontre o representante comercial do seu estado e fale direto pelo WhatsApp.",
 };
-
-/** "5545999998888" → "(45) 99999-8888"; o que não reconhecer, mostra como veio. */
-function telefone(bruto: string) {
-  const d = bruto.replace(/\D/g, "");
-  const local = d.startsWith("55") && d.length >= 12 ? d.slice(2) : d;
-  if (local.length === 11) return `(${local.slice(0, 2)}) ${local.slice(2, 7)}-${local.slice(7)}`;
-  if (local.length === 10) return `(${local.slice(0, 2)}) ${local.slice(2, 6)}-${local.slice(6)}`;
-  return bruto;
-}
 
 async function carregarRepresentantes(): Promise<Representante[]> {
   const { data } = await getSupabaseAdmin()
@@ -42,7 +34,7 @@ async function carregarRepresentantes(): Promise<Representante[]> {
       uf,
       regiao: r.regiao?.trim() || null,
       email: r.email?.trim().toLowerCase() || null, // há e-mail cadastrado todo em maiúsculas
-      telefone: telefone(String(r.whatsapp ?? "")),
+      telefone: formatarTelefone(String(r.whatsapp ?? "")),
       whatsapp: linkWhatsapp(
         String(r.whatsapp ?? "").replace(/\D/g, ""),
         `Olá! Vim pelo site da Halten Abraçadeiras e gostaria de falar com o representante de ${NOMES_UF[uf] ?? uf}.`,
@@ -52,7 +44,7 @@ async function carregarRepresentantes(): Promise<Representante[]> {
 }
 
 export default async function RepresentantesV2Page() {
-  const reps = await carregarRepresentantes();
+  const [reps, config] = await Promise.all([carregarRepresentantes(), getConfigSite()]);
   const estados = Array.from(new Set(reps.map((r) => r.uf)));
   const empresas = contarRepresentantes(reps.map((r) => ({ whatsapp: r.telefone, name: r.nome })));
 
@@ -126,11 +118,11 @@ export default async function RepresentantesV2Page() {
           <br />
           A fábrica atende você.
         </h2>
-        <a className="botao rv2-fim-botao" href={WHATSAPP_COMERCIAL} target="_blank" rel="noreferrer">
+        <a className="botao rv2-fim-botao" href={whatsappComercial(config.whatsapp)} target="_blank" rel="noreferrer">
           Falar com a fábrica no WhatsApp
         </a>
         <p className="rv2-fim-contato">
-          (45) 99151-7308 <i>·</i> (45) 3197-2130 <i>·</i> contato@halten.ind.br
+          {formatarTelefone(config.whatsapp)} <i>·</i> (45) 3197-2130 <i>·</i> contato@halten.ind.br
         </p>
       </section>
 

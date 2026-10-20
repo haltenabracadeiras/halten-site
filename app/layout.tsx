@@ -5,6 +5,10 @@ import { LenisProvider } from "./providers";
 import { CartProvider } from "./context/cart-context";
 import { CartDrawer } from "./components/cart-drawer";
 import { PageTracker } from "./components/page-tracker";
+import { ConfigSiteProvider } from "./components/config-site";
+import { Rastreamento } from "./components/rastreamento";
+import { BannerCookies } from "./components/consentimento";
+import { getConfigSite } from "../lib/configuracoes";
 
 const syne = Syne({
   subsets: ["latin"],
@@ -41,22 +45,32 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+// GA, Pixel e WhatsApp vêm do admin: as páginas estáticas se refazem a cada 60s no máximo
+// (e na hora, quando o admin salva as configurações — ver app/admin/configuracoes/actions.ts)
+export const revalidate = 60;
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const config = await getConfigSite();
+
   return (
     <html
       lang="pt-BR"
       className={`${syne.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <CartProvider>
-          <PageTracker />
-          <LenisProvider>{children}</LenisProvider>
-          <CartDrawer />
-        </CartProvider>
+        <ConfigSiteProvider whatsapp={config.whatsapp}>
+          <CartProvider>
+            <PageTracker />
+            <LenisProvider>{children}</LenisProvider>
+            <CartDrawer />
+          </CartProvider>
+        </ConfigSiteProvider>
+        <BannerCookies />
+        <Rastreamento gaId={config.gaId} metaPixelId={config.metaPixelId} />
       </body>
     </html>
   );

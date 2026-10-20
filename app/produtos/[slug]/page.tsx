@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import "../../v2/v2.css";
 import "../../v2/v2-paginas.css";
 import { carregarProdutoV2 } from "../../v2/_dados/produto";
-import { ROTAS, WHATSAPP_NUMERO, linkWhatsapp } from "../../v2/_partes/contato";
+import { getConfigSite } from "../../../lib/configuracoes";
+import { ROTAS, linkWhatsapp } from "../../v2/_partes/contato";
 import { archivo } from "../../v2/_partes/fonte";
 import { Rodape, Topo } from "../../v2/_partes/moldura";
 import { Galeria } from "./galeria";
@@ -25,10 +26,10 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 export default async function ProdutoV2Page({ params }: Params) {
   const { slug } = await params;
-  const p = await carregarProdutoV2(slug);
+  const [p, config] = await Promise.all([carregarProdutoV2(slug), getConfigSite()]);
   if (!p) notFound();
 
-  const pedido = linkWhatsapp(WHATSAPP_NUMERO, `Olá! Tenho interesse na ${p.nome}. Poderia me enviar um orçamento?`);
+  const pedido = linkWhatsapp(config.whatsapp, `Olá! Tenho interesse na ${p.nome}. Poderia me enviar um orçamento?`);
   const temTabela = !!p.tabela || p.conversoes.length > 0;
 
   return (

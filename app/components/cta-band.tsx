@@ -1,6 +1,11 @@
-const WA_LINK = "https://wa.me/5545991517308";
+"use client";
+
+import { useWhatsapp } from "./config-site";
+import { formatarTelefone, linkWhatsapp } from "../v2/_partes/contato";
 
 export function CtaBand() {
+  const whatsapp = useWhatsapp();
+  const WA_LINK = linkWhatsapp(whatsapp);
   return (
     <section
       id="contato"
@@ -177,7 +182,7 @@ export function CtaBand() {
                 </svg>
               ),
               label: "WHATSAPP COMERCIAL",
-              value: "(45) 99151-7308",
+              value: formatarTelefone(whatsapp),
               href: WA_LINK,
             },
             {

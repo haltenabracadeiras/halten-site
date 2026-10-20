@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Menu, Search, X } from "lucide-react";
+import { useWhatsapp } from "./config-site";
+import { linkWhatsapp } from "../v2/_partes/contato";
 
 const navLinks = [
   { href: "/", label: "Início" },
@@ -15,9 +17,8 @@ const navLinks = [
   { href: "/contato", label: "Contato" },
 ];
 
-const WA_LINK = "https://wa.me/5545991517308";
-
 export function Navbar() {
+  const WA_LINK = linkWhatsapp(useWhatsapp());
   const router = useRouter();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");

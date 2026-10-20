@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Navbar } from "../../../components/navbar";
 import { Footer } from "../../../components/footer";
 import { getSupabaseAdmin } from "../../../../lib/supabase";
+import { getConfigSite } from "../../../../lib/configuracoes";
 import { ImageViewer } from "./image-viewer";
 import { AddToCartButton } from "../../../components/add-to-cart-button";
 
@@ -105,9 +106,10 @@ export default async function ProductDetailPage({
 
   if (!product) notFound();
 
-  const [productTable, productConversion] = await Promise.all([
+  const [productTable, productConversion, config] = await Promise.all([
     getProductTable(product.id),
     getProductConversion(product.id),
+    getConfigSite(),
   ]);
 
   const images = Array.isArray(product.images) ? product.images : [];
@@ -457,7 +459,7 @@ export default async function ProductDetailPage({
 
               {/* WhatsApp CTA */}
               <a
-                href={`https://wa.me/5545991517308?text=${whatsappMsg}`}
+                href={`https://wa.me/${config.whatsapp}?text=${whatsappMsg}`}
                 target="_blank"
                 rel="noreferrer"
                 style={{

@@ -1,0 +1,290 @@
+/* Banner de cookies — fica fora do .v2 (vem do layout raiz), então traz as cores da v2 consigo. */
+
+.ck {
+  --ck-fundo: #10151a;
+  --ck-tinta: #e9edf0;
+  --ck-suave: #8e9aa6;
+  --ck-azul: #1c9bd7;
+  --ck-linha: rgba(233, 237, 240, 0.12);
+
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  z-index: 1100; /* acima do botão do carrinho (999) */
+  box-sizing: border-box;
+  width: min(560px, calc(100vw - 40px));
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  padding: 26px 26px 22px;
+  border: 1px solid var(--ck-linha);
+  border-radius: 10px;
+  background: var(--ck-fundo);
+  color: var(--ck-tinta);
+  box-shadow: 0 24px 60px -18px rgba(0, 0, 0, 0.7);
+  font-family: var(--font-v2), "Archivo", system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  animation: ck-entra 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.ck:focus {
+  outline: none;
+}
+
+.ck *,
+.ck *::before {
+  box-sizing: border-box;
+}
+
+@keyframes ck-entra {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+.ck-x {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--ck-suave);
+  cursor: pointer;
+}
+
+.ck-x:hover {
+  color: var(--ck-tinta);
+  background: rgba(233, 237, 240, 0.06);
+}
+
+.ck-rotulo {
+  margin: 0 0 8px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ck-azul);
+}
+
+.ck-titulo {
+  margin: 0 40px 10px 0;
+  font-family: inherit;
+  font-size: 22px;
+  font-weight: 800;
+  font-variation-settings: "wdth" 80;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--ck-tinta);
+}
+
+.ck-texto {
+  margin: 0;
+  color: var(--ck-suave);
+}
+
+.ck-texto a {
+  color: var(--ck-tinta);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ck-texto a:hover {
+  color: var(--ck-azul);
+}
+
+/* ── categorias (Personalizar) ── */
+
+.ck-categorias {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ck-categoria {
+  padding: 14px 16px;
+  border: 1px solid var(--ck-linha);
+  border-radius: 8px;
+}
+
+.ck-categoria p {
+  margin: 6px 0 0;
+  font-size: 13.5px;
+  color: var(--ck-suave);
+}
+
+.ck-categoria-topo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ck-categoria-nome {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+  margin-right: auto;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ck-categoria-nome small {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: var(--ck-suave);
+}
+
+.ck-sempre {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ck-suave);
+}
+
+/* chave liga/desliga */
+.ck-chave {
+  appearance: none;
+  position: relative;
+  flex: none;
+  width: 44px;
+  height: 24px;
+  margin: 0;
+  border-radius: 999px;
+  background: rgba(233, 237, 240, 0.18);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.ck-chave::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--ck-tinta);
+  transition: transform 0.2s ease;
+}
+
+.ck-chave:checked {
+  background: var(--ck-azul);
+}
+
+.ck-chave:checked::before {
+  transform: translateX(20px);
+}
+
+.ck-chave:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* ── botões: Aceitar e Recusar idênticos; Personalizar/Salvar em contorno ── */
+
+.ck-botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.ck-botao,
+.ck-botao-sec {
+  flex: 1 1 140px;
+  height: 46px;
+  padding: 0 18px;
+  border-radius: 6px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.ck-botao {
+  border: 1px solid var(--ck-tinta);
+  background: var(--ck-tinta);
+  color: #090c0f;
+}
+
+.ck-botao:hover {
+  border-color: var(--ck-azul);
+  background: var(--ck-azul);
+  color: #fff;
+}
+
+.ck-botao-sec {
+  flex-basis: 100%;
+  border: 1px solid var(--ck-linha);
+  background: none;
+  color: var(--ck-tinta);
+}
+
+.ck-botao-sec:hover {
+  border-color: var(--ck-tinta);
+}
+
+.ck :is(button, a, input):focus-visible {
+  outline: 2px solid var(--ck-azul);
+  outline-offset: 2px;
+}
+
+/* ── link "Preferências de cookies" dos rodapés ── */
+
+.ck-link-rodape {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+
+.ck-link-rodape:hover {
+  color: #e9edf0;
+}
+
+.ck-link-rodape:focus-visible {
+  outline: 2px solid #1c9bd7;
+  outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+  .ck {
+    left: 12px;
+    bottom: 12px;
+    width: calc(100vw - 24px);
+    max-height: calc(100dvh - 24px);
+    padding: 22px 18px 18px;
+  }
+
+  .ck-titulo {
+    font-size: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ck {
+    animation: none;
+  }
+}

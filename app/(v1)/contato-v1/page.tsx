@@ -4,8 +4,12 @@ import { useState } from "react";
 import { MessageCircle, Phone, Mail, Send } from "lucide-react";
 import { Navbar } from "../../components/navbar";
 import { Footer } from "../../components/footer";
+import { useWhatsapp } from "../../components/config-site";
+import { rastrearCliqueWhatsapp } from "../../components/rastreamento";
+import { formatarTelefone, linkWhatsapp } from "../../v2/_partes/contato";
 
 export default function ContactPage() {
+  const whatsapp = useWhatsapp();
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -13,7 +17,9 @@ export default function ContactPage() {
     const text = encodeURIComponent(
       `Olá! Meu nome é *${form.name}*.\n\n${form.message}\n\nE-mail: ${form.email}${form.phone ? `\nTelefone: ${form.phone}` : ""}`
     );
-    window.open(`https://wa.me/5545991517308?text=${text}`, "_blank");
+    const url = `https://wa.me/${whatsapp}?text=${text}`;
+    rastrearCliqueWhatsapp(url);
+    window.open(url, "_blank");
   };
 
   const field: React.CSSProperties = {
@@ -120,7 +126,7 @@ export default function ContactPage() {
 
                 <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                   <a
-                    href="https://wa.me/5545991517308"
+                    href={linkWhatsapp(whatsapp)}
                     target="_blank"
                     rel="noreferrer"
                     style={{
@@ -151,7 +157,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="font-sans" style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)", margin: 0 }}>
-                        (45) 99151-7308
+                        {formatarTelefone(whatsapp)}
                       </p>
                       <p style={{ fontSize: 12, color: "#16a34a", fontFamily: "var(--font-mono)", margin: 0 }}>
                         WhatsApp · atendimento comercial

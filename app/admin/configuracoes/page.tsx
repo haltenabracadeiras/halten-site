@@ -116,12 +116,12 @@ export default async function ConfiguracoesPage() {
               <label style={labelStyle}>Número WhatsApp</label>
               <input
                 name="empresa_whatsapp"
-                defaultValue={config.empresa_whatsapp ?? "554531972130"}
+                defaultValue={config.empresa_whatsapp ?? ""}
                 style={inputStyle}
                 placeholder="554599999999 (sem + ou espaços)"
               />
               <p style={{ fontSize: 11, color: "var(--ink-dim)", fontFamily: "var(--font-mono)", marginTop: 4 }}>
-                Formato DDI+DDD+número. Ex.: 554599999999
+                Formato DDI+DDD+número. Ex.: 5545999999999. Vale para todos os botões de WhatsApp do site.
               </p>
             </div>
             <div>

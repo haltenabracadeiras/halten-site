@@ -7,7 +7,8 @@ import { carregarDadosV2 } from "./v2/_dados/linha";
 import { BRASIL_VIEWBOX, CASCAVEL, ESTADOS } from "./v2/_dados/brasil";
 import { NOMES_UF, ROTULO_DESLOCADO, rotaAte } from "./v2/_dados/mapa";
 import { archivo } from "./v2/_partes/fonte";
-import { ROTAS, WHATSAPP_COMERCIAL as WHATSAPP, rotaInterna } from "./v2/_partes/contato";
+import { ROTAS, formatarTelefone, rotaInterna, whatsappComercial } from "./v2/_partes/contato";
+import { getConfigSite } from "../lib/configuracoes";
 import { Rodape, Topo } from "./v2/_partes/moldura";
 import { Movimento } from "./v2/_fx/movimento";
 
@@ -26,7 +27,8 @@ function letras(texto: string) {
 }
 
 export default async function V2Page() {
-  const dados = await carregarDadosV2();
+  const [dados, config] = await Promise.all([carregarDadosV2(), getConfigSite()]);
+  const WHATSAPP = whatsappComercial(config.whatsapp);
   const { pecas, totalCodigos, medidor, representantes, estados, banners } = dados;
   const rotas = estados
     .filter((uf) => uf !== "PR" && ESTADOS[uf])
@@ -577,7 +579,7 @@ export default async function V2Page() {
           <li>
             <span>WhatsApp comercial</span>
             <a href={WHATSAPP} target="_blank" rel="noreferrer">
-              (45) 99151-7308
+              {formatarTelefone(config.whatsapp)}
             </a>
           </li>
           <li>

@@ -1,7 +1,8 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { getSupabaseAdmin } from "../../../lib/supabase";
+import { TAG_CONFIGURACOES } from "../../../lib/configuracoes";
 
 export async function saveConfiguracoes(formData: FormData) {
   const db = getSupabaseAdmin();
@@ -37,6 +38,7 @@ export async function saveConfiguracoes(formData: FormData) {
       .upsert({ key, value }, { onConflict: "key" });
   }
 
-  revalidatePath("/admin/configuracoes");
-  revalidatePath("/");
+  // GA, Pixel e WhatsApp são lidos no layout raiz: expira o cache delas e refaz todas as páginas
+  updateTag(TAG_CONFIGURACOES);
+  revalidatePath("/", "layout");
 }

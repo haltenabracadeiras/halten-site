@@ -1,5 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useWhatsapp } from "./config-site";
+import { BotaoPreferenciasCookies } from "./consentimento";
+import { ROTAS, formatarTelefone, linkWhatsapp } from "../v2/_partes/contato";
 
 const NAV_LINKS = [
   { label: "Início", href: "/" },
@@ -9,6 +14,7 @@ const NAV_LINKS = [
 ];
 
 export function Footer() {
+  const whatsapp = useWhatsapp();
   return (
     <footer style={{ background: "#0f1923" }}>
       <div
@@ -58,7 +64,7 @@ export function Footer() {
             <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
               {/* WhatsApp */}
               <a
-                href="https://wa.me/5545991517308"
+                href={linkWhatsapp(whatsapp)}
                 target="_blank"
                 rel="noreferrer"
                 aria-label="WhatsApp"
@@ -151,12 +157,12 @@ export function Footer() {
                   WhatsApp
                 </p>
                 <a
-                  href="https://wa.me/5545991517308"
+                  href={linkWhatsapp(whatsapp)}
                   target="_blank"
                   rel="noreferrer"
                   style={{ fontSize: 13, color: "rgba(255,255,255,0.75)", fontFamily: "var(--font-mono)", textDecoration: "none" }}
                 >
-                  (45) 99151-7308
+                  {formatarTelefone(whatsapp)}
                 </a>
               </div>
               <div>
@@ -248,9 +254,14 @@ export function Footer() {
               letterSpacing: "0.06em",
             }}
           >
-            © {new Date().getFullYear()} Halten Abraçadeiras · Todos os direitos reservados
+            © {new Date().getFullYear()} Halten Abraçadeiras · Todos os direitos reservados ·{" "}
+            <a href={ROTAS.privacidade} style={{ color: "inherit" }}>
+              Privacidade
+            </a>{" "}
+            · <BotaoPreferenciasCookies />
           </p>
           <a
+            data-sem-rastreio
             href="https://wa.me/5545991250788?text=Ol%C3%A1%20vi%20seu%20projeto%20da%20Halten%2C%20gostaria%20de%20falar%20sobre%3A"
             target="_blank"
             rel="noreferrer"

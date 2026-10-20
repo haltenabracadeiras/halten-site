@@ -4,7 +4,8 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import gsap from "gsap";
 import { BRASIL_VIEWBOX, CASCAVEL, ESTADOS } from "../v2/_dados/brasil";
 import { NOMES_UF, ROTULO_DESLOCADO, rotaAte } from "../v2/_dados/mapa";
-import { WHATSAPP_NUMERO, linkWhatsapp } from "../v2/_partes/contato";
+import { linkWhatsapp } from "../v2/_partes/contato";
+import { useWhatsapp } from "../components/config-site";
 
 export type Representante = {
   id: string;
@@ -43,6 +44,7 @@ function circulo(classe: string, r: number) {
 }
 
 export function MapaRepresentantes({ reps, children }: { reps: Representante[]; children: ReactNode }) {
+  const whatsapp = useWhatsapp();
   const [sel, setSel] = useState<string | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const fxRef = useRef<SVGGElement>(null);
@@ -262,7 +264,7 @@ export function MapaRepresentantes({ reps, children }: { reps: Representante[]; 
                 <p className="rv2-placa-texto">A fábrica atende você direto, de Cascavel/PR.</p>
                 <a
                   className="botao rv2-zap"
-                  href={linkWhatsapp(WHATSAPP_NUMERO, `Olá, Halten! Sou de ${nomeSel} e gostaria de fazer um orçamento.`)}
+                  href={linkWhatsapp(whatsapp, `Olá, Halten! Sou de ${nomeSel} e gostaria de fazer um orçamento.`)}
                   target="_blank"
                   rel="noreferrer"
                 >

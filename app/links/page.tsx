@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { getSupabaseAdmin } from "../../lib/supabase";
 import { LinkIcon } from "./link-icons";
+import { BotaoPreferenciasCookies } from "../components/consentimento";
+import { ROTAS } from "../v2/_partes/contato";
 
 export const dynamic = "force-dynamic";
 
@@ -16,12 +18,13 @@ type LinkRow = {
   subtitle: string | null;
   icon: string | null;
   icon_url: string | null;
+  url: string | null;
 };
 
 export default async function LinksPage() {
   const { data } = await getSupabaseAdmin()
     .from("links")
-    .select("id, title, subtitle, icon, icon_url, position, active")
+    .select("id, title, subtitle, icon, icon_url, url, position, active")
     .eq("active", true)
     .order("position", { ascending: true });
 
@@ -69,6 +72,7 @@ export default async function LinksPage() {
               <a
                 key={link.id}
                 href={link.icon === "catalogo" ? `/catalogo/${link.id}` : `/links/go/${link.id}`}
+                data-destino={link.url ?? undefined} // o clique passa por /links/go: o rastreio de WhatsApp olha o destino
                 className="hl-link-card"
                 style={{
                   display: "flex",
@@ -137,6 +141,11 @@ export default async function LinksPage() {
           }}
         >
           © {new Date().getFullYear()} HALTEN ABRAÇADEIRAS
+          <br />
+          <a href={ROTAS.privacidade} style={{ color: "inherit" }}>
+            PRIVACIDADE
+          </a>{" "}
+          · <BotaoPreferenciasCookies />
         </p>
       </div>
 

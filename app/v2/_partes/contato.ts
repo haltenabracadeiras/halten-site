@@ -8,6 +8,7 @@ export const ROTAS = {
   quemSomos: "/quem-somos",
   representantes: "/representantes",
   contato: "/contato",
+  privacidade: "/politica-de-privacidade",
   /** sempre a revista ativa do admin de Links (app/catalogo/route.ts resolve qual é) */
   catalogo: "/catalogo",
   revista: (id: string) => `/catalogo/${id}?origem=site`,
@@ -19,16 +20,28 @@ export function rotaInterna(link: string) {
   return slug ? ROTAS.produto(slug) : link;
 }
 
-export const WHATSAPP_NUMERO = "5545991517308";
+/* O número do WhatsApp comercial vem do admin (Configurações → Número WhatsApp):
+   no servidor, getConfigSite() (lib/configuracoes.ts); nos componentes de cliente, useWhatsapp(). */
 
-export function linkWhatsapp(numero: string, texto: string) {
-  return `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
+export function linkWhatsapp(numero: string, texto?: string) {
+  return `https://wa.me/${numero}${texto ? `?text=${encodeURIComponent(texto)}` : ""}`;
 }
 
-export const WHATSAPP_COMERCIAL = linkWhatsapp(WHATSAPP_NUMERO, "Olá, Halten! Gostaria de fazer um orçamento.");
+/** Botões "Orçamento" / "Falar no WhatsApp" do site. */
+export function whatsappComercial(numero: string) {
+  return linkWhatsapp(numero, "Olá, Halten! Gostaria de fazer um orçamento.");
+}
+
+/** "5545999998888" → "(45) 99999-8888"; o que não reconhecer, mostra como veio. */
+export function formatarTelefone(bruto: string) {
+  const d = bruto.replace(/\D/g, "");
+  const local = d.startsWith("55") && d.length >= 12 ? d.slice(2) : d;
+  if (local.length === 11) return `(${local.slice(0, 2)}) ${local.slice(2, 7)}-${local.slice(7)}`;
+  if (local.length === 10) return `(${local.slice(0, 2)}) ${local.slice(2, 6)}-${local.slice(6)}`;
+  return bruto;
+}
 
 export const CONTATO = {
-  whatsapp: "(45) 99151-7308",
   telefone: "(45) 3197-2130",
   telefoneLink: "tel:+554531972130",
   email: "contato@halten.ind.br",

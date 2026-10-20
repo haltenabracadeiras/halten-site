@@ -2,7 +2,8 @@
 
 import { useEffect, useState, type CSSProperties } from "react";
 import type { Peca } from "../v2/_dados/linha";
-import { ROTAS, WHATSAPP_NUMERO, linkWhatsapp } from "../v2/_partes/contato";
+import { ROTAS, linkWhatsapp } from "../v2/_partes/contato";
+import { useWhatsapp } from "../components/config-site";
 
 type Achado = { rotulo: string; valor: string } | null;
 
@@ -39,6 +40,7 @@ function buscar(p: Peca, q: string): { ok: boolean; achado: Achado } {
 }
 
 export function ListaProdutos({ pecas, inicial }: { pecas: Peca[]; inicial: string }) {
+  const whatsapp = useWhatsapp();
   const [q, setQ] = useState(inicial);
   const busca = q.trim();
 
@@ -130,7 +132,7 @@ export function ListaProdutos({ pecas, inicial }: { pecas: Peca[]; inicial: stri
           </p>
           <a
             className="botao"
-            href={linkWhatsapp(WHATSAPP_NUMERO, `Olá, Halten! Vocês têm o código ${busca}?`)}
+            href={linkWhatsapp(whatsapp, `Olá, Halten! Vocês têm o código ${busca}?`)}
             target="_blank"
             rel="noreferrer"
           >

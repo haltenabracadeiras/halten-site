@@ -1,9 +1,12 @@
 /* Topo e rodapé das páginas v2. Os links são <a> comuns (recarga completa) para o motor de rolagem
    da home (que mexe no <html> e no fundo do <body>) não vazar para as outras páginas. */
-import { ROTAS, WHATSAPP_COMERCIAL } from "./contato";
+import { getConfigSite } from "../../../lib/configuracoes";
+import { BotaoPreferenciasCookies } from "../../components/consentimento";
+import { ROTAS, whatsappComercial } from "./contato";
 
 /** Topo de vidro escuro das páginas v2. */
-export function Topo() {
+export async function Topo() {
+  const { whatsapp } = await getConfigSite();
   return (
     <header className="topo" data-topo>
       <a href={ROTAS.inicio} className="topo-marca" aria-label="Halten Abraçadeiras — início">
@@ -17,7 +20,7 @@ export function Topo() {
         <a href={ROTAS.catalogo}>Catálogo</a>
         <a href={ROTAS.contato}>Contato</a>
       </nav>
-      <a className="topo-cta" href={WHATSAPP_COMERCIAL} target="_blank" rel="noreferrer">
+      <a className="topo-cta" href={whatsappComercial(whatsapp)} target="_blank" rel="noreferrer">
         Orçamento
       </a>
     </header>
@@ -38,10 +41,13 @@ export function Rodape() {
         <a href="https://www.instagram.com/haltenabracadeiras/" target="_blank" rel="noreferrer">
           Instagram
         </a>
+        <a href={ROTAS.privacidade}>Privacidade</a>
+        <BotaoPreferenciasCookies />
       </nav>
       <p>© {new Date().getFullYear()} Halten Abraçadeiras · CNPJ 43.453.407/0001-87</p>
       <a
         className="rodape-credito"
+        data-sem-rastreio // contato do desenvolvedor, não é lead da Halten
         href="https://wa.me/5545991250788?text=Ol%C3%A1%20vi%20seu%20projeto%20da%20Halten%2C%20gostaria%20de%20falar%20sobre%3A"
         target="_blank"
         rel="noreferrer"

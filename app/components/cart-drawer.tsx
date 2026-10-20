@@ -2,8 +2,8 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useCart } from "../context/cart-context";
-
-const WHATSAPP = "5545991517308";
+import { useWhatsapp } from "./config-site";
+import { rastrearCliqueWhatsapp } from "./rastreamento";
 
 function buildMessage(items: { code: string; productName: string; qty: number }[]) {
   const lines = items.map((i) => `• ${i.code} — ${i.productName} — ${i.qty} un`).join("\n");
@@ -12,6 +12,7 @@ function buildMessage(items: { code: string; productName: string; qty: number }[
 
 export function CartDrawer() {
   const pathname = usePathname();
+  const whatsapp = useWhatsapp();
   const { items, removeItem, updateQty, clearCart } = useCart();
   const [open, setOpen] = useState(false);
 
@@ -26,7 +27,9 @@ export function CartDrawer() {
 
   function handleSend() {
     const msg = encodeURIComponent(buildMessage(items));
-    window.open(`https://wa.me/${WHATSAPP}?text=${msg}`, "_blank");
+    const url = `https://wa.me/${whatsapp}?text=${msg}`;
+    rastrearCliqueWhatsapp(url);
+    window.open(url, "_blank");
     clearCart();
     setOpen(false);
   }

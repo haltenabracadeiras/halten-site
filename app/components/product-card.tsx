@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useWhatsapp } from "./config-site";
+import { linkWhatsapp } from "../v2/_partes/contato";
 
 type ProductCardProps = {
   product: {
@@ -12,6 +16,7 @@ type ProductCardProps = {
 };
 
 export function ProductCard({ product }: ProductCardProps) {
+  const whatsapp = useWhatsapp();
   return (
     <article className="group overflow-hidden rounded-[20px] border border-[var(--line)] bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(28,155,215,0.12)] hover:border-[var(--blue)]">
       <div className="bg-[var(--bg-section)] p-6">
@@ -46,7 +51,7 @@ export function ProductCard({ product }: ProductCardProps) {
             </Link>
           ) : (
             <a
-              href="https://wa.me/5545991517308"
+              href={linkWhatsapp(whatsapp)}
               target="_blank"
               rel="noreferrer"
               className="inline-flex w-full items-center justify-center rounded-full border border-[var(--blue)] px-5 py-3 text-sm font-semibold text-[var(--blue)] transition hover:bg-[var(--blue)] hover:text-white"
