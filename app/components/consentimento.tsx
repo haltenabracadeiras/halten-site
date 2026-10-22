@@ -16,7 +16,8 @@ import "./consentimento.css";
 /** Mudou o texto do banner ou as ferramentas usadas? Suba a versão: todo mundo é perguntado de novo. */
 export const VERSAO_BANNER = "1";
 
-const CHAVE = "halten-cookies";
+/** Onde a escolha fica no navegador (o script do Pixel lê direto daqui antes do init). */
+export const CHAVE = "halten-cookies";
 const CHAVE_FECHADO = "halten-cookies-fechado"; // X nesta aba (sessionStorage)
 const EVENTO_MUDOU = "halten:cookies";
 const EVENTO_ABRIR = "halten:abrir-cookies";

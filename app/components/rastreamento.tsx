@@ -3,13 +3,15 @@
 import { useEffect } from "react";
 import Script from "next/script";
 import { usePathname } from "next/navigation";
-import { lerEscolha, useEscolha } from "./consentimento";
+import { CHAVE, VERSAO_BANNER, lerEscolha, useEscolha } from "./consentimento";
 
 declare global {
   interface Window {
     dataLayer?: unknown[];
     gtag?: (...args: unknown[]) => void;
     fbq?: (...args: unknown[]) => void;
+    /** estado do Pixel: o consentimento já passado ao fbq e a última página com PageView (evita duplicar) */
+    __haltenPixel?: { consentimento: "grant" | "revoke"; pagina: string };
   }
 }
 
@@ -27,7 +29,8 @@ export function rastrearCliqueWhatsapp(url: string) {
 /**
  * Google Analytics (gtag.js) e Meta Pixel com os IDs do admin, mais o rastreio de todo clique em link de WhatsApp.
  * Cada ferramenta só carrega depois que a pessoa aceita a categoria dela no banner de cookies (consentimento.tsx);
- * mesmo assim o consentimento é declarado antes: Consent Mode v2 "denied" antes do config e fbq revoke antes do init.
+ * mesmo assim o consentimento é declarado antes: Consent Mode v2 "denied" antes do config, e no Pixel a escolha salva
+ * vira um único fbq('consent') antes do init (ordem: consent → init → PageView).
  * Links que passam por redirecionamento (ex.: /links/go/[id]) informam o destino em data-destino;
  * links com data-sem-rastreio (ex.: crédito do desenvolvedor no rodapé) não contam.
  */
@@ -64,8 +67,30 @@ export function Rastreamento({ gaId, metaPixelId }: { gaId: string | null; metaP
       ad_user_data: sinal(publicidade),
       ad_personalization: sinal(publicidade),
     });
-    window.fbq?.("consent", publicidade ? "grant" : "revoke");
   }, [gaId, medicao, publicidade]);
+
+  // Meta Pixel depois de iniciado (o script abaixo já faz consent → init → PageView da página em que carregou):
+  // - consentimento mudou pelo banner: um único fbq('consent'); ao aceitar, PageView da página atual;
+  // - navegação interna (App Router): PageView da nova página. O PageView automático do Pixel por
+  //   history.pushState fica desligado (disablePushState) para não contar duas vezes.
+  useEffect(() => {
+    const px = window.__haltenPixel;
+    if (!px || !window.fbq) return; // Pixel ainda não carregou (só carrega com publicidade aceita)
+    const consentimento = publicidade ? "grant" : "revoke";
+    if (px.consentimento !== consentimento) {
+      px.consentimento = consentimento;
+      window.fbq("consent", consentimento);
+      if (publicidade) {
+        window.fbq("track", "PageView");
+        px.pagina = pathname;
+      }
+      return;
+    }
+    if (publicidade && px.pagina !== pathname) {
+      px.pagina = pathname;
+      window.fbq("track", "PageView");
+    }
+  }, [publicidade, pathname]);
 
   if (noAdmin) return null;
 
@@ -91,10 +116,19 @@ n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
 n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
 document,'script','https://connect.facebook.net/en_US/fbevents.js');
-fbq('consent', 'revoke');
-fbq('init', '${metaPixelId}');
-fbq('consent', 'grant');
-fbq('track', 'PageView');`}
+(function () {
+  var aceito = false;
+  try {
+    var e = JSON.parse(localStorage.getItem('${CHAVE}') || 'null');
+    aceito = !!(e && e.versao === '${VERSAO_BANNER}' && e.categorias && e.categorias.publicidade === true);
+  } catch (err) {}
+  var consentimento = aceito ? 'grant' : 'revoke';
+  window.__haltenPixel = { consentimento: consentimento, pagina: location.pathname };
+  fbq.disablePushState = true;
+  fbq('consent', consentimento);
+  fbq('init', '${metaPixelId}');
+  if (aceito) fbq('track', 'PageView');
+})();`}
         </Script>
       )}
     </>
